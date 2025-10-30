@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-生成模拟数据脚本
-使用Django管理命令generate_sample_data来创建测试数据
+Mock Data Generation Script
+Uses Django management command generate_sample_data to create test data
 """
 
 import os
@@ -12,30 +12,34 @@ import subprocess
 
 def main():
     """
-    使用Django管理命令来生成示例数据
+    Use Django management command to generate sample data
     """
-    print("正在调用Django管理命令生成示例数据...")
+    print("Calling Django management command to generate sample data...")
     
     try:
-        # 使用subprocess调用Django管理命令
+        # Set environment variable for UTF-8 encoding
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        
+        # Use subprocess to call Django management command
         cmd = [sys.executable, "manage.py", "generate_sample_data", 
                "--products", "100", 
                "--members", "50", 
                "--sales", "200", 
                "--clean"]
         
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env, encoding='utf-8')
         print(result.stdout)
         
-        print("示例数据生成完成！")
-        print("你可以自行调整参数使用以下命令来生成不同规模的数据：")
-        print("python manage.py generate_sample_data --products 数量 --members 数量 --sales 数量 --clean")
+        print("Sample data generation completed!")
+        print("You can adjust parameters using the following command to generate different amounts of data:")
+        print("python manage.py generate_sample_data --products <number> --members <number> --sales <number> --clean")
         
     except subprocess.CalledProcessError as e:
-        print(f"生成示例数据时出错: {e}")
-        print(f"错误信息: {e.stderr}")
+        print(f"Error occurred while generating sample data: {e}")
+        print(f"Error message: {e.stderr}")
     except Exception as e:
-        print(f"发生未知错误: {e}")
+        print(f"Unknown error occurred: {e}")
 
 if __name__ == "__main__":
     main() 
