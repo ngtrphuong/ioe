@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('receipt_footer', models.TextField(blank=True, null=True, verbose_name='Receipt Footer')),
                 ('enable_low_stock_alert', models.BooleanField(default=True, verbose_name='Enable Low Stock Alert')),
                 ('default_tax_rate', models.DecimalField(decimal_places=2, default=0, max_digits=5, verbose_name='Default Tax Rate')),
-                ('currency_symbol', models.CharField(default='¥', max_length=10, verbose_name='Currency Symbol')),
+                ('currency_symbol', models.CharField(default='VNĐ', max_length=10, verbose_name='Currency Symbol')),
                 ('timezone', models.CharField(default='Asia/Shanghai', max_length=50, verbose_name='Timezone')),
             ],
             options={

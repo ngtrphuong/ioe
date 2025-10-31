@@ -56,10 +56,10 @@
                                 <td>#{{ record.id }}</td>
                                 <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <span class="fw-bold text-success">¥{{ record.amount }}</span>
+                                    <span class="fw-bold text-success">VNĐ{{ record.amount }}</span>
                                 </td>
                                 <td>
-                                    <span class="text-muted">¥{{ record.actual_amount }}</span>
+                                    <span class="text-muted">VNĐ{{ record.actual_amount }}</span>
                                 </td>
                                 <td>
                                     <span class="badge bg-secondary">{{ record.get_payment_method_display }}</span>

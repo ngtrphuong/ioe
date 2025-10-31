@@ -116,9 +116,9 @@ class ExportService:
                 'Member Name': member['name'],
                 'Level': member['level'].name,
                 'Phone': member['phone'],
-                'Amount Spent': f"¥{member['period_spend']:.2f}",
+                'Amount Spent': f"VNĐ{member['period_spend']:.2f}",
                 'Number of Purchases': member['period_purchase_count'],
-                'Avg Order Value': f"¥{avg_order:.2f}"
+                'Avg Order Value': f"VNĐ{avg_order:.2f}"
             })
         
         return {

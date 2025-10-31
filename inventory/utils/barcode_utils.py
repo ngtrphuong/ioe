@@ -80,7 +80,7 @@ def generate_product_barcode(product, price=None, barcode_type='ean13'):
         
         # Render info
         draw.text((10, height + 10), product_name, fill='black', font=title_font)
-        draw.text((10, height + 40), f"Price: ¥{price:.2f}", fill='black', font=info_font)
+        draw.text((10, height + 40), f"Price: VNĐ{price:.2f}", fill='black', font=info_font)
         draw.text((10, height + 70), f"Specification: {product.specification or 'Standard'}", fill='black', font=info_font)
         
         return complete_img

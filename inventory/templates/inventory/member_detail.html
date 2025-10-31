@@ -16,7 +16,7 @@
             </div>
             <div class="col-md-6">
                 <p><strong>Points:</strong> {{ member.points }}</p>
-                <p><strong>Total Spending:</strong> ${{ member.total_spend }}</p>
+                <p><strong>Total Spending:</strong> VNĐ{{ member.total_spend }}</p>
                 <p><strong>Registered:</strong> {{ member.created_at|date:"Y-m-d H:i" }}</p>
             </div>
         </div>
@@ -44,9 +44,9 @@
                     {% for sale in member.sale_set.all %}
                     <tr>
                         <td>#{{ sale.id }}</td>
-                        <td>${{ sale.total_amount }}</td>
-                        <td>${{ sale.discount_amount }}</td>
-                        <td>${{ sale.final_amount }}</td>
+                        <td>VNĐ{{ sale.total_amount }}</td>
+                        <td>VNĐ{{ sale.discount_amount }}</td>
+                        <td>VNĐ{{ sale.final_amount }}</td>
                         <td>{{ sale.points_earned }}</td>
                         <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
                     </tr>

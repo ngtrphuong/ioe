@@ -60,7 +60,7 @@
             <div class="card text-white bg-primary">
                 <div class="card-body">
                     <h5 class="card-title">Total Sales Amount</h5>
-                    <h3 class="mb-0">¥{{ summary.total_sales|floatformat:2 }}</h3>
+                    <h3 class="mb-0">VNĐ{{ summary.total_sales|floatformat:2 }}</h3>
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
             <div class="card text-white bg-info">
                 <div class="card-body">
                     <h5 class="card-title">Total Cost</h5>
-                    <h3 class="mb-0">¥{{ summary.total_cost|floatformat:2 }}</h3>
+                    <h3 class="mb-0">VNĐ{{ summary.total_cost|floatformat:2 }}</h3>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
             <div class="card text-white bg-success">
                 <div class="card-body">
                     <h5 class="card-title">Total Profit</h5>
-                    <h3 class="mb-0">¥{{ summary.total_profit|floatformat:2 }}</h3>
+                    <h3 class="mb-0">VNĐ{{ summary.total_profit|floatformat:2 }}</h3>
                 </div>
             </div>
         </div>
@@ -128,9 +128,9 @@
                                 {% for data in profit_data %}
                                 <tr>
                                     <td>{{ data.period|date:"Y-m-d" }}</td>
-                                    <td class="text-end">¥{{ data.sales|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ data.cost|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ data.profit|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.sales|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.cost|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.profit|floatformat:2 }}</td>
                                     <td class="text-end">
                                         <span class="{% if data.profit_margin < 15 %}text-danger{% elif data.profit_margin < 25 %}text-warning{% else %}text-success{% endif %}">
                                             {{ data.profit_margin|floatformat:2 }}%
@@ -248,7 +248,7 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: 'Amount (¥)'
+                            text: 'Amount (VNĐ)'
                         }
                     },
                     y1: {

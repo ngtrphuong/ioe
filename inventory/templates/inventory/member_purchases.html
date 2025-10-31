@@ -48,7 +48,7 @@
                                 </div>
                                 <div>
                                     <h5 class="mb-1">{{ member.name }}</h5>
-                                    <p class="mb-0">Phone: {{ member.phone }} | Member Level: {{ member.level.name }} | Purchase Count: {{ member.purchase_count }} | Total Spend: ¥{{ member.total_spend }}</p>
+                                    <p class="mb-0">Phone: {{ member.phone }} | Member Level: {{ member.level.name }} | Purchase Count: {{ member.purchase_count }} | Total Spend: VNĐ{{ member.total_spend }}</p>
                                 </div>
                             </div>
                         </div>
@@ -76,9 +76,9 @@
                                                 <a href="#" class="fw-bold text-primary">#{{ sale.id }}</a>
                                             </td>
                                             <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
-                                            <td>¥{{ sale.total_amount|floatformat:2 }}</td>
-                                            <td>¥{{ sale.discount_amount|floatformat:2 }}</td>
-                                            <td class="fw-bold text-success">¥{{ sale.final_amount|floatformat:2 }}</td>
+                                            <td>VNĐ{{ sale.total_amount|floatformat:2 }}</td>
+                                            <td>VNĐ{{ sale.discount_amount|floatformat:2 }}</td>
+                                            <td class="fw-bold text-success">VNĐ{{ sale.final_amount|floatformat:2 }}</td>
                                             <td>{{ sale.points_earned }}</td>
                                             <td>{{ sale.operator.username }}</td>
                                             <td>{{ sale.notes|default:"-" }}</td>

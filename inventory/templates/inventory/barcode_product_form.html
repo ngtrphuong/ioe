@@ -88,7 +88,7 @@
                                 {% if barcode_data.suggested_price %}
                                 <tr>
                                     <th><i class="bi bi-tag me-2"></i>Suggested Price</th>
-                                    <td class="fw-bold">¥{{ barcode_data.suggested_price }}</td>
+                                    <td class="fw-bold">VNĐ{{ barcode_data.suggested_price }}</td>
                                 </tr>
                                 {% endif %}
                                 
@@ -202,7 +202,7 @@
                                 <div class="alert alert-danger">{{ form.price.errors }}</div>
                             {% endif %}
                             <div class="input-group">
-                                <span class="input-group-text">¥</span>
+                                <span class="input-group-text">VNĐ</span>
                                 <input type="number" name="price" id="id_price" class="form-control" value="{{ form.price.value|default:'' }}{% if not form.price.value and barcode_data %}{{ barcode_data.suggested_price|default:'' }}{% endif %}" step="0.01" min="0" required>
                             </div>
                         </div>
@@ -212,7 +212,7 @@
                                 <div class="alert alert-danger">{{ form.cost.errors }}</div>
                             {% endif %}
                             <div class="input-group">
-                                <span class="input-group-text">¥</span>
+                                <span class="input-group-text">VNĐ</span>
                                 <input type="number" name="cost" id="id_cost" class="form-control" value="{{ form.cost.value|default:'0.00' }}" step="0.01" min="0">
                             </div>
                         </div>

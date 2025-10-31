@@ -94,8 +94,8 @@
                                 <p><strong>Product Name:</strong> {{ product.name }}</p>
                                 <p><strong>Barcode:</strong> {{ product.barcode|default:"Not Set" }}</p>
                                 <p><strong>Category:</strong> {{ product.category.name|default:"Uncategorized" }}</p>
-                                <p><strong>Retail Price:</strong> ¥{{ product.retail_price }}</p>
-                                <p><strong>Wholesale Price:</strong> ¥{{ product.wholesale_price }}</p>
+                                <p><strong>Retail Price:</strong> VNĐ{{ product.retail_price }}</p>
+                                <p><strong>Wholesale Price:</strong> VNĐ{{ product.wholesale_price }}</p>
                             </div>
                             <div class="col-md-6">
                                 {% if product.image %}

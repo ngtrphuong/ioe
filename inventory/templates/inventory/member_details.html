@@ -73,7 +73,7 @@
                         <div class="card bg-light">
                             <div class="card-body p-3">
                                 <h6 class="card-subtitle mb-1 text-muted">Account Balance</h6>
-                                <span class="fw-bold text-success">¥{{ member.balance }}</span>
+                                <span class="fw-bold text-success">VNĐ{{ member.balance }}</span>
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@
                         <div class="card bg-light">
                             <div class="card-body p-3">
                                 <h6 class="card-subtitle mb-1 text-muted">Total Spend</h6>
-                                <span class="fw-bold text-success">¥{{ member.total_spend }}</span>
+                                <span class="fw-bold text-success">VNĐ{{ member.total_spend }}</span>
                             </div>
                         </div>
                     </div>
@@ -160,9 +160,9 @@
                                         <td>{{ sale.created_at|date:"Y-m-d H:i" }}</td>
                                         <td>
                                             <div class="d-flex flex-column">
-                                                <span class="fw-bold text-success">¥{{ sale.final_amount }}</span>
+                                                <span class="fw-bold text-success">VNĐ{{ sale.final_amount }}</span>
                                                 {% if sale.discount_amount > 0 %}
-                                                <small class="text-muted">Original Price: ¥{{ sale.total_amount }}</small>
+                                                <small class="text-muted">Original Price: VNĐ{{ sale.total_amount }}</small>
                                                 {% endif %}
                                             </div>
                                         </td>
@@ -173,7 +173,7 @@
                                         </td>
                                         <td>
                                             {% if sale.balance_paid > 0 %}
-                                            <span class="text-primary">¥{{ sale.balance_paid }}</span>
+                                            <span class="text-primary">VNĐ{{ sale.balance_paid }}</span>
                                             {% else %}
                                             <span class="text-muted">-</span>
                                             {% endif %}
@@ -219,10 +219,10 @@
                                         <td>#{{ record.id }}</td>
                                         <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
                                         <td>
-                                            <span class="fw-bold text-success">¥{{ record.amount }}</span>
+                                            <span class="fw-bold text-success">VNĐ{{ record.amount }}</span>
                                         </td>
                                         <td>
-                                            <span class="text-muted">¥{{ record.actual_amount }}</span>
+                                            <span class="text-muted">VNĐ{{ record.actual_amount }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-secondary">{{ record.get_payment_method_display }}</span>

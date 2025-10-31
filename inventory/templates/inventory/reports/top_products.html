@@ -95,8 +95,8 @@
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.code }}</td>
                                     <td class="text-end">{{ product.quantity_sold }}</td>
-                                    <td class="text-end">¥{{ product.total_sales|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ product.profit|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ product.total_sales|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ product.profit|floatformat:2 }}</td>
                                     <td class="text-end">{{ product.profit_margin|floatformat:2 }}%</td>
                                 </tr>
                                 {% empty %}
@@ -175,7 +175,7 @@
                         position: 'right',
                         title: {
                             display: true,
-                            text: 'Sales Amount (¥)'
+                            text: 'Sales Amount (VNĐ)'
                         },
                         grid: {
                             drawOnChartArea: false

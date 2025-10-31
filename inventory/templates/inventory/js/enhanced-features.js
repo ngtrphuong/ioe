@@ -580,7 +580,7 @@ function showAdjustPriceModal(ids) {
     const adjustmentUnit = document.querySelector('.adjustment-unit');
     
     adjustmentType.addEventListener('change', function() {
-        adjustmentUnit.textContent = this.value === 'percentage' ? '%' : '¥';
+        adjustmentUnit.textContent = this.value === 'percentage' ? '%' : 'VNĐ';
     });
     
     // Confirm button click event

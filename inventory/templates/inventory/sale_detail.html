@@ -76,17 +76,17 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Total Amount:</span>
-                        <span class="fs-5 fw-bold text-success">¥{{ sale.total_amount|floatformat:2 }}</span>
+                        <span class="fs-5 fw-bold text-success">VNĐ{{ sale.total_amount|floatformat:2 }}</span>
                     </li>
                     {% if sale.discount_amount %}
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Discount Amount:</span>
-                        <span class="text-danger">-¥{{ sale.discount_amount|floatformat:2 }}</span>
+                        <span class="text-danger">-VNĐ{{ sale.discount_amount|floatformat:2 }}</span>
                     </li>
                     {% endif %}
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Amount Paid:</span>
-                        <span class="fs-5 fw-bold text-success">¥{{ sale.final_amount|floatformat:2 }}</span>
+                        <span class="fs-5 fw-bold text-success">VNĐ{{ sale.final_amount|floatformat:2 }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Payment Method:</span>
@@ -191,16 +191,16 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>¥{{ item.price|floatformat:2 }}</td>
+                                <td>VNĐ{{ item.price|floatformat:2 }}</td>
                                 <td>
                                     {% if item.price != item.actual_price %}
-                                    <span class="text-danger">¥{{ item.actual_price|floatformat:2 }}</span>
+                                    <span class="text-danger">VNĐ{{ item.actual_price|floatformat:2 }}</span>
                                     {% else %}
-                                    ¥{{ item.actual_price|floatformat:2 }}
+                                    VNĐ{{ item.actual_price|floatformat:2 }}
                                     {% endif %}
                                 </td>
                                 <td>{{ item.quantity }}</td>
-                                <td class="fw-bold">¥{{ item.subtotal|floatformat:2 }}</td>
+                                <td class="fw-bold">VNĐ{{ item.subtotal|floatformat:2 }}</td>
                             </tr>
                             {% empty %}
                             <tr>
@@ -216,16 +216,16 @@
                         <tfoot>
                             <tr>
                                 <td colspan="4" class="text-end fw-bold">Total:</td>
-                                <td class="fw-bold fs-5 text-success">¥{{ sale.total_amount|floatformat:2 }}</td>
+                                <td class="fw-bold fs-5 text-success">VNĐ{{ sale.total_amount|floatformat:2 }}</td>
                             </tr>
                             {% if sale.discount_amount %}
                             <tr>
                                 <td colspan="4" class="text-end fw-bold">Discount:</td>
-                                <td class="fw-bold text-danger">-¥{{ sale.discount_amount|floatformat:2 }}</td>
+                                <td class="fw-bold text-danger">-VNĐ{{ sale.discount_amount|floatformat:2 }}</td>
                             </tr>
                             <tr>
                                 <td colspan="4" class="text-end fw-bold">Amount Paid:</td>
-                                <td class="fw-bold fs-5 text-success">¥{{ sale.final_amount|floatformat:2 }}</td>
+                                <td class="fw-bold fs-5 text-success">VNĐ{{ sale.final_amount|floatformat:2 }}</td>
                             </tr>
                             {% endif %}
                         </tfoot>

@@ -67,7 +67,7 @@
                             <p><strong>Barcode:</strong> {{ product.barcode|default:"Not Set" }}</p>
                             <p><strong>Category:</strong> {{ product.category.name|default:"Uncategorized" }}</p>
                             <p><strong>Price Type:</strong> {% if price_type == 'retail' %}Retail Price{% else %}Wholesale Price{% endif %}</p>
-                            <p><strong>Unit Price:</strong> ¥{{ price }}</p>
+                            <p><strong>Unit Price:</strong> VNĐ{{ price }}</p>
                         </div>
                     </div>
                     
@@ -114,7 +114,7 @@
                                 <img src="data:image/png;base64,{{ barcode_data }}" alt="{{ product.name }} barcode">
                                 <div class="barcode-info">
                                     <p class="mb-0"><strong>{{ product.name }}</strong></p>
-                                    <p class="mb-0">¥{{ price }}</p>
+                                    <p class="mb-0">VNĐ{{ price }}</p>
                                 </div>
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                 }
                 
                 if (showPrice) {
-                    infoDiv.append('<p class="mb-0">¥{{ price }}</p>');
+                    infoDiv.append('<p class="mb-0">VNĐ{{ price }}</p>');
                 }
                 
                 barcodeDiv.append(infoDiv);

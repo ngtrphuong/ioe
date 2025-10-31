@@ -170,15 +170,15 @@
                             <tbody>
                                 <tr>
                                     <td>Member</td>
-                                    <td class="text-end">¥{{ member_data.member_sales.total_amount|default:"0.00" }}</td>
+                                    <td class="text-end">VNĐ{{ member_data.member_sales.total_amount|default:"0.00" }}</td>
                                     <td class="text-end">{{ member_data.member_sales.total_count|default:"0" }}</td>
-                                    <td class="text-end">¥{{ member_data.member_avg_order|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member_data.member_avg_order|floatformat:2 }}</td>
                                 </tr>
                                 <tr>
                                     <td>Non-Member</td>
-                                    <td class="text-end">¥{{ member_data.non_member_sales.total_amount|default:"0.00" }}</td>
+                                    <td class="text-end">VNĐ{{ member_data.non_member_sales.total_amount|default:"0.00" }}</td>
                                     <td class="text-end">{{ member_data.non_member_sales.total_count|default:"0" }}</td>
-                                    <td class="text-end">¥{{ member_data.non_member_avg_order|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member_data.non_member_avg_order|floatformat:2 }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -218,9 +218,9 @@
                                         <span class="badge bg-info text-dark">{{ member.level.name }}</span>
                                     </td>
                                     <td>{{ member.phone }}</td>
-                                    <td class="text-end">¥{{ member.period_spend|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member.period_spend|floatformat:2 }}</td>
                                     <td class="text-end">{{ member.period_purchase_count }}</td>
-                                    <td class="text-end">¥{{ member.period_spend|div:member.period_purchase_count|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member.period_spend|div:member.period_purchase_count|floatformat:2 }}</td>
                                 </tr>
                                 {% empty %}
                                 <tr>

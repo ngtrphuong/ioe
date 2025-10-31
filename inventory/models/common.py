@@ -56,7 +56,7 @@ class SystemConfig(models.Model):
     # System settings
     enable_low_stock_alert = models.BooleanField(verbose_name="Enable Low Stock Alert", default=True)
     default_tax_rate = models.DecimalField(max_digits=5, decimal_places=2, verbose_name="Default Tax Rate", default=0)
-    currency_symbol = models.CharField(max_length=10, verbose_name="Currency Symbol", default="¥")
+    currency_symbol = models.CharField(max_length=10, verbose_name="Currency Symbol", default="VNĐ")
     timezone = models.CharField(max_length=50, verbose_name="Timezone", default="Asia/Shanghai")
     
     class Meta:

@@ -135,7 +135,7 @@
                             <img src="data:image/png;base64,{{ item.barcode_data }}" alt="{{ item.product.name }} barcode">
                             <div class="barcode-info">
                                 <p class="barcode-name mb-0"><strong>{{ item.product.name }}</strong></p>
-                                <p class="barcode-price mb-0">¥{{ item.price }}</p>
+                                <p class="barcode-price mb-0">VNĐ{{ item.price }}</p>
                             </div>
                         </div>
                         {% endfor %}
@@ -199,7 +199,7 @@
             }
             
             if (showPrice) {
-                infoDiv.append('<p class="barcode-price mb-0">¥{{ item.price }}</p>');
+                infoDiv.append('<p class="barcode-price mb-0">VNĐ{{ item.price }}</p>');
             }
             
             barcodeDiv.append(infoDiv);

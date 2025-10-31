@@ -57,9 +57,9 @@
             <div class="card text-white bg-warning">
                 <div class="card-body">
                     <h5 class="card-title">Total Recharge Amount</h5>
-                    <h3 class="mb-0">¥{{ recharge_data.summary.total_recharge_amount|floatformat:2 }}</h3>
+                    <h3 class="mb-0">VNĐ{{ recharge_data.summary.total_recharge_amount|floatformat:2 }}</h3>
                     <p class="mt-2 mb-0">
-                        <small>Actual Amount Received: ¥{{ recharge_data.summary.total_actual_amount|floatformat:2 }}</small>
+                        <small>Actual Amount Received: VNĐ{{ recharge_data.summary.total_actual_amount|floatformat:2 }}</small>
                     </p>
                 </div>
             </div>
@@ -79,9 +79,9 @@
             <div class="card text-white bg-success">
                 <div class="card-body">
                     <h5 class="card-title">Average Recharge Amount</h5>
-                    <h3 class="mb-0">¥{{ recharge_data.summary.avg_recharge_amount|floatformat:2 }}</h3>
+                    <h3 class="mb-0">VNĐ{{ recharge_data.summary.avg_recharge_amount|floatformat:2 }}</h3>
                     <p class="mt-2 mb-0">
-                        <small>Per Capita Recharge: ¥{{ recharge_data.summary.total_recharge_amount|div:recharge_data.summary.recharged_member_count|floatformat:2 }}</small>
+                        <small>Per Capita Recharge: VNĐ{{ recharge_data.summary.total_recharge_amount|div:recharge_data.summary.recharged_member_count|floatformat:2 }}</small>
                     </p>
                 </div>
             </div>
@@ -143,9 +143,9 @@
                                     <td>
                                         <span class="badge bg-{{ member.level.color }}">{{ member.level.name }}</span>
                                     </td>
-                                    <td class="text-end">¥{{ member.total_recharge|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member.total_recharge|floatformat:2 }}</td>
                                     <td class="text-end">{{ member.recharge_count }}</td>
-                                    <td class="text-end">¥{{ member.total_recharge|div:member.recharge_count|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ member.total_recharge|div:member.recharge_count|floatformat:2 }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
                                             <a href="{% url 'member_details' member.id %}" class="btn btn-outline-primary">
@@ -193,8 +193,8 @@
                                 {% for recharge in recharge_data.daily_recharge %}
                                 <tr>
                                     <td>{{ recharge.day|date:"Y-m-d" }}</td>
-                                    <td class="text-end">¥{{ recharge.total_amount|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ recharge.actual_amount|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ recharge.total_amount|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ recharge.actual_amount|floatformat:2 }}</td>
                                     <td class="text-end">{{ recharge.count }}</td>
                                     <td class="text-end">{{ recharge.member_count }}</td>
                                 </tr>

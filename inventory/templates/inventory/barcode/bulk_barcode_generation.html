@@ -109,8 +109,8 @@
                                         <td>{{ product.name }}</td>
                                         <td>{{ product.barcode|default:"Not Set" }}</td>
                                         <td>{{ product.category.name|default:"Uncategorized" }}</td>
-                                        <td>¥{{ product.retail_price }}</td>
-                                        <td>¥{{ product.wholesale_price }}</td>
+                                        <td>VNĐ{{ product.retail_price }}</td>
+                                        <td>VNĐ{{ product.wholesale_price }}</td>
                                         <td>{{ product.current_inventory }}</td>
                                     </tr>
                                     {% empty %}

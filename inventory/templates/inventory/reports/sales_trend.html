@@ -93,9 +93,9 @@
                                 {% for data in sales_data %}
                                 <tr>
                                     <td>{{ data.period|date:"Y-m-d" }}</td>
-                                    <td class="text-end">¥{{ data.total_sales|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ data.total_cost|floatformat:2 }}</td>
-                                    <td class="text-end">¥{{ data.profit|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.total_sales|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.total_cost|floatformat:2 }}</td>
+                                    <td class="text-end">VNĐ{{ data.profit|floatformat:2 }}</td>
                                     <td class="text-end">{{ data.profit_margin|floatformat:2 }}%</td>
                                     <td class="text-end">{{ data.order_count }}</td>
                                     <td class="text-end">{{ data.item_count }}</td>
@@ -192,7 +192,7 @@
                         position: 'left',
                         title: {
                             display: true,
-                            text: 'Amount (¥)'
+                            text: 'Amount (VNĐ)'
                         }
                     },
                     y1: {

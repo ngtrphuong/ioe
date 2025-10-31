@@ -49,11 +49,11 @@
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted">Account Balance</span>
-                        <span class="fw-bold text-success">¥{{ member.balance }}</span>
+                        <span class="fw-bold text-success">VNĐ{{ member.balance }}</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted">Total Spend</span>
-                        <span class="fw-bold text-success">¥{{ member.total_spend }}</span>
+                        <span class="fw-bold text-success">VNĐ{{ member.total_spend }}</span>
                     </div>
                 </div>
                 
@@ -79,7 +79,7 @@
                         <div class="col-md-6">
                             <label for="amount" class="form-label">Recharge Amount <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">¥</span>
+                                <span class="input-group-text">VNĐ</span>
                                 <input type="number" id="amount" name="amount" class="form-control" min="0" step="0.01" required>
                             </div>
                             <div class="form-text">Actual amount to add to member account</div>
@@ -88,7 +88,7 @@
                         <div class="col-md-6">
                             <label for="actual_amount" class="form-label">Amount Received <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <span class="input-group-text">¥</span>
+                                <span class="input-group-text">VNĐ</span>
                                 <input type="number" id="actual_amount" name="actual_amount" class="form-control" min="0" step="0.01" required>
                             </div>
                             <div class="form-text">Actual amount received (may include discounts)</div>

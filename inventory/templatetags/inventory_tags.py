@@ -13,8 +13,8 @@ def jsonify(obj):
 def currency(value):
     """Format a number as currency"""
     if value is None:
-        return '¥0.00'
-    return f'¥{value:.2f}'
+        return 'VNĐ0.00'
+    return f'VNĐ{value:.2f}'
 
 @register.filter(name='divisor')
 def divisor(value, arg):
