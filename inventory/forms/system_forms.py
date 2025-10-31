@@ -7,7 +7,7 @@ from inventory.models import SystemConfig
 
 
 class SystemConfigForm(forms.ModelForm):
-    """系统配置表单"""
+    """System Configuration Form"""
     class Meta:
         model = SystemConfig
         fields = [
@@ -46,20 +46,20 @@ class SystemConfigForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.form_enctype = 'multipart/form-data'
         
-        # 添加时区选项
+        # Add timezone options
         timezone_choices = [(tz, tz) for tz in settings.TIME_ZONE_CHOICES] if hasattr(settings, 'TIME_ZONE_CHOICES') else [
-            ('Asia/Shanghai', '中国标准时间 (UTC+8)'),
-            ('Asia/Hong_Kong', '香港时间 (UTC+8)'),
-            ('Asia/Tokyo', '东京时间 (UTC+9)'),
-            ('Asia/Singapore', '新加坡时间 (UTC+8)'),
-            ('Europe/London', '伦敦时间 (UTC+0/+1)'),
-            ('America/New_York', '纽约时间 (UTC-5/-4)'),
-            ('America/Los_Angeles', '洛杉矶时间 (UTC-8/-7)'),
-            ('UTC', '协调世界时 (UTC)'),
+            ('Asia/Shanghai', 'China Standard Time (UTC+8)'),
+            ('Asia/Hong_Kong', 'Hong Kong Time (UTC+8)'),
+            ('Asia/Tokyo', 'Tokyo Time (UTC+9)'),
+            ('Asia/Singapore', 'Singapore Time (UTC+8)'),
+            ('Europe/London', 'London Time (UTC+0/+1)'),
+            ('America/New_York', 'New York Time (UTC-5/-4)'),
+            ('America/Los_Angeles', 'Los Angeles Time (UTC-8/-7)'),
+            ('UTC', 'Coordinated Universal Time (UTC)'),
         ]
         self.fields['timezone'].choices = timezone_choices
         
-        # 设置表单布局
+        # Set form layout
         self.helper.layout = Layout(
             Div(
                 Div('company_name', css_class='col-md-12'),
@@ -91,14 +91,14 @@ class SystemConfigForm(forms.ModelForm):
                 Div('timezone', css_class='col-md-3'),
                 css_class='row mb-4'
             ),
-            Submit('submit', '保存设置', css_class='btn btn-primary')
+            Submit('submit', 'Save Settings', css_class='btn btn-primary')
         )
 
 
 class StoreForm(forms.ModelForm):
-    """商店表单"""
+    """Store Form"""
     class Meta:
-        model = None  # 将在forms/__init__.py中设置正确的model
+        model = None  # Set in forms/__init__.py
         fields = ['name', 'address', 'phone', 'email', 'manager', 'is_active']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -114,7 +114,7 @@ class StoreForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         
-        # 设置表单布局
+        # Set form layout
         self.helper.layout = Layout(
             Row(
                 Column('name', css_class='form-group col-md-6 mb-0'),
@@ -128,5 +128,5 @@ class StoreForm(forms.ModelForm):
                 css_class='form-row'
             ),
             'is_active',
-            Submit('submit', '保存', css_class='btn btn-primary')
+            Submit('submit', 'Save', css_class='btn btn-primary')
         ) 

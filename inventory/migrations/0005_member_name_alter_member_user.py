@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='name',
-            field=models.CharField(default='', max_length=50, verbose_name='姓名'),
+            field=models.CharField(default='', max_length=50, verbose_name='Name'),
         ),
         migrations.AlterField(
             model_name='member',
             name='user',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='用户'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='User'),
         ),
     ]

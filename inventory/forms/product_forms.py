@@ -7,29 +7,29 @@ from inventory.models import Product, Category, ProductImage, ProductBatch, Supp
 class ProductForm(forms.ModelForm):
     barcode = forms.CharField(
         max_length=100,
-        label='商品条码',
-        help_text='支持EAN-13、UPC、ISBN等标准条码格式',
+        label='Product Barcode',
+        help_text='Supports standard barcode formats such as EAN-13, UPC, ISBN, etc.',
         widget=forms.TextInput(attrs={
-            'class': 'form-control', 
-            'placeholder': '请输入商品条码',
-            'autocomplete': 'off',  # 防止自动填充
-            'inputmode': 'numeric',  # 在移动设备上显示数字键盘
-            'pattern': '[A-Za-z0-9-]+',  # HTML5验证模式，修复转义序列
-            'aria-label': '商品条码'
+            'class': 'form-control',
+            'placeholder': 'Please enter the product barcode',
+            'autocomplete': 'off',  # Prevent autofill
+            'inputmode': 'numeric',
+            'pattern': '[A-Za-z0-9-]+',
+            'aria-label': 'Product Barcode'
         })
     )
     
-    # 添加库存预警级别字段
+    # Add warning level field
     warning_level = forms.IntegerField(
-        label='预警库存',
-        help_text='库存低于此数量时将发出预警',
+        label='Warning Inventory',
+        help_text='An alert will be triggered when inventory falls below this quantity',
         required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'min': '0',
             'step': '1',
-            'placeholder': '预警数量',
-            'aria-label': '预警库存'
+            'placeholder': 'Warning Quantity',
+            'aria-label': 'Warning Inventory'
         })
     )
     
@@ -38,49 +38,49 @@ class ProductForm(forms.ModelForm):
         fields = ['barcode', 'name', 'category', 'color', 'size', 'description', 'price', 'cost', 'image', 'specification', 'manufacturer', 'is_active']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '请输入商品名称', 'aria-label': '商品名称'}),
-            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': '售价', 'inputmode': 'decimal', 'aria-label': '售价'}),
-            'cost': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': '成本价', 'inputmode': 'decimal', 'aria-label': '成本价'}),
-            'specification': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '规格', 'aria-label': '规格'}),
-            'manufacturer': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '制造商', 'aria-label': '制造商'}),
-            'category': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': '商品分类'}),
-            'color': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': '颜色'}),
-            'size': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': '尺码'}),
-            'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*', 'aria-label': '商品图片'}),
-            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input', 'aria-label': '是否启用'}),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Please enter product name', 'aria-label': 'Product Name'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Sale Price', 'inputmode': 'decimal', 'aria-label': 'Sale Price'}),
+            'cost': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Cost Price', 'inputmode': 'decimal', 'aria-label': 'Cost Price'}),
+            'specification': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Specification', 'aria-label': 'Specification'}),
+            'manufacturer': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Manufacturer', 'aria-label': 'Manufacturer'}),
+            'category': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': 'Product Category'}),
+            'color': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': 'Color'}),
+            'size': forms.Select(attrs={'class': 'form-control form-select', 'aria-label': 'Size'}),
+            'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*', 'aria-label': 'Product Image'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input', 'aria-label': 'Active'}),
         }
         
     def clean_barcode(self):
         barcode = self.cleaned_data.get('barcode')
         if barcode:
-            # 移除空格和其他不可见字符
+            # Remove spaces and other invisible characters
             barcode = re.sub(r'\s', '', barcode).strip()
             
-            # 检查是否只包含数字、字母和连字符
+            # Check if only contains numbers, letters and hyphens
             if not all(c.isalnum() or c == '-' for c in barcode):
-                raise forms.ValidationError('条码只能包含数字、字母和连字符')
+                raise forms.ValidationError('Barcode can only contain numbers, letters, and hyphens')
             
-            # 检查条码是否已存在（排除当前实例）
+            # Check if barcode already exists (exclude current instance)
             existing = Product.objects.filter(barcode=barcode)
             if self.instance and self.instance.pk:
                 existing = existing.exclude(pk=self.instance.pk)
                 
             if existing.exists():
-                raise forms.ValidationError('该条码已存在，请勿重复添加')
+                raise forms.ValidationError('This barcode already exists, please do not add duplicates')
                 
-            # 检查常见条码格式
-            # 标准条码格式
-            # EAN-13: 13位数字
-            # EAN-8: 8位数字
-            # UPC-A: 12位数字
-            # UPC-E: 8位数字，以0开头
-            # ISBN-13: 13位数字，通常以978或979开头
-            # ISBN-10: 10位数字或数字+X
-            # JAN: 日本商品编码，13位数字，以45或49开头
-            # ITF-14: 14位数字，通常用于物流包装
-            # GTIN-14: 14位数字，全球贸易项目代码
-            # Code-39: 可变长度，字母数字和特定符号
-            # Code-128: 可变长度，所有ASCII字符
+            # Check common barcode formats
+            # Standard barcode formats
+            # EAN-13: 13 digits
+            # EAN-8: 8 digits
+            # UPC-A: 12 digits
+            # UPC-E: 8 digits, starts with 0
+            # ISBN-13: 13 digits, usually starts with 978 or 979
+            # ISBN-10: 10 digits or digits+X
+            # JAN: Japanese product code, 13 digits, starts with 45 or 49
+            # ITF-14: 14 digits, usually used for logistics packaging
+            # GTIN-14: 14 digits, Global Trade Item Number
+            # Code-39: Variable length, alphanumeric and specific symbols
+            # Code-128: Variable length, all ASCII characters
             ean13_pattern = re.compile(r'^\d{13}$')
             ean8_pattern = re.compile(r'^\d{8}$')
             upc_pattern = re.compile(r'^\d{12}$')
@@ -91,7 +91,7 @@ class ProductForm(forms.ModelForm):
             itf14_pattern = re.compile(r'^\d{14}$')
             gtin14_pattern = re.compile(r'^\d{14}$')
             
-            # 如果不符合任何标准格式，添加警告（但不阻止保存）
+            # If does not match any standard format, add warning (but don't prevent saving)
             is_standard_format = (
                 ean13_pattern.match(barcode) or
                 ean8_pattern.match(barcode) or
@@ -105,8 +105,8 @@ class ProductForm(forms.ModelForm):
             )
             
             if not is_standard_format:
-                # 添加警告，但不阻止保存
-                self.add_warning = '条码格式不符合常见标准格式，请确认无误'
+                # Add warning, but don't prevent saving
+                self.add_warning = 'Barcode format does not match standard formats, please confirm'
                 
         return barcode
         
@@ -116,7 +116,7 @@ class ProductForm(forms.ModelForm):
         cost = cleaned_data.get('cost')
         
         if price is not None and cost is not None and price < cost:
-            self.add_warning = '当前售价低于成本价，请确认无误'
+            self.add_warning = 'Current sale price is below cost price, please confirm'
             
         return cleaned_data
 
@@ -128,166 +128,166 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '分类名称',
-                'aria-label': '分类名称',
+                'placeholder': 'Category Name',
+                'aria-label': 'Category Name',
                 'style': 'height: 48px; font-size: 16px;',
-                'autocomplete': 'off',  # 防止自动填充
-                'autofocus': True  # 自动获取焦点
+                'autocomplete': 'off',  # Prevent autofill
+                'autofocus': True  # Auto-focus
             }),
             'description': forms.Textarea(attrs={
                 'class': 'form-control',
-                'placeholder': '分类描述',
+                'placeholder': 'Category Description',
                 'rows': 3,
-                'aria-label': '分类描述',
-                'style': 'font-size: 16px;'  # 增大字体
+                'aria-label': 'Category Description',
+                'style': 'font-size: 16px;'  # Increase font size
             }),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 添加响应式布局的辅助类
+        # Add helper classes for responsive layout
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': field.widget.attrs.get('class', '') + ' mb-2',  # 添加下边距
-                'autocapitalize': 'off',  # 防止自动大写首字母
+                'class': field.widget.attrs.get('class', '') + ' mb-2',  # Add bottom margin
+                'autocapitalize': 'off',  # Prevent automatic capitalization of first letter
             })
     
     def clean_name(self):
         name = self.cleaned_data.get('name')
         if name:
-            # 移除多余的空格
+            # Remove extra spaces
             name = name.strip()
             
-            # 检查名称长度
+            # Check name length
             if len(name) < 2:
-                raise forms.ValidationError('分类名称至少需要2个字符')
+                raise forms.ValidationError('Category name must be at least 2 characters')
                 
-            # 检查是否已存在相同名称的分类（排除当前实例）
+            # Check if a category with the same name already exists (excluding the current instance)
             existing = Category.objects.filter(name=name)
             if self.instance and self.instance.pk:
                 existing = existing.exclude(pk=self.instance.pk)
                 
             if existing.exists():
-                raise forms.ValidationError('该分类名称已存在，请使用其他名称')
+                raise forms.ValidationError('This category name already exists, please use another name')
                 
         return name 
 
 
 class ProductBatchForm(forms.ModelForm):
-    """商品批次表单"""
+    """Product Batch Form"""
     class Meta:
         model = ProductBatch
         fields = ['batch_number', 'production_date', 'expiry_date', 'quantity', 'cost_price', 'supplier', 'remarks']
         widgets = {
             'batch_number': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': '批次号',
-                'aria-label': '批次号'
+                'placeholder': 'Batch Number',
+                'aria-label': 'Batch Number'
             }),
             'production_date': forms.DateInput(attrs={
                 'class': 'form-control',
                 'type': 'date',
-                'aria-label': '生产日期'
+                'aria-label': 'Production Date'
             }),
             'expiry_date': forms.DateInput(attrs={
                 'class': 'form-control',
                 'type': 'date',
-                'aria-label': '过期日期'
+                'aria-label': 'Expiry Date'
             }),
             'quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0',
                 'step': '1',
-                'placeholder': '数量',
-                'aria-label': '数量'
+                'placeholder': 'Quantity',
+                'aria-label': 'Quantity'
             }),
             'cost_price': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'step': '0.01',
-                'placeholder': '成本价',
-                'aria-label': '成本价'
+                'placeholder': 'Cost Price',
+                'aria-label': 'Cost Price'
             }),
             'supplier': forms.Select(attrs={
                 'class': 'form-control form-select',
-                'aria-label': '供应商'
+                'aria-label': 'Supplier'
             }),
             'remarks': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': '备注',
-                'aria-label': '备注'
+                'placeholder': 'Remarks',
+                'aria-label': 'Remarks'
             }),
         }
 
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity')
         if quantity is not None and quantity < 0:
-            raise forms.ValidationError('数量不能为负数')
+            raise forms.ValidationError('Quantity cannot be negative')
         return quantity
 
     def clean_cost_price(self):
         cost_price = self.cleaned_data.get('cost_price')
         if cost_price is not None and cost_price < 0:
-            raise forms.ValidationError('成本价不能为负数')
+            raise forms.ValidationError('Cost price cannot be negative')
         return cost_price
 
 
-# 创建商品图片的内联表单集
+# Create inline formset for product images
 ProductImageFormSet = inlineformset_factory(
     Product, 
     ProductImage,
     fields=('image', 'alt_text', 'order', 'is_primary'),
-    extra=3,  # 默认显示3个空表单
-    can_delete=True,  # 允许删除
+    extra=3,  # Default to 3 empty forms
+    can_delete=True,  # Allow deletion
     widgets={
         'image': forms.FileInput(attrs={
             'class': 'form-control',
             'accept': 'image/*',
-            'aria-label': '图片'
+            'aria-label': 'Image'
         }),
         'alt_text': forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '图片描述',
-            'aria-label': '图片描述'
+            'placeholder': 'Image Description',
+            'aria-label': 'Image Description'
         }),
         'order': forms.NumberInput(attrs={
             'class': 'form-control',
             'min': '0',
             'step': '1',
-            'placeholder': '排序',
-            'aria-label': '排序'
+            'placeholder': 'Order',
+            'aria-label': 'Order'
         }),
         'is_primary': forms.CheckboxInput(attrs={
             'class': 'form-check-input',
-            'aria-label': '是否主图'
+            'aria-label': 'Is Primary'
         }),
     }
 )
 
 
 class ProductBulkForm(forms.Form):
-    """批量创建商品表单"""
+    """Bulk Create Product Form"""
     category = forms.ModelChoiceField(
         queryset=Category.objects.filter(is_active=True),
-        label='商品分类',
+        label='Product Category',
         required=True,
         widget=forms.Select(attrs={
             'class': 'form-control form-select',
-            'aria-label': '商品分类'
+            'aria-label': 'Product Category'
         })
     )
     name_prefix = forms.CharField(
         max_length=100,
-        label='商品名称前缀',
+        label='Product Name Prefix',
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '例如：测试商品',
-            'aria-label': '商品名称前缀'
+            'placeholder': 'e.g., Test Product',
+            'aria-label': 'Product Name Prefix'
         })
     )
     name_suffix_start = forms.IntegerField(
-        label='编号起始值',
+        label='Starting Number',
         initial=1,
         required=True,
         widget=forms.NumberInput(attrs={
@@ -295,11 +295,11 @@ class ProductBulkForm(forms.Form):
             'min': '1',
             'step': '1',
             'placeholder': '1',
-            'aria-label': '编号起始值'
+            'aria-label': 'Starting Number'
         })
     )
     name_suffix_end = forms.IntegerField(
-        label='编号结束值',
+        label='Ending Number',
         initial=10,
         required=True,
         widget=forms.NumberInput(attrs={
@@ -307,43 +307,43 @@ class ProductBulkForm(forms.Form):
             'min': '1',
             'step': '1',
             'placeholder': '10',
-            'aria-label': '编号结束值'
+            'aria-label': 'Ending Number'
         })
     )
     retail_price = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        label='零售价',
+        label='Retail Price',
         required=True,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'step': '0.01',
-            'placeholder': '零售价',
-            'aria-label': '零售价'
+            'placeholder': 'Retail Price',
+            'aria-label': 'Retail Price'
         })
     )
     wholesale_price = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        label='批发价',
+        label='Wholesale Price',
         required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'step': '0.01',
-            'placeholder': '批发价（可选）',
-            'aria-label': '批发价'
+            'placeholder': 'Wholesale Price (Optional)',
+            'aria-label': 'Wholesale Price'
         })
     )
     cost_price = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        label='成本价',
+        label='Cost Price',
         required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'step': '0.01',
-            'placeholder': '成本价（可选）',
-            'aria-label': '成本价'
+            'placeholder': 'Cost Price (Optional)',
+            'aria-label': 'Cost Price'
         })
     )
 
@@ -353,36 +353,36 @@ class ProductBulkForm(forms.Form):
         suffix_end = cleaned_data.get('name_suffix_end')
         
         if suffix_start and suffix_end and suffix_start > suffix_end:
-            raise forms.ValidationError('编号起始值不能大于结束值')
+            raise forms.ValidationError('Starting number cannot be greater than ending number')
         
-        # 限制批量创建数量不超过100
+        # Limit bulk creation to no more than 100
         if suffix_start and suffix_end and (suffix_end - suffix_start + 1) > 100:
-            raise forms.ValidationError('批量创建商品数量不能超过100个')
+            raise forms.ValidationError('Number of products to create cannot exceed 100')
         
         return cleaned_data
 
 
 class ProductImportForm(forms.Form):
-    """商品导入表单"""
+    """Product Import Form"""
     csv_file = forms.FileField(
-        label='CSV文件',
+        label='CSV File',
         required=True,
         widget=forms.FileInput(attrs={
             'class': 'form-control',
             'accept': '.csv',
-            'aria-label': 'CSV文件'
+            'aria-label': 'CSV File'
         })
     )
     
     def clean_csv_file(self):
         csv_file = self.cleaned_data.get('csv_file')
         if csv_file:
-            # 检查文件类型
+            # Check file type
             if not csv_file.name.endswith('.csv'):
-                raise forms.ValidationError('请上传CSV格式的文件')
+                raise forms.ValidationError('Please upload a CSV file')
             
-            # 检查文件大小，限制为5MB
+            # Check file size, limit to 5MB
             if csv_file.size > 5 * 1024 * 1024:
-                raise forms.ValidationError('文件大小不能超过5MB')
+                raise forms.ValidationError('File size cannot exceed 5MB')
         
         return csv_file 

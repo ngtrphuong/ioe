@@ -5,7 +5,7 @@ from ..models.member import Member, MemberLevel, RechargeRecord
 
 
 class MemberForm(forms.ModelForm):
-    """会员表单"""
+    """Member Form"""
     class Meta:
         model = Member
         fields = ['name', 'phone', 'gender', 'birthday', 'level', 'email', 'member_id', 'address', 'notes', 'is_active']
@@ -37,36 +37,36 @@ class MemberForm(forms.ModelForm):
             'address',
             'notes',
             'is_active',
-            Submit('submit', '保存', css_class='btn btn-primary')
+            Submit('submit', 'Save', css_class='btn btn-primary')
         )
     
     def clean_phone(self):
-        """手机号验证"""
+        """Phone number validation"""
         phone = self.cleaned_data.get('phone')
         if not phone:
-            raise forms.ValidationError('手机号不能为空')
+            raise forms.ValidationError('Phone number cannot be empty')
         
-        # 检查格式
+        # Check format
         import re
         if not re.match(r'^\d{11}$', phone):
-            raise forms.ValidationError('请输入11位手机号码')
+            raise forms.ValidationError('Please enter an 11-digit phone number')
         
-        # 检查唯一性（排除当前实例）
+        # Check uniqueness (exclude current instance)
         instance = getattr(self, 'instance', None)
         if instance and instance.pk:
-            # 修改时检查
+            # Modify check
             if Member.objects.exclude(pk=instance.pk).filter(phone=phone).exists():
-                raise forms.ValidationError('该手机号已被注册')
+                raise forms.ValidationError('This phone number has already been registered')
         else:
-            # 新增时检查
+            # New check
             if Member.objects.filter(phone=phone).exists():
-                raise forms.ValidationError('该手机号已被注册')
+                raise forms.ValidationError('This phone number has already been registered')
                 
         return phone
 
 
 class MemberLevelForm(forms.ModelForm):
-    """会员等级表单"""
+    """Member Level Form"""
     class Meta:
         model = MemberLevel
         fields = ['name', 'discount', 'points_threshold', 'color', 'priority', 'is_default', 'is_active']
@@ -89,30 +89,30 @@ class MemberLevelForm(forms.ModelForm):
                 Column('is_active', css_class='form-group col-md-2 mb-0'),
                 css_class='form-row'
             ),
-            Submit('submit', '保存', css_class='btn btn-primary')
+            Submit('submit', 'Save', css_class='btn btn-primary')
         )
     
     def clean_discount(self):
-        """折扣率验证"""
+        """Discount validation"""
         discount = self.cleaned_data.get('discount')
         if discount < 0 or discount > 1:
-            raise forms.ValidationError('折扣率必须在0到1之间')
+            raise forms.ValidationError('Discount rate must be between 0 and 1')
         return discount
     
     def clean(self):
-        """验证整个表单"""
+        """Validate the whole form"""
         cleaned_data = super().clean()
         is_default = cleaned_data.get('is_default')
         
-        # 如果设置为默认等级，检查是否有其他默认等级
+        # If set to default, check for existing default
         if is_default and not self.instance.pk:
             if MemberLevel.objects.filter(is_default=True).exists():
-                self.add_error('is_default', '已存在默认等级，一次只能有一个默认等级')
+                self.add_error('is_default', 'There is already a default level; only one is allowed at a time')
         return cleaned_data
 
 
 class RechargeForm(forms.ModelForm):
-    """会员充值表单"""
+    """Member recharge form"""
     class Meta:
         model = RechargeRecord
         fields = ['amount', 'actual_amount', 'payment_method', 'remark']
@@ -129,18 +129,18 @@ class RechargeForm(forms.ModelForm):
             ),
             'payment_method',
             'remark',
-            Submit('submit', '确认充值', css_class='btn btn-primary')
+            Submit('submit', 'Confirm Recharge', css_class='btn btn-primary')
         )
         
-        # 自动填充实收金额等于充值金额
+        # Auto-fill actual_amount with amount
         self.fields['actual_amount'].initial = self.fields['amount'].initial
 
 
 class MemberImportForm(forms.Form):
-    """会员批量导入表单"""
+    """Batch member import form"""
     csv_file = forms.FileField(
-        label='CSV文件',
-        help_text='请上传CSV格式的会员数据文件，必须包含姓名和手机号两个字段'
+        label='CSV File',
+        help_text='Please upload a CSV format member data file, must include name and phone columns'
     )
     
     def __init__(self, *args, **kwargs):
@@ -153,23 +153,23 @@ class MemberImportForm(forms.Form):
         self.helper.layout = Layout(
             'csv_file',
             Div(
-                Submit('submit', '导入', css_class='btn btn-primary'),
+                Submit('submit', 'Import', css_class='btn btn-primary'),
                 css_class='form-group'
             )
         )
         
     def clean_csv_file(self):
-        """CSV文件格式验证"""
+        """CSV file format validation"""
         csv_file = self.cleaned_data.get('csv_file')
         if not csv_file:
-            raise forms.ValidationError('请选择文件')
+            raise forms.ValidationError('Please select a file')
         
-        # 检查文件扩展名
+        # Check file extension
         if not csv_file.name.endswith('.csv'):
-            raise forms.ValidationError('请上传CSV格式的文件')
+            raise forms.ValidationError('Please upload a CSV file')
             
-        # 文件大小限制（2MB）
+        # File size limit (2MB)
         if csv_file.size > 2 * 1024 * 1024:
-            raise forms.ValidationError('文件大小不能超过2MB')
+            raise forms.ValidationError('File size cannot exceed 2MB')
             
         return csv_file 

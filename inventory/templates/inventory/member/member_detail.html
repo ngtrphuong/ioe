@@ -1,91 +1,91 @@
 {% extends 'inventory/base.html' %}
 {% load static %}
 
-{% block title %}会员详情 - {{ member.name }}{% endblock %}
+{% block title %}Member Details - {{ member.name }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">会员详情</h1>
+                <h1 class="h3 mb-0">Member Details</h1>
                 <div>
                     <a href="{% url 'member_edit' pk=member.id %}" class="btn btn-primary">
-                        <i class="bi bi-pencil"></i> 编辑会员
+                        <i class="bi bi-pencil"></i> Edit Member
                     </a>
                     <a href="{% url 'member_list' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left"></i> 返回列表
+                        <i class="bi bi-arrow-left"></i> Back to List
                     </a>
                 </div>
             </div>
 
-            <!-- 会员基本信息卡片 -->
+            <!-- Member Basic Information Card -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">会员基本信息</h5>
+                    <h5 class="card-title mb-0">Member Basic Information</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <p><strong>会员姓名:</strong> {{ member.name }}</p>
-                            <p><strong>会员ID:</strong> {{ member.member_id }}</p>
-                            <p><strong>联系电话:</strong> {{ member.phone }}</p>
-                            <p><strong>电子邮件:</strong> {{ member.email|default:"未设置" }}</p>
+                            <p><strong>Member Name:</strong> {{ member.name }}</p>
+                            <p><strong>Member ID:</strong> {{ member.member_id }}</p>
+                            <p><strong>Contact Phone:</strong> {{ member.phone }}</p>
+                            <p><strong>Email:</strong> {{ member.email|default:"Not Set" }}</p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>会员等级:</strong> <span class="badge bg-{{ member.level.color|default:'primary' }}">{{ member.level.name }}</span></p>
-                            <p><strong>当前积分:</strong> <span class="badge bg-success">{{ member.points }}</span></p>
-                            <p><strong>账户余额:</strong> <span class="badge bg-info">{{ member.balance }} 元</span></p>
-                            <p><strong>状态:</strong> {% if member.is_active %}<span class="badge bg-success">启用</span>{% else %}<span class="badge bg-danger">禁用</span>{% endif %}</p>
+                            <p><strong>Member Level:</strong> <span class="badge bg-{{ member.level.color|default:'primary' }}">{{ member.level.name }}</span></p>
+                            <p><strong>Current Points:</strong> <span class="badge bg-success">{{ member.points }}</span></p>
+                            <p><strong>Account Balance:</strong> <span class="badge bg-info">{{ member.balance }}</span></p>
+                            <p><strong>Status:</strong> {% if member.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Inactive</span>{% endif %}</p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>生日:</strong> {{ member.birthday|date:"Y-m-d"|default:"未设置" }}</p>
-                            <p><strong>性别:</strong> {{ member.get_gender_display|default:"未设置" }}</p>
-                            <p><strong>地址:</strong> {{ member.address|default:"未设置" }}</p>
-                            <p><strong>注册时间:</strong> {{ member.created_at|date:"Y-m-d H:i" }}</p>
+                            <p><strong>Birthday:</strong> {{ member.birthday|date:"Y-m-d"|default:"Not Set" }}</p>
+                            <p><strong>Gender:</strong> {{ member.get_gender_display|default:"Not Set" }}</p>
+                            <p><strong>Address:</strong> {{ member.address|default:"Not Set" }}</p>
+                            <p><strong>Registration Date:</strong> {{ member.created_at|date:"Y-m-d H:i" }}</p>
                         </div>
                         <div class="col-md-3">
-                            <p><strong>消费总额:</strong> {{ total_spent|floatformat:2 }} 元</p>
-                            <p><strong>购买次数:</strong> {{ visit_count }}</p>
-                            <p><strong>最近30天消费:</strong> {{ recent_spent|floatformat:2 }} 元</p>
-                            <p><strong>最近30天访问:</strong> {{ recent_visit_count }} 次</p>
+                            <p><strong>Total Spent:</strong> {{ total_spent|floatformat:2 }}</p>
+                            <p><strong>Purchase Count:</strong> {{ visit_count }}</p>
+                            <p><strong>Last 30 Days Spent:</strong> {{ recent_spent|floatformat:2 }}</p>
+                            <p><strong>Last 30 Days Visits:</strong> {{ recent_visit_count }}</p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="btn-group">
                         <a href="{% url 'member_recharge' pk=member.id %}" class="btn btn-success">
-                            <i class="bi bi-wallet2"></i> 账户充值
+                            <i class="bi bi-wallet2"></i> Account Recharge
                         </a>
                         <a href="{% url 'member_balance_adjust' pk=member.id %}" class="btn btn-warning">
-                            <i class="bi bi-currency-exchange"></i> 调整余额
+                            <i class="bi bi-currency-exchange"></i> Adjust Balance
                         </a>
                         <a href="{% url 'member_points_adjust' pk=member.id %}" class="btn btn-info">
-                            <i class="bi bi-star"></i> 调整积分
+                            <i class="bi bi-star"></i> Adjust Points
                         </a>
                         <a href="{% url 'member_recharge_records' pk=member.id %}" class="btn btn-outline-primary">
-                            <i class="bi bi-clock-history"></i> 充值记录
+                            <i class="bi bi-clock-history"></i> Recharge Records
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- 账户交易记录 -->
+            <!-- Account Transaction Records -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">账户交易记录</h5>
+                    <h5 class="card-title mb-0">Account Transaction Records</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>交易时间</th>
-                                    <th>交易类型</th>
-                                    <th>余额变动</th>
-                                    <th>积分变动</th>
-                                    <th>交易描述</th>
-                                    <th>操作人员</th>
+                                    <th>Transaction Time</th>
+                                    <th>Transaction Type</th>
+                                    <th>Balance Change</th>
+                                    <th>Points Change</th>
+                                    <th>Description</th>
+                                    <th>Operator</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -112,7 +112,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6" class="text-center">暂无交易记录</td>
+                                    <td colspan="6" class="text-center">No transaction records available</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -121,23 +121,23 @@
                 </div>
             </div>
 
-            <!-- 购买记录 -->
+            <!-- Purchase Records -->
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">购买记录</h5>
+                    <h5 class="card-title mb-0">Purchase Records</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>订单编号</th>
-                                    <th>购买日期</th>
-                                    <th>商品数量</th>
-                                    <th>订单金额</th>
-                                    <th>实付金额</th>
-                                    <th>支付方式</th>
-                                    <th>操作</th>
+                                    <th>Order Number</th>
+                                    <th>Purchase Date</th>
+                                    <th>Item Quantity</th>
+                                    <th>Order Amount</th>
+                                    <th>Amount Paid</th>
+                                    <th>Payment Method</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -151,13 +151,13 @@
                                     <td>{{ sale.get_payment_method_display }}</td>
                                     <td>
                                         <a href="{% url 'sale_detail' sale_id=sale.id %}" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-eye"></i> 查看
+                                            <i class="bi bi-eye"></i> View
                                         </a>
                                     </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="7" class="text-center">暂无购买记录</td>
+                                    <td colspan="7" class="text-center">No purchase records available</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

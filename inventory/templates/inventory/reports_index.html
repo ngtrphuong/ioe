@@ -1,6 +1,6 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}报表中心 - {{ block.super }}{% endblock %}
+{% block title %}Reports Center - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -9,8 +9,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="card-title mb-0">报表中心</h2>
-                        <p class="text-muted">查看各类业务报表</p>
+                        <h2 class="card-title mb-0">Reports Center</h2>
+                        <p class="text-muted">View various business reports</p>
                     </div>
                 </div>
             </div>
@@ -19,7 +19,7 @@
 </div>
 
 <div class="row">
-    <!-- 生日会员报表 -->
+    <!-- Birthday Members Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -28,23 +28,23 @@
                         <i class="bi bi-gift"></i>
                     </span>
                 </div>
-                <h4 class="card-title">当月生日会员报表</h4>
-                <p class="card-text text-muted">查看当月过生日的会员列表</p>
+                <h4 class="card-title">Monthly Birthday Members Report</h4>
+                <p class="card-text text-muted">View list of members with birthdays this month</p>
                 <div class="d-grid">
                     <a href="{% url 'birthday_members_report' %}" class="btn btn-primary">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 本月共 {{ birthday_members_count }} 位会员过生日</small>
+                        <small><i class="bi bi-info-circle me-1"></i> {{ birthday_members_count }} members have birthdays this month</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 会员消费报表 -->
+    <!-- Member Spending Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -53,23 +53,23 @@
                         <i class="bi bi-bar-chart-line"></i>
                     </span>
                 </div>
-                <h4 class="card-title">会员消费报表</h4>
-                <p class="card-text text-muted">查看会员消费统计和历史记录</p>
+                <h4 class="card-title">Member Spending Report</h4>
+                <p class="card-text text-muted">View member spending statistics and history</p>
                 <div class="d-grid">
                     <a href="{% url 'member_analysis_report' %}" class="btn btn-success">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 总计 {{ total_sales_count }} 笔消费记录</small>
+                        <small><i class="bi bi-info-circle me-1"></i> Total {{ total_sales_count }} sales records</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 库存商品报表 -->
+    <!-- Inventory Products Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -78,23 +78,23 @@
                         <i class="bi bi-box-seam"></i>
                     </span>
                 </div>
-                <h4 class="card-title">库存商品报表</h4>
-                <p class="card-text text-muted">查看库存商品统计和警报</p>
+                <h4 class="card-title">Inventory Products Report</h4>
+                <p class="card-text text-muted">View inventory product statistics and alerts</p>
                 <div class="d-grid">
                     <a href="{% url 'inventory_turnover_report' %}" class="btn btn-danger">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> {{ low_stock_count }} 种商品库存偏低</small>
+                        <small><i class="bi bi-info-circle me-1"></i> {{ low_stock_count }} products with low stock</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 会员充值报表 -->
+    <!-- Member Recharge Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -103,23 +103,23 @@
                         <i class="bi bi-wallet2"></i>
                     </span>
                 </div>
-                <h4 class="card-title">会员充值报表</h4>
-                <p class="card-text text-muted">查看会员充值记录和统计</p>
+                <h4 class="card-title">Member Recharge Report</h4>
+                <p class="card-text text-muted">View member recharge records and statistics</p>
                 <div class="d-grid">
                     <a href="{% url 'recharge_report' %}" class="btn btn-warning">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 总计 {{ total_recharge_amount|floatformat:2 }} 元充值金额</small>
+                        <small><i class="bi bi-info-circle me-1"></i> Total recharge amount: ¥{{ total_recharge_amount|floatformat:2 }}</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 销售数据报表 -->
+    <!-- Sales Data Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -128,23 +128,23 @@
                         <i class="bi bi-graph-up"></i>
                     </span>
                 </div>
-                <h4 class="card-title">销售数据报表</h4>
-                <p class="card-text text-muted">查看销售额和趋势分析</p>
+                <h4 class="card-title">Sales Data Report</h4>
+                <p class="card-text text-muted">View sales revenue and trend analysis</p>
                 <div class="d-grid">
                     <a href="{% url 'sales_trend_report' %}" class="btn btn-info">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 本月销售额 {{ monthly_sales_amount|floatformat:2 }} 元</small>
+                        <small><i class="bi bi-info-circle me-1"></i> Monthly sales: ¥{{ monthly_sales_amount|floatformat:2 }}</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 操作日志报表 -->
+    <!-- Operation Log Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -153,23 +153,23 @@
                         <i class="bi bi-file-earmark-text"></i>
                     </span>
                 </div>
-                <h4 class="card-title">操作日志报表</h4>
-                <p class="card-text text-muted">查看系统操作记录和审计</p>
+                <h4 class="card-title">Operation Log Report</h4>
+                <p class="card-text text-muted">View system operation records and audit logs</p>
                 <div class="d-grid">
                     <a href="{% url 'operation_log_report' %}" class="btn btn-secondary">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 今日 {{ today_log_count }} 条操作记录</small>
+                        <small><i class="bi bi-info-circle me-1"></i> {{ today_log_count }} operation records today</small>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 热销商品报表 -->
+    <!-- Top Products Report -->
     <div class="col-md-4 mb-4">
         <div class="card h-100">
             <div class="card-body text-center">
@@ -178,16 +178,16 @@
                         <i class="bi bi-star"></i>
                     </span>
                 </div>
-                <h4 class="card-title">热销商品报表</h4>
-                <p class="card-text text-muted">查看最畅销商品的统计分析</p>
+                <h4 class="card-title">Top Products Report</h4>
+                <p class="card-text text-muted">View statistical analysis of best-selling products</p>
                 <div class="d-grid">
                     <a href="{% url 'top_products_report' %}" class="btn btn-primary">
-                        <i class="bi bi-eye me-1"></i> 查看报表
+                        <i class="bi bi-eye me-1"></i> View Report
                     </a>
                 </div>
                 <div class="card-footer bg-transparent border-0 mt-3">
                     <p class="text-muted mb-0">
-                        <small><i class="bi bi-info-circle me-1"></i> 分析热销商品，优化库存策略</small>
+                        <small><i class="bi bi-info-circle me-1"></i> Analyze top products to optimize inventory strategy</small>
                     </p>
                 </div>
             </div>

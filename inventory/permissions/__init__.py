@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-# 导入装饰器
+# Import decorators
 from .decorators import (
     permission_required, 
     group_required, 
@@ -15,7 +15,7 @@ from .decorators import (
     system_admin_required
 )
 
-# 导出装饰器
+# Export decorators
 __all__ = [
     'permission_required', 
     'group_required', 
@@ -28,43 +28,43 @@ __all__ = [
 # Define common permission codenames
 PERMISSIONS = {
     # Inventory permissions
-    'view_inventory': '查看库存',
-    'change_inventory': '修改库存',
-    'add_inventory': '添加库存',
+    'view_inventory': 'View Inventory',
+    'change_inventory': 'Change Inventory',
+    'add_inventory': 'Add Inventory',
     
     # Product permissions
-    'view_product': '查看商品',
-    'add_product': '添加商品',
-    'change_product': '修改商品',
-    'delete_product': '删除商品',
+    'view_product': 'View Product',
+    'add_product': 'Add Product',
+    'change_product': 'Change Product',
+    'delete_product': 'Delete Product',
     
     # Sales permissions
-    'view_sale': '查看销售',
-    'add_sale': '添加销售',
-    'void_sale': '作废销售',
+    'view_sale': 'View Sale',
+    'add_sale': 'Add Sale',
+    'void_sale': 'Void Sale',
     
     # Member permissions
-    'view_member': '查看会员',
-    'add_member': '添加会员',
-    'change_member': '修改会员',
+    'view_member': 'View Member',
+    'add_member': 'Add Member',
+    'change_member': 'Change Member',
     
     # Report permissions
-    'view_reports': '查看报表',
-    'export_reports': '导出报表',
+    'view_reports': 'View Reports',
+    'export_reports': 'Export Reports',
     
-    # Inventory checking permissions
-    'perform_inventory_check': '执行库存盘点',
-    'approve_inventory_check': '审批库存盘点',
+    # Inventory check permissions
+    'perform_inventory_check': 'Perform Inventory Check',
+    'approve_inventory_check': 'Approve Inventory Check',
 }
 
 # Define role-permission mappings
 ROLES = {
     'admin': {
-        'name': '系统管理员',
+        'name': 'System Administrator',
         'permissions': list(PERMISSIONS.keys()),
     },
     'manager': {
-        'name': '店长',
+        'name': 'Store Manager',
         'permissions': [
             'view_inventory', 'change_inventory', 'add_inventory',
             'view_product', 'add_product', 'change_product',
@@ -75,7 +75,7 @@ ROLES = {
         ],
     },
     'sales': {
-        'name': '销售员',
+        'name': 'Sales Clerk',
         'permissions': [
             'view_inventory',
             'view_product',
@@ -84,7 +84,7 @@ ROLES = {
         ],
     },
     'inventory': {
-        'name': '库存管理员',
+        'name': 'Inventory Manager',
         'permissions': [
             'view_inventory', 'change_inventory', 'add_inventory',
             'view_product', 'add_product', 'change_product',
@@ -100,7 +100,6 @@ def setup_permissions():
         'inventory', 'product', 'sale', 'member', 'report', 'inventorycheck'
     ]:
         content_type = ContentType.objects.get_for_model(models.Model)
-        
         for codename, name in PERMISSIONS.items():
             if codename.split('_')[1] == model:
                 Permission.objects.get_or_create(
@@ -108,13 +107,11 @@ def setup_permissions():
                     name=name,
                     content_type=content_type,
                 )
-    
+
     # Create groups and assign permissions
     for role_key, role_info in ROLES.items():
         group, created = Group.objects.get_or_create(name=role_info['name'])
-        
         # Get all permissions for this role
         permissions = Permission.objects.filter(codename__in=role_info['permissions'])
-        
         # Assign permissions to group
         group.permissions.set(permissions) 

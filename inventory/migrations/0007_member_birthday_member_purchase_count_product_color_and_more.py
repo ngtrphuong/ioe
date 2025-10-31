@@ -13,21 +13,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='birthday',
-            field=models.DateField(blank=True, null=True, verbose_name='生日'),
+            field=models.DateField(blank=True, null=True, verbose_name='Birthday'),
         ),
         migrations.AddField(
             model_name='member',
             name='purchase_count',
-            field=models.IntegerField(default=0, verbose_name='消费次数'),
+            field=models.IntegerField(default=0, verbose_name='Purchase Count'),
         ),
         migrations.AddField(
             model_name='product',
             name='color',
-            field=models.CharField(blank=True, choices=[('', '无颜色'), ('black', '黑色'), ('white', '白色'), ('red', '红色'), ('blue', '蓝色'), ('green', '绿色'), ('yellow', '黄色'), ('purple', '紫色'), ('grey', '灰色'), ('pink', '粉色'), ('orange', '橙色'), ('brown', '棕色'), ('other', '其他')], default='', max_length=20, verbose_name='颜色'),
+            field=models.CharField(blank=True, choices=[('', 'No Color'), ('black', 'Black'), ('white', 'White'), ('red', 'Red'), ('blue', 'Blue'), ('green', 'Green'), ('yellow', 'Yellow'), ('purple', 'Purple'), ('grey', 'Grey'), ('pink', 'Pink'), ('orange', 'Orange'), ('brown', 'Brown'), ('other', 'Other')], default='', max_length=20, verbose_name='Color'),
         ),
         migrations.AddField(
             model_name='product',
             name='size',
-            field=models.CharField(blank=True, choices=[('', '无尺码'), ('XS', 'XS'), ('S', 'S'), ('M', 'M'), ('L', 'L'), ('XL', 'XL'), ('XXL', 'XXL'), ('XXXL', 'XXXL'), ('35', '35'), ('36', '36'), ('37', '37'), ('38', '38'), ('39', '39'), ('40', '40'), ('41', '41'), ('42', '42'), ('43', '43'), ('44', '44'), ('45', '45'), ('other', '其他')], default='', max_length=10, verbose_name='尺码'),
+            field=models.CharField(blank=True, choices=[('', 'No Size'), ('XS', 'XS'), ('S', 'S'), ('M', 'M'), ('L', 'L'), ('XL', 'XL'), ('XXL', 'XXL'), ('XXXL', 'XXXL'), ('35', '35'), ('36', '36'), ('37', '37'), ('38', '38'), ('39', '39'), ('40', '40'), ('41', '41'), ('42', '42'), ('43', '43'), ('44', '44'), ('45', '45'), ('other', 'Other')], default='', max_length=10, verbose_name='Size'),
         ),
     ]

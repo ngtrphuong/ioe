@@ -1,5 +1,5 @@
 """
-条码生成工具函数
+Barcode generation utility functions
 """
 import io
 import os
@@ -12,36 +12,36 @@ from decimal import Decimal
 
 def generate_product_barcode(product, price=None, barcode_type='ean13'):
     """
-    生成商品条码图片
+    Generate a product barcode image.
     
-    参数:
-        product: 商品对象
-        price: 显示的价格，如果为None则使用商品默认零售价
-        barcode_type: 条码类型，支持'ean13'、'code128'等
+    Args:
+        product: Product object
+        price: Displayed price; if None, use product's default retail price
+        barcode_type: Barcode type, supports 'ean13', 'code128', etc.
         
-    返回:
-        PIL.Image: 条码图片对象
+    Returns:
+        PIL.Image: Barcode image
     """
     if not price:
         price = product.retail_price
     
-    # 获取条码内容
+    # Get barcode content
     barcode_content = product.barcode
     if not barcode_content:
-        # 如果商品没有条码，使用商品ID作为条码
+        # If product has no barcode, use product ID
         barcode_content = f"ID{product.id:08d}"
     
-    # 确定条码类型
+    # Determine barcode type
     if barcode_type == 'ean13' and len(barcode_content) != 13:
-        # 如果需要EAN13但条码不是13位，改用CODE128
+        # If EAN13 is required but not 13 digits, switch to CODE128
         barcode_type = 'code128'
     
     try:
-        # 生成条码
+        # Generate barcode
         barcode_class = barcode.get_barcode_class(barcode_type)
         barcode_image = barcode_class(barcode_content, writer=ImageWriter())
         
-        # 渲染条码
+        # Render barcode
         barcode_img = barcode_image.render(
             writer_options={
                 'module_width': 0.6,
@@ -52,69 +52,69 @@ def generate_product_barcode(product, price=None, barcode_type='ean13'):
             }
         )
         
-        # 创建包含商品信息的完整图片
+        # Create full image containing product info
         width, height = barcode_img.size
-        new_height = height + 100  # 添加额外空间用于显示商品信息
+        new_height = height + 100  # Extra space for product info
         
-        # 创建新图片
+        # Create new image
         complete_img = Image.new('RGB', (width, new_height), color='white')
         complete_img.paste(barcode_img, (0, 0))
         
-        # 添加商品信息
+        # Add product info
         draw = ImageDraw.Draw(complete_img)
         
-        # 尝试加载字体，如果失败则使用默认字体
+        # Try to load font; fallback to default
         try:
-            font_path = os.path.join('static', 'fonts', 'msyh.ttf')  # 微软雅黑字体
+            font_path = os.path.join('static', 'fonts', 'msyh.ttf')  # Microsoft YaHei
             title_font = ImageFont.truetype(font_path, 20)
             info_font = ImageFont.truetype(font_path, 16)
         except IOError:
-            # 使用默认字体
+            # Use default font
             title_font = ImageFont.load_default()
             info_font = ImageFont.load_default()
         
-        # 绘制商品名称
+        # Product name (truncate if too long)
         product_name = product.name
         if len(product_name) > 20:
             product_name = product_name[:18] + '...'
         
-        # 绘制信息
+        # Render info
         draw.text((10, height + 10), product_name, fill='black', font=title_font)
-        draw.text((10, height + 40), f"价格: ¥{price:.2f}", fill='black', font=info_font)
-        draw.text((10, height + 70), f"规格: {product.specification or '标准'}", fill='black', font=info_font)
+        draw.text((10, height + 40), f"Price: ¥{price:.2f}", fill='black', font=info_font)
+        draw.text((10, height + 70), f"Specification: {product.specification or 'Standard'}", fill='black', font=info_font)
         
         return complete_img
         
     except (ValueError, AttributeError) as e:
-        # 生成错误时的默认图片
+        # Default image on error
         error_img = Image.new('RGB', (300, 150), color='white')
         draw = ImageDraw.Draw(error_img)
-        draw.text((10, 10), f"条码生成错误: {str(e)}", fill='black')
-        draw.text((10, 30), f"商品: {product.name}", fill='black')
-        draw.text((10, 50), f"条码: {barcode_content}", fill='black')
+        draw.text((10, 10), f"Barcode generation error: {str(e)}", fill='black')
+        draw.text((10, 30), f"Product: {product.name}", fill='black')
+        draw.text((10, 50), f"Barcode: {barcode_content}", fill='black')
         return error_img
 
 
 def generate_batch_barcode(batch, barcode_type='code128'):
     """
-    生成批次条码图片
+    Generate a batch barcode image.
     
-    参数:
-        batch: 批次对象
-        barcode_type: 条码类型
+    Args:
+        batch: Batch object
+        barcode_type: Barcode type
         
-    返回:
-        PIL.Image: 条码图片对象
+    Returns:
+        PIL.Image: Barcode image
     """
-    # 生成批次编号条码
+    # Generate batch code barcode
     batch_code = f"B{batch.id:06d}"
     
     try:
-        # 生成条码
+        # Generate barcode
         barcode_class = barcode.get_barcode_class(barcode_type)
         barcode_image = barcode_class(batch_code, writer=ImageWriter())
         
-        # 渲染条码
+        # Render barcode
         barcode_img = barcode_image.render(
             writer_options={
                 'module_width': 0.6,
@@ -125,61 +125,61 @@ def generate_batch_barcode(batch, barcode_type='code128'):
             }
         )
         
-        # 创建包含批次信息的完整图片
+        # Create full image containing batch info
         width, height = barcode_img.size
-        new_height = height + 100  # 添加额外空间用于显示批次信息
+        new_height = height + 100  # Extra space for batch info
         
-        # 创建新图片
+        # Create new image
         complete_img = Image.new('RGB', (width, new_height), color='white')
         complete_img.paste(barcode_img, (0, 0))
         
-        # 添加批次信息
+        # Add batch info
         draw = ImageDraw.Draw(complete_img)
         
-        # 尝试加载字体，如果失败则使用默认字体
+        # Try to load font; fallback to default
         try:
-            font_path = os.path.join('static', 'fonts', 'msyh.ttf')  # 微软雅黑字体
+            font_path = os.path.join('static', 'fonts', 'msyh.ttf')  # Microsoft YaHei
             title_font = ImageFont.truetype(font_path, 20)
             info_font = ImageFont.truetype(font_path, 16)
         except IOError:
-            # 使用默认字体
+            # Use default font
             title_font = ImageFont.load_default()
             info_font = ImageFont.load_default()
         
-        # 绘制批次信息
+        # Product name (truncate if too long)
         product_name = batch.product.name
         if len(product_name) > 20:
             product_name = product_name[:18] + '...'
         
-        # 绘制信息
+        # Render info
         draw.text((10, height + 10), product_name, fill='black', font=title_font)
-        draw.text((10, height + 40), f"批次: {batch.batch_number}", fill='black', font=info_font)
-        draw.text((10, height + 70), f"生产日期: {batch.production_date.strftime('%Y-%m-%d')}", fill='black', font=info_font)
+        draw.text((10, height + 40), f"Batch: {batch.batch_number}", fill='black', font=info_font)
+        draw.text((10, height + 70), f"Production date: {batch.production_date.strftime('%Y-%m-%d')}", fill='black', font=info_font)
         
         return complete_img
         
     except (ValueError, AttributeError) as e:
-        # 生成错误时的默认图片
+        # Default image on error
         error_img = Image.new('RGB', (300, 150), color='white')
         draw = ImageDraw.Draw(error_img)
-        draw.text((10, 10), f"条码生成错误: {str(e)}", fill='black')
-        draw.text((10, 30), f"批次: {batch.batch_number}", fill='black')
-        draw.text((10, 50), f"商品: {batch.product.name}", fill='black')
+        draw.text((10, 10), f"Barcode generation error: {str(e)}", fill='black')
+        draw.text((10, 30), f"Batch: {batch.batch_number}", fill='black')
+        draw.text((10, 50), f"Product: {batch.product.name}", fill='black')
         return error_img
 
 
 def generate_qrcode(content, size=10, box_size=10, border=4):
     """
-    生成二维码
+    Generate a QR code image.
     
-    参数:
-        content: 二维码内容
-        size: 二维码大小
-        box_size: 每个点的像素大小
-        border: 边框宽度
+    Args:
+        content: QR content
+        size: QR code version (size)
+        box_size: Pixel size of each box
+        border: Border width
         
-    返回:
-        PIL.Image: 二维码图片对象
+    Returns:
+        PIL.Image: QR code image
     """
     qr = qrcode.QRCode(
         version=size,

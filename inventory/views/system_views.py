@@ -15,12 +15,13 @@ from django.db.models import management
 from django.utils.text import slugify
 import zipfile
 from django.http import HttpResponse
+from django.utils import timezone
 
-# 获取logger
+# Get logger
 logger = logging.getLogger(__name__)
 
 def get_dir_size_display(dir_path):
-    """获取目录大小的友好显示"""
+    """Get human-friendly directory size display"""
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(dir_path):
         for f in filenames:
@@ -28,7 +29,7 @@ def get_dir_size_display(dir_path):
             if os.path.exists(fp):
                 total_size += os.path.getsize(fp)
     
-    # 转换为合适的单位
+    # Convert to appropriate units
     size_bytes = total_size
     if size_bytes < 1024:
         return f"{size_bytes} bytes"
@@ -42,65 +43,65 @@ def get_dir_size_display(dir_path):
 @login_required
 @permission_required('inventory.can_manage_backup')
 def restore_backup(request, backup_name):
-    """恢复备份视图"""
-    # 检查备份是否存在
+    """Restore backup view"""
+    # Check if backup exists
     backup_dir = os.path.join(settings.BACKUP_ROOT, backup_name)
     if not os.path.exists(backup_dir):
-        messages.error(request, f"备份 {backup_name} 不存在")
+        messages.error(request, f"Backup does not exist: {backup_name}")
         return redirect('backup_list')
     
-    # 获取备份信息
+    # Get backup information
     backup_info_file = os.path.join(backup_dir, 'backup_info.json')
     try:
         with open(backup_info_file, 'r', encoding='utf-8') as f:
             backup_info = json.load(f)
     except Exception as e:
-        messages.error(request, f"读取备份信息失败: {str(e)}")
+        messages.error(request, f"Failed to read backup info: {str(e)}")
         return redirect('backup_list')
     
-    # 封装备份对象
+    # Package backup object
     backup = {
         'name': backup_name,
         'created_at': datetime.fromisoformat(backup_info.get('created_at', '')),
-        'created_by': backup_info.get('created_by', '未知'),
+        'created_by': backup_info.get('created_by', 'Unknown'),
         'size': get_dir_size_display(backup_dir),
     }
     
     if request.method == 'POST':
-        # 确认恢复
+        # Confirm restore
         if not request.POST.get('confirm_restore'):
-            messages.error(request, "请确认恢复操作")
+            messages.error(request, "Please confirm the restore operation")
             return render(request, 'inventory/system/restore_backup.html', {'backup': backup})
         
-        # 是否恢复媒体文件
+        # If to restore media files
         restore_media = request.POST.get('restore_media') == 'on'
         
-        # 执行恢复
+        # Execute restore
         try:
-            # 创建临时目录
+            # Create temp directory
             temp_dir = os.path.join(settings.TEMP_DIR, f"restore_{backup_name}_{int(time.time())}")
             os.makedirs(temp_dir, exist_ok=True)
             
-            # 恢复数据库
+            # Restore database
             db_file = os.path.join(backup_dir, 'db.json')
             if not os.path.exists(db_file):
-                messages.error(request, "备份中不存在数据库文件")
+                messages.error(request, "Backup is missing db.json file")
                 return redirect('backup_list')
             
-            # 执行数据库恢复
-            management.call_command('flush', '--noinput')  # 清空当前数据库
-            management.call_command('loaddata', db_file)  # 加载备份的数据
+            # Execute database restore
+            management.call_command('flush', '--noinput')  # Clear current database
+            management.call_command('loaddata', db_file)   # Load backup data
             
-            # 恢复媒体文件
+            # Restore media files
             if restore_media:
                 media_backup = os.path.join(backup_dir, 'media')
                 if os.path.exists(media_backup):
-                    # 备份当前媒体文件
+                    # Backup current media files
                     if os.path.exists(settings.MEDIA_ROOT):
                         current_media_backup = os.path.join(temp_dir, 'media_backup')
                         shutil.copytree(settings.MEDIA_ROOT, current_media_backup)
                     
-                    # 删除当前媒体目录中的文件（保留目录结构）
+                    # Remove all files in current media dir (keep structure)
                     for item in os.listdir(settings.MEDIA_ROOT):
                         item_path = os.path.join(settings.MEDIA_ROOT, item)
                         if os.path.isdir(item_path):
@@ -108,7 +109,7 @@ def restore_backup(request, backup_name):
                         else:
                             os.remove(item_path)
                     
-                    # 复制备份的媒体文件到媒体目录
+                    # Copy backup media files to media dir
                     for item in os.listdir(media_backup):
                         src_path = os.path.join(media_backup, item)
                         dst_path = os.path.join(settings.MEDIA_ROOT, item)
@@ -117,34 +118,32 @@ def restore_backup(request, backup_name):
                         else:
                             shutil.copy2(src_path, dst_path)
             
-            # 记录日志
+            # Log operation
             LogEntry.objects.create(
                 user=request.user,
-                action_type='RESTORE',
-                object_id=backup_name,
-                object_repr=f'备份: {backup_name}',
-                change_message=f'从备份 {backup_name} 恢复了系统数据' + (' 和媒体文件' if restore_media else '')
+                action_flag=2,  # Change
+                object_repr=f"Restore backup: {backup_name}",
+                action_time=timezone.now(),
             )
             
-            messages.success(request, f"成功从备份 {backup_name} 恢复了系统数据" + (" 和媒体文件" if restore_media else ""))
+            messages.success(request, f"Successfully restored system data from backup {backup_name}" + (" and media files" if restore_media else ""))
             
-            # 清理临时目录
+            # Cleanup temp dir
             if os.path.exists(temp_dir):
                 shutil.rmtree(temp_dir)
                 
             return redirect('index')
             
         except Exception as e:
-            # 恢复失败
-            messages.error(request, f"恢复失败: {str(e)}")
-            logger.error(f"恢复备份 {backup_name} 失败: {str(e)}")
-            # 记录恢复失败日志
+            # Restore failed
+            messages.error(request, f"Restore failed: {str(e)}")
+            logger.error(f"Restore backup {backup_name} failed: {str(e)}")
+            # Log restore failure
             LogEntry.objects.create(
                 user=request.user,
-                action_type='ERROR',
-                object_id=backup_name,
-                object_repr=f'备份: {backup_name}',
-                change_message=f'恢复备份 {backup_name} 失败: {str(e)}'
+                action_flag=3,  # Delete
+                object_repr=f"Restore backup {backup_name} failed: {str(e)}",
+                action_time=timezone.now(),
             )
             return redirect('backup_list')
     
@@ -153,33 +152,27 @@ def restore_backup(request, backup_name):
 @login_required
 @permission_required('inventory.can_manage_backup')
 def backup_list(request):
-    """备份列表视图"""
-    # 检查备份目录是否存在
+    """Backup list view"""
+    # Check if backup root exists
     if not os.path.exists(settings.BACKUP_ROOT):
         os.makedirs(settings.BACKUP_ROOT, exist_ok=True)
     
-    # 获取所有备份
+    # Get all backups
     backups = []
     for backup_name in os.listdir(settings.BACKUP_ROOT):
         backup_dir = os.path.join(settings.BACKUP_ROOT, backup_name)
         if os.path.isdir(backup_dir):
-            # 读取备份信息
+            # Read backup info
             backup_info_file = os.path.join(backup_dir, 'backup_info.json')
             try:
-                if os.path.exists(backup_info_file):
-                    with open(backup_info_file, 'r', encoding='utf-8') as f:
-                        backup_info = json.load(f)
-                    
-                    backups.append({
-                        'name': backup_name,
-                        'created_at': datetime.fromisoformat(backup_info.get('created_at', '')),
-                        'created_by': backup_info.get('created_by', '未知'),
-                        'size': get_dir_size_display(backup_dir),
-                    })
+                with open(backup_info_file, 'r', encoding='utf-8') as f:
+                    backup_info = json.load(f)
+                backup_info['name'] = backup_name
+                backups.append(backup_info)
             except Exception as e:
-                logger.error(f"读取备份信息失败: {str(e)}")
+                logger.error(f"Failed to read backup info: {str(e)}")
     
-    # 按创建时间排序
+    # Sort backups descending by create time
     backups.sort(key=lambda x: x['created_at'], reverse=True)
     
     return render(request, 'inventory/system/backup_list.html', {'backups': backups})
@@ -187,45 +180,45 @@ def backup_list(request):
 @login_required
 @permission_required('inventory.can_manage_backup')
 def create_backup(request):
-    """创建备份视图"""
-    # 生成建议的备份名称
+    """Create backup view"""
+    # Generate suggested backup name
     now = datetime.now()
     suggested_name = f"backup_{now.strftime('%Y%m%d_%H%M%S')}"
     
     if request.method == 'POST':
-        # 获取表单数据
+        # Get form data
         backup_name = request.POST.get('backup_name', '').strip()
         if not backup_name:
             backup_name = suggested_name
         
-        # 验证备份名称
+        # Validate backup name
         if not re.match(r'^[a-zA-Z0-9_\-]+$', backup_name):
-            messages.error(request, "备份名称只能包含字母、数字、下划线和连字符")
+            messages.error(request, "Backup name can only contain letters, numbers, underscores, and hyphens")
             return render(request, 'inventory/system/create_backup.html', {'suggested_name': suggested_name})
         
-        # 检查备份是否已存在
+        # Check if backup already exists
         backup_dir = os.path.join(settings.BACKUP_ROOT, backup_name)
         if os.path.exists(backup_dir):
-            messages.error(request, f"备份 {backup_name} 已存在")
+            messages.error(request, f"Backup {backup_name} already exists")
             return render(request, 'inventory/system/create_backup.html', {'suggested_name': suggested_name})
         
-        # 创建备份目录
+        # Create backup directory
         os.makedirs(backup_dir, exist_ok=True)
         
         try:
-            # 备份数据库
+            # Backup database
             db_file = os.path.join(backup_dir, 'db.json')
             management.call_command('dumpdata', '--exclude', 'auth.permission', '--exclude', 'contenttypes', 
                                   '--exclude', 'sessions.session', '--indent', '4', 
                                   '--output', db_file)
             
-            # 备份媒体文件
+            # Backup media files
             backup_media = request.POST.get('backup_media') == 'on'
             if backup_media and os.path.exists(settings.MEDIA_ROOT):
                 media_dir = os.path.join(backup_dir, 'media')
                 os.makedirs(media_dir, exist_ok=True)
                 
-                # 复制媒体文件
+                # Copy media files
                 for item in os.listdir(settings.MEDIA_ROOT):
                     src_path = os.path.join(settings.MEDIA_ROOT, item)
                     dst_path = os.path.join(media_dir, item)
@@ -234,10 +227,10 @@ def create_backup(request):
                     else:
                         shutil.copy2(src_path, dst_path)
             
-            # 备份描述
+            # Backup description
             backup_description = request.POST.get('backup_description', '').strip()
             
-            # 保存备份信息
+            # Save backup info
             backup_info = {
                 'name': backup_name,
                 'created_at': now.isoformat(),
@@ -250,25 +243,25 @@ def create_backup(request):
             with open(backup_info_file, 'w', encoding='utf-8') as f:
                 json.dump(backup_info, f, indent=4, ensure_ascii=False)
             
-            # 记录日志
+            # Log operation
             LogEntry.objects.create(
                 user=request.user,
                 action_type='BACKUP',
                 object_id=backup_name,
-                object_repr=f'备份: {backup_name}',
-                change_message=f'创建了系统备份 {backup_name}' + (' 包含媒体文件' if backup_media else '')
+                object_repr=f'Backup: {backup_name}',
+                change_message=f'Created system backup {backup_name}' + (' including media files' if backup_media else '')
             )
             
-            messages.success(request, f"成功创建备份: {backup_name}")
+            messages.success(request, f"Successfully created backup: {backup_name}")
             return redirect('backup_list')
             
         except Exception as e:
-            # 备份失败，清理备份目录
+            # Backup failed, clean up backup directory
             if os.path.exists(backup_dir):
                 shutil.rmtree(backup_dir)
             
-            messages.error(request, f"创建备份失败: {str(e)}")
-            logger.error(f"创建备份失败: {str(e)}")
+            messages.error(request, f"Failed to create backup: {str(e)}")
+            logger.error(f"Failed to create backup: {str(e)}")
             return render(request, 'inventory/system/create_backup.html', {'suggested_name': suggested_name})
     
     return render(request, 'inventory/system/create_backup.html', {'suggested_name': suggested_name})
@@ -276,71 +269,71 @@ def create_backup(request):
 @login_required
 @permission_required('inventory.can_manage_backup')
 def delete_backup(request, backup_name):
-    """删除备份视图"""
+    """Delete backup view"""
     backup_dir = os.path.join(settings.BACKUP_ROOT, backup_name)
     if not os.path.exists(backup_dir):
-        messages.error(request, f"备份 {backup_name} 不存在")
+        messages.error(request, f"Backup does not exist: {backup_name}")
         return redirect('backup_list')
     
     try:
-        # 删除备份目录
+        # Delete backup directory
         shutil.rmtree(backup_dir)
         
-        # 记录日志
+        # Log operation
         LogEntry.objects.create(
             user=request.user,
             action_type='DELETE',
             object_id=backup_name,
-            object_repr=f'备份: {backup_name}',
-            change_message=f'删除了系统备份 {backup_name}'
+            object_repr=f'Backup: {backup_name}',
+            change_message=f'Deleted system backup {backup_name}'
         )
         
-        messages.success(request, f"成功删除备份: {backup_name}")
+        messages.success(request, f"Successfully deleted backup: {backup_name}")
     except Exception as e:
-        messages.error(request, f"删除备份失败: {str(e)}")
-        logger.error(f"删除备份 {backup_name} 失败: {str(e)}")
+        messages.error(request, f"Failed to delete backup: {str(e)}")
+        logger.error(f"Failed to delete backup {backup_name}: {str(e)}")
     
     return redirect('backup_list')
 
 @login_required
 @permission_required('inventory.can_manage_backup')
 def download_backup(request, backup_name):
-    """下载备份视图"""
+    """Download backup view"""
     backup_dir = os.path.join(settings.BACKUP_ROOT, backup_name)
     if not os.path.exists(backup_dir):
-        messages.error(request, f"备份 {backup_name} 不存在")
+        messages.error(request, f"Backup does not exist: {backup_name}")
         return redirect('backup_list')
     
     try:
-        # 创建临时目录
+        # Create temp directory
         temp_dir = os.path.join(settings.TEMP_DIR, f"download_{backup_name}_{int(time.time())}")
         os.makedirs(temp_dir, exist_ok=True)
         
-        # 创建压缩文件
+        # Create compressed file
         zip_file_path = os.path.join(temp_dir, f"{backup_name}.zip")
         with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # 添加备份信息
+            # Add backup info
             for root, dirs, files in os.walk(backup_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
                     zipf.write(file_path, os.path.relpath(file_path, backup_dir))
         
-        # 返回文件
+        # Return file
         if os.path.exists(zip_file_path):
             with open(zip_file_path, 'rb') as f:
                 response = HttpResponse(f.read(), content_type='application/zip')
                 response['Content-Disposition'] = f'attachment; filename="{backup_name}.zip"'
                 
-                # 记录下载日志
+                # Log download operation
                 LogEntry.objects.create(
                     user=request.user,
                     action_type='DOWNLOAD',
                     object_id=backup_name,
-                    object_repr=f'备份: {backup_name}',
-                    change_message=f'下载了系统备份 {backup_name}'
+                    object_repr=f'Backup: {backup_name}',
+                    change_message=f'Downloaded system backup {backup_name}'
                 )
                 
-                # 清理临时目录
+                # Clean up temp directory
                 try:
                     shutil.rmtree(temp_dir)
                 except:
@@ -348,10 +341,10 @@ def download_backup(request, backup_name):
                     
                 return response
         else:
-            messages.error(request, "生成备份压缩文件失败")
+            messages.error(request, "Failed to generate backup compressed file")
             return redirect('backup_list')
             
     except Exception as e:
-        messages.error(request, f"下载备份失败: {str(e)}")
-        logger.error(f"下载备份 {backup_name} 失败: {str(e)}")
+        messages.error(request, f"Failed to download backup: {str(e)}")
+        logger.error(f"Failed to download backup {backup_name}: {str(e)}")
         return redirect('backup_list') 

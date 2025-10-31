@@ -1,2 +1,2 @@
-# 这是Django命令包的初始化文件
-# 此目录包含用于管理库存系统的自定义命令 
+# This is the initialization file for the Django management command package
+# This directory contains custom commands for managing the inventory system 

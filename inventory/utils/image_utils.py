@@ -1,5 +1,5 @@
 """
-图片处理工具函数
+Image processing utility functions
 """
 from io import BytesIO
 from PIL import Image, ImageOps
@@ -8,37 +8,37 @@ import os
 
 def generate_thumbnail(image_file, size=(300, 300), format='JPEG', quality=85):
     """
-    生成图片缩略图
+    Generate a thumbnail image.
     
-    参数:
-        image_file: 原始图片文件对象(Django UploadedFile或文件路径)
-        size: 缩略图尺寸，格式为(宽, 高)
-        format: 图片格式('JPEG', 'PNG'等)
-        quality: 图片质量(1-100)
+    Args:
+        image_file: Original image file (Django UploadedFile or file path)
+        size: Thumbnail size as (width, height)
+        format: Image format ('JPEG', 'PNG', etc.)
+        quality: Image quality (1-100)
         
-    返回:
-        PIL.Image: 处理后的缩略图对象
+    Returns:
+        PIL.Image: The processed thumbnail image
     """
-    # 如果是文件路径，打开文件
+    # If it's a file path, open the file
     if isinstance(image_file, str):
         img = Image.open(image_file)
-    # 如果是Django的InMemoryUploadedFile或TemporaryUploadedFile
+    # If it's a Django InMemoryUploadedFile or TemporaryUploadedFile
     elif hasattr(image_file, 'read'):
         if hasattr(image_file, 'seek'):
             image_file.seek(0)
         img = Image.open(image_file)
     else:
-        # 已经是PIL.Image对象
+        # Already a PIL.Image object
         img = image_file
     
-    # 转换为RGB模式（去除透明通道）
+    # Convert to RGB mode (remove alpha channel)
     if img.mode != 'RGB':
         img = img.convert('RGB')
     
-    # 生成缩略图
+    # Generate thumbnail
     img.thumbnail(size, Image.Resampling.LANCZOS)
     
-    # 确保缩略图是指定的尺寸（通过填充）
+    # Ensure thumbnail is the specified size (by fitting)
     thumb = ImageOps.fit(img, size, Image.Resampling.LANCZOS)
     
     return thumb
@@ -46,23 +46,23 @@ def generate_thumbnail(image_file, size=(300, 300), format='JPEG', quality=85):
 
 def save_thumbnail(image, path, format='JPEG', quality=85):
     """
-    保存缩略图到指定路径
+    Save a thumbnail to the specified path.
     
-    参数:
-        image: PIL.Image对象
-        path: 保存路径
-        format: 图片格式
-        quality: 图片质量
+    Args:
+        image: PIL.Image object
+        path: Target path to save
+        format: Image format
+        quality: Image quality
         
-    返回:
-        str: 保存后的路径
+    Returns:
+        str: The saved path
     """
-    # 确保目录存在
+    # Ensure directory exists
     directory = os.path.dirname(path)
     if directory and not os.path.exists(directory):
         os.makedirs(directory)
     
-    # 保存图片
+    # Save image
     image.save(path, format=format, quality=quality)
     
     return path
@@ -70,15 +70,15 @@ def save_thumbnail(image, path, format='JPEG', quality=85):
 
 def image_to_base64(image, format='JPEG', quality=85):
     """
-    将图片转换为base64编码
+    Convert an image to base64 data URI.
     
-    参数:
-        image: PIL.Image对象
-        format: 图片格式
-        quality: 图片质量
+    Args:
+        image: PIL.Image object
+        format: Image format
+        quality: Image quality
         
-    返回:
-        str: base64编码的图片数据
+    Returns:
+        str: Base64-encoded image data URI
     """
     import base64
     
@@ -91,34 +91,34 @@ def image_to_base64(image, format='JPEG', quality=85):
 
 def resize_image(image_file, size, format='JPEG', quality=85):
     """
-    调整图片大小
+    Resize an image.
     
-    参数:
-        image_file: 原始图片文件对象或路径
-        size: 新尺寸，格式为(宽, 高)
-        format: 图片格式
-        quality: 图片质量
+    Args:
+        image_file: Original image file or path
+        size: New size as (width, height)
+        format: Image format
+        quality: Image quality
         
-    返回:
-        PIL.Image: 调整大小后的图片
+    Returns:
+        PIL.Image: Resized image
     """
-    # 如果是文件路径，打开文件
+    # If it's a file path, open the file
     if isinstance(image_file, str):
         img = Image.open(image_file)
-    # 如果是Django的InMemoryUploadedFile或TemporaryUploadedFile
+    # If it's a Django InMemoryUploadedFile or TemporaryUploadedFile
     elif hasattr(image_file, 'read'):
         if hasattr(image_file, 'seek'):
             image_file.seek(0)
         img = Image.open(image_file)
     else:
-        # 已经是PIL.Image对象
+        # Already a PIL.Image object
         img = image_file
     
-    # 转换为RGB模式（去除透明通道）
+    # Convert to RGB mode (remove alpha channel)
     if img.mode != 'RGB':
         img = img.convert('RGB')
     
-    # 调整大小
+    # Resize image
     resized_img = img.resize(size, Image.Resampling.LANCZOS)
     
     return resized_img
@@ -126,24 +126,24 @@ def resize_image(image_file, size, format='JPEG', quality=85):
 
 def get_image_dimensions(image_file):
     """
-    获取图片尺寸
+    Get image dimensions.
     
-    参数:
-        image_file: 图片文件对象或路径
+    Args:
+        image_file: Image file object or path
         
-    返回:
-        tuple: (宽, 高)
+    Returns:
+        tuple: (width, height)
     """
-    # 如果是文件路径，打开文件
+    # If it's a file path, open the file
     if isinstance(image_file, str):
         img = Image.open(image_file)
-    # 如果是Django的InMemoryUploadedFile或TemporaryUploadedFile
+    # If it's a Django InMemoryUploadedFile or TemporaryUploadedFile
     elif hasattr(image_file, 'read'):
         if hasattr(image_file, 'seek'):
             image_file.seek(0)
         img = Image.open(image_file)
     else:
-        # 已经是PIL.Image对象
+        # Already a PIL.Image object
         img = image_file
     
     return img.size 

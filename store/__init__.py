@@ -4,41 +4,38 @@ from inventory.models import Inventory, InventoryTransaction
 
 def update_inventory(product, quantity, transaction_type, operator, notes=''):
     """
-    更新商品库存
-    :param product: 商品对象
-    :param quantity: 数量（正数表示入库，负数表示出库）
-    :param transaction_type: 交易类型（IN/OUT/ADJUST）
-    :param operator: 操作员
-    :param notes: 备注
+    Update product inventory
+    :param product: Product object
+    :param quantity: Amount (positive for stock in, negative for stock out)
+    :param transaction_type: Transaction type ('IN'/'OUT'/'ADJUST')
+    :param operator: Operator
+    :param notes: Notes
     """
     with transaction.atomic():
-        inventory, created = Inventory.objects.select_for_update().get_or_create(
+        inventory, created = Inventory.objects.get_or_create(
             product=product,
-            defaults={'quantity': 0}
+            defaults={'quantity': 0, 'warning_level': 10}
         )
-
-        # 检查库存是否足够（仅出库时）
+        # Check if inventory is sufficient (stock out only)
         if quantity < 0 and inventory.quantity + quantity < 0:
-            raise ValidationError('库存不足')
-
-        # 更新库存
+            raise ValidationError('Insufficient inventory')
+        # Update inventory
         inventory.quantity += quantity
         inventory.save()
-
-        # 创建库存交易记录
+        # Create inventory transaction record
         InventoryTransaction.objects.create(
             product=product,
             transaction_type=transaction_type,
-            quantity=abs(quantity),  # 保存绝对值
+            quantity=abs(quantity),  # Save absolute value
             operator=operator,
             notes=notes
         )
 
 def check_inventory(product, quantity):
     """
-    检查商品库存是否足够
-    :param product: 商品对象
-    :param quantity: 需要的数量
+    Check if product inventory is sufficient
+    :param product: Product object
+    :param quantity: Required amount
     :return: bool
     """
     try:

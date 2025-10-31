@@ -1,4 +1,4 @@
-# 从各表单模块导入
+# Import all forms from individual form modules
 from .product_forms import (
     ProductForm, CategoryForm, ProductBatchForm, 
     ProductImageFormSet, ProductBulkForm, ProductImportForm
@@ -13,7 +13,7 @@ from .report_forms import (
 )
 from .system_forms import SystemConfigForm, StoreForm
 
-# 设置StoreForm的model
+# Set StoreForm's model
 from django.apps import apps
 try:
     Store = apps.get_model('inventory', 'Store')
@@ -21,40 +21,34 @@ try:
 except:
     pass
 
-# 在完全重构完成之前，继续从原始表单文件导入
+# Continue importing from batch forms until full refactor
 from inventory.forms_batch import (
     BatchProductImportForm, BatchInventoryUpdateForm, ProductBatchDeleteForm
 )
 
-# 导出所有表单，使其可以从inventory.forms访问
+# Export all forms for access via inventory.forms
 __all__ = [
-    # 产品表单
+    # Product forms
     'ProductForm', 'CategoryForm', 'ProductBatchForm',
     'ProductImageFormSet', 'ProductBulkForm', 'ProductImportForm',
-    
-    # 库存盘点表单
+    # Inventory check forms
     'InventoryCheckForm', 'InventoryCheckItemForm', 'InventoryCheckApproveForm',
-    
-    # 会员表单
+    # Member forms
     'MemberForm', 'MemberLevelForm', 'RechargeForm', 'MemberImportForm',
-    
-    # 库存管理表单
+    # Inventory management form
     'InventoryTransactionForm',
-    
-    # 销售表单
+    # Sales forms
     'SaleForm', 'SaleItemForm',
-    
-    # 报表表单
+    # Report forms
     'DateRangeForm', 'TopProductsForm', 'InventoryTurnoverForm',
     'ReportFilterForm', 'SalesReportForm',
-    
-    # 系统配置表单
+    # System config forms
     'SystemConfigForm', 'StoreForm',
-    
-    # 批量操作表单
+    # Batch operation forms
     'BatchProductImportForm', 'BatchInventoryUpdateForm', 'ProductBatchDeleteForm',
 ]
 
-# 后续会逐步导入其他表单，如：
+# Future imports will go here as the refactor continues
+# Example:
 # from .inventory_forms import InventoryTransactionForm
 # from .sales_forms import SaleForm, SaleItemForm 

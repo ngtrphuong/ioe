@@ -79,7 +79,7 @@
     <div class="col-lg-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="card-title mb-0">备份说明</h5>
+                <h5 class="card-title mb-0">Backup Instructions</h5>
             </div>
             <div class="card-body">
                 <div class="alert alert-info">
@@ -88,42 +88,42 @@
                             <i class="bi bi-info-circle-fill"></i>
                         </div>
                         <div>
-                            <h6 class="alert-heading">备份内容</h6>
+                            <h6 class="alert-heading">Backup Contents</h6>
                             <ul class="ps-3 mb-0">
-                                <li>系统全部数据库数据</li>
-                                <li>用户上传的媒体文件</li>
-                                <li>系统配置信息</li>
+                                <li>All system database data</li>
+                                <li>User uploaded media files</li>
+                                <li>System configuration information</li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 
-                <h6 class="mb-2">备份过程</h6>
+                <h6 class="mb-2">Backup Process</h6>
                 <ol class="text-muted ps-3 mb-4">
-                    <li>系统将创建完整数据库副本</li>
-                    <li>打包媒体文件（如选择）</li>
-                    <li>记录备份元数据</li>
-                    <li>完成后可在备份列表下载或恢复</li>
+                    <li>System will create a complete database copy</li>
+                    <li>Package media files (if selected)</li>
+                    <li>Record backup metadata</li>
+                    <li>After completion, can download or restore from backup list</li>
                 </ol>
                 
-                <h6 class="mb-2">备份建议</h6>
+                <h6 class="mb-2">Backup Recommendations</h6>
                 <ul class="text-muted ps-3 mb-0">
-                    <li>定期创建备份，防止数据丢失</li>
-                    <li>在系统变更前创建备份</li>
-                    <li>重要数据修改后及时备份</li>
-                    <li>建议保留多个时间点的备份</li>
+                    <li>Create backups regularly to prevent data loss</li>
+                    <li>Create backup before system changes</li>
+                    <li>Backup promptly after important data modifications</li>
+                    <li>Recommend keeping backups from multiple time points</li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 备份进度模态框 -->
+<!-- Backup Progress Modal -->
 <div class="modal fade" id="backupProgressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="backupProgressModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="backupProgressModalLabel">备份进行中</h5>
+                <h5 class="modal-title" id="backupProgressModalLabel">Backup in Progress</h5>
             </div>
             <div class="modal-body text-center py-4">
                 <div class="mb-3">

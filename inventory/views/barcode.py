@@ -5,14 +5,14 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-# 显式导入原始models
+# Explicitly import original models
 import inventory.models
 from inventory.models.common import OperationLog 
-from inventory.forms import ProductForm  # 直接从forms包导入需要的表单
+from inventory.forms import ProductForm  # Directly import the required form from forms package
 from inventory.ali_barcode_service import AliBarcodeService
 from inventory.services.product_service import search_products
 
-# 外部条码服务API配置（示例用，实际应替换为自己的API密钥）
+# External barcode service API configuration (example, replace with your own API key)
 BARCODE_API_APP_KEY = "your_app_key"
 BARCODE_API_APP_SECRET = "your_app_secret"
 BARCODE_API_URL = "https://api.example.com/barcode"
@@ -20,38 +20,38 @@ BARCODE_API_URL = "https://api.example.com/barcode"
 @login_required
 def barcode_product_create(request):
     """
-    通过条码查询商品信息并创建商品的视图
-    支持GET方式查询条码，POST方式保存商品
-    先查询数据库，如果不存在再调用API
+    View to fetch product info by barcode and create product.
+    Supports GET for fetching by barcode, POST for saving product.
+    Checks DB first; calls external API if not found.
     """
     barcode = request.GET.get('barcode', '')
     barcode_data = None
     initial_data = {}
     
-    # 如果提供了条码，尝试查询商品信息
+    # If barcode is provided, try to fetch product info
     if barcode:
-        # 首先检查数据库中是否已存在该条码的商品
+        # First check if a product with this barcode exists in the database
         try:
             existing_product = inventory.models.Product.objects.get(barcode=barcode)
-            messages.warning(request, f'条码 {barcode} 的商品已存在，请勿重复添加')
+            messages.warning(request, f'Product with barcode {barcode} already exists; do not add duplicate')
             return redirect('product_list')
         except inventory.models.Product.DoesNotExist:
-            # 调用阿里云条码服务查询商品信息
+            # Call Aliyun barcode service to fetch product info
             barcode_data = AliBarcodeService.search_barcode(barcode)
             
             if barcode_data:
-                # 预填表单数据
+                # Prefill form data
                 initial_data = {
                     'barcode': barcode,
                     'name': barcode_data.get('name', ''),
                     'specification': barcode_data.get('specification', ''),
                     'manufacturer': barcode_data.get('manufacturer', ''),
                     'price': barcode_data.get('suggested_price', 0),
-                    'cost': barcode_data.get('suggested_price', 0) * 0.8 if barcode_data.get('suggested_price') else 0,  # 默认成本价为建议售价的80%
+                    'cost': barcode_data.get('suggested_price', 0) * 0.8 if barcode_data.get('suggested_price') else 0,  # Default cost as 80% of suggested price
                     'description': barcode_data.get('description', '')
                 }
                 
-                # 尝试从数据库中查找匹配的商品类别
+                # Try to find matching product category from DB
                 category_name = barcode_data.get('category', '')
                 if category_name:
                     try:
@@ -59,21 +59,21 @@ def barcode_product_create(request):
                         if category:
                             initial_data['category'] = category.id
                     except Exception as e:
-                        print(f"查找商品类别出错: {e}")
-                        # 错误处理，但不影响表单的其他字段
-                messages.success(request, '成功获取商品信息，请确认并完善商品详情')
+                        print(f"Error finding product category: {e}")
+                        # Error handling, but does not affect other form fields
+                messages.success(request, 'Successfully fetched product info, please confirm and complete details')
             else:
-                messages.info(request, f'未找到条码 {barcode} 的商品信息，请手动填写')
+                messages.info(request, f'Product info not found for barcode {barcode}, please fill in manually')
                 initial_data = {'barcode': barcode}
     
-    # 处理表单提交
+    # Handle form submission
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            # 保存商品信息
+            # Save product info
             product = form.save()
             
-            # 创建初始库存记录
+            # Create initial inventory record
             initial_stock = request.POST.get('initial_stock', 0)
             try:
                 initial_stock = int(initial_stock)
@@ -82,32 +82,32 @@ def barcode_product_create(request):
             except ValueError:
                 initial_stock = 0
                 
-            # 检查是否已存在该商品的库存记录
+            # Check if product inventory already exists
             inventory, created = inventory.models.Inventory.objects.get_or_create(
                 product=product,
                 defaults={'quantity': initial_stock}
             )
             
-            # 如果已存在库存记录，则更新数量
+            # Update quantity if inventory record already exists
             if not created:
                 inventory.quantity += initial_stock
                 inventory.save()
             
-            # 记录操作日志
+            # Record operation log
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'添加新商品: {product.name} (条码: {product.barcode}), 初始库存: {initial_stock}',
+                details=f'Added new product: {product.name} (Barcode: {product.barcode}), initial stock: {initial_stock}',
                 related_object_id=product.id,
                 related_content_type=ContentType.objects.get_for_model(product)
             )
             
-            messages.success(request, '商品添加成功')
+            messages.success(request, 'Product successfully added')
             return redirect('product_list')
     else:
         form = ProductForm(initial=initial_data)
     
-    # 渲染模板
+    # Render template
     return render(request, 'inventory/barcode_product_form.html', {
         'form': form,
         'barcode': barcode,
@@ -117,17 +117,17 @@ def barcode_product_create(request):
 @login_required
 def barcode_lookup(request):
     """
-    AJAX接口，用于查询条码信息
-    先查询数据库，如果不存在再调用API
+    AJAX endpoint for barcode lookup.
+    Checks database first, then external API if not found.
     """
     barcode = request.GET.get('barcode', '')
     if not barcode:
-        return JsonResponse({'success': False, 'message': '请提供条码'})
+        return JsonResponse({'success': False, 'message': 'Please provide a barcode'})
         
-    # 首先检查数据库中是否已存在该条码的商品
+    # First check if a product with this barcode already exists in the database
     try:
         product = inventory.models.Product.objects.get(barcode=barcode)
-        # 获取库存信息
+        # Get inventory info
         try:
             inventory = inventory.models.Inventory.objects.get(product=product)
             stock = inventory.quantity
@@ -145,10 +145,10 @@ def barcode_lookup(request):
             'specification': product.specification,
             'manufacturer': product.manufacturer,
             'description': product.description,
-            'message': '商品已存在于系统中'
+            'message': 'Product already exists in the system'
         })
     except inventory.models.Product.DoesNotExist:
-        # 调用阿里云条码服务查询商品信息
+        # Call Aliyun barcode service to get product info
         barcode_data = AliBarcodeService.search_barcode(barcode)
         
         if barcode_data:
@@ -156,26 +156,26 @@ def barcode_lookup(request):
                 'success': True,
                 'exists': False,
                 'data': barcode_data,
-                'message': '成功获取商品信息'
+                'message': 'Successfully got product info'
             })
         else:
             return JsonResponse({
                 'success': False,
                 'exists': False,
-                'message': '未找到商品信息'
+                'message': 'Product information not found'
             })
 
 @login_required
 def barcode_scan(request):
-    """条码扫描页面，用于测试条码功能"""
+    """Barcode scan page, used for testing barcode functionality"""
     return render(request, 'inventory/barcode/barcode_scan.html')
 
 def product_by_barcode(request, barcode):
-    """根据条码查询商品信息的API"""
+    """API to get product info by barcode"""
     try:
-        # 先尝试精确匹配条码
+        # First try an exact barcode match
         product = inventory.models.Product.objects.get(barcode=barcode)
-        # 获取库存信息
+        # Get inventory info
         try:
             inventory_obj = inventory.models.Inventory.objects.get(product=product)
             stock = inventory_obj.quantity
@@ -194,17 +194,17 @@ def product_by_barcode(request, barcode):
             'manufacturer': product.manufacturer
         })
     except inventory.models.Product.DoesNotExist:
-        # 如果精确匹配失败，尝试模糊匹配条码或名称
+        # If no exact match, try partial/fuzzy match with barcode or name
         products = inventory.models.Product.objects.filter(
             Q(barcode__icontains=barcode) | 
             Q(name__icontains=barcode)
-        ).order_by('name')[:5]  # 限制返回数量
+        ).order_by('name')[:5]  # Limit number of results returned
         
         if products.exists():
-            # 如果只有一个匹配结果
+            # If only one result found
             if products.count() == 1:
                 product = products.first()
-                # 获取库存信息
+                # Get inventory info
                 try:
                     inventory_obj = inventory.models.Inventory.objects.get(product=product)
                     stock = inventory_obj.quantity
@@ -222,7 +222,7 @@ def product_by_barcode(request, barcode):
                     'specification': product.specification,
                     'manufacturer': product.manufacturer
                 })
-            # 如果有多个匹配结果
+            # If multiple results found
             else:
                 product_list = []
                 for product in products:
@@ -249,21 +249,21 @@ def product_by_barcode(request, barcode):
         else:
             return JsonResponse({
                 'success': False,
-                'message': '未找到商品'
+                'message': 'Product not found'
             })
 
 @login_required
 def scan_barcode(request):
-    """条码扫描功能视图"""
+    """Barcode scan functionality view"""
     if request.method == 'POST':
         barcode_data = request.POST.get('barcode_data')
         
         if not barcode_data:
-            return JsonResponse({'error': '未提供条码数据'}, status=400)
+            return JsonResponse({'error': 'No barcode data provided'}, status=400)
         
-        # 尝试查找商品
+        # Try to find product
         try:
-            # 如果是商品条码（通常以商品ID开始）
+            # If it is a product barcode (typically starts with product ID)
             if barcode_data.startswith('P'):
                 product_id = barcode_data.split('-')[0][1:]
                 product = get_object_or_404(inventory.models.Product, pk=product_id)
@@ -280,7 +280,7 @@ def scan_barcode(request):
                     }
                 })
             
-            # 如果是批次条码（通常以B开始）
+            # If it is a batch barcode (typically starts with B)
             elif barcode_data.startswith('B'):
                 batch_id = barcode_data.split('-')[0][1:]
                 batch = get_object_or_404(inventory.models.ProductBatch, pk=batch_id)
@@ -301,7 +301,7 @@ def scan_barcode(request):
                     }
                 })
             
-            # 否则尝试通过商品条形码查找
+            # Otherwise, try to search by product barcode
             else:
                 product = get_object_or_404(inventory.models.Product, barcode=barcode_data)
                 
@@ -318,14 +318,14 @@ def scan_barcode(request):
                 })
         
         except Exception as e:
-            return JsonResponse({'error': f'找不到条码对应的商品或批次: {str(e)}'}, status=404)
+            return JsonResponse({'error': f'Cannot find product or batch for this barcode: {str(e)}'}, status=404)
     
-    # GET请求
+    # GET request
     return render(request, 'inventory/barcode/scan_barcode.html')
 
 @login_required
 def get_product_batches(request):
-    """获取商品批次的API视图"""
+    """API view to get product batches"""
     product_id = request.GET.get('product_id')
     if not product_id:
         return JsonResponse({'error': 'Missing product_id'}, status=400)
@@ -341,48 +341,48 @@ def get_product_batches(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-# 以下为已停用的条码生成和打印功能
-# 保留函数定义以维持API兼容性，但返回功能停用提示
+# The following features for barcode generation/printing are deprecated
+# Function definitions are retained for API compatibility but always return a 'feature disabled' message
 
 @login_required
 def generate_barcode_view(request, product_id=None):
-    """生成商品条码视图 - 功能已停用"""
-    messages.info(request, "条码生成功能已停用，因为您的商品已有条码。")
-    return redirect('product_list')  # 重定向到商品列表页面
+    """Generate product barcode view - feature disabled"""
+    messages.info(request, "Barcode generation is disabled because your products already have barcodes.")
+    return redirect('product_list')  # Redirect to product list page
 
 @login_required
 def batch_barcode_view(request, batch_id=None):
-    """生成批次条码视图 - 功能已停用"""
-    messages.info(request, "批次条码生成功能已停用，因为您的商品已有条码。")
-    return redirect('product_list')  # 重定向到商品列表页面
+    """Generate batch barcode view - feature disabled"""
+    messages.info(request, "Batch barcode generation is disabled because your products already have barcodes.")
+    return redirect('product_list')  # Redirect to product list page
 
 @login_required
 def bulk_barcode_generation(request):
-    """批量生成条码视图 - 功能已停用"""
-    messages.info(request, "批量条码生成功能已停用，因为您的商品已有条码。")
-    return redirect('product_list')  # 重定向到商品列表页面
+    """Bulk barcode generation view - feature disabled"""
+    messages.info(request, "Bulk barcode generation is disabled because your products already have barcodes.")
+    return redirect('product_list')  # Redirect to product list page
 
 @login_required
 def barcode_template(request):
-    """条码模板设置视图 - 功能已停用"""
-    messages.info(request, "条码模板设置功能已停用，因为您的商品已有条码。")
-    return redirect('product_list')  # 重定向到商品列表页面
+    """Barcode template settings view - feature disabled"""
+    messages.info(request, "Barcode template settings are disabled because your products already have barcodes.")
+    return redirect('product_list')  # Redirect to product list page
 
 def product_search_api(request):
-    """通过名称或其他字段搜索商品API"""
+    """API to search products by name or other fields"""
     query = request.GET.get('query', '')
-    if not query or len(query) < 2:  # 至少2个字符才进行搜索
+    if not query or len(query) < 2:  # Only search if at least 2 characters
         return JsonResponse({
             'success': False,
-            'message': '请输入至少2个字符进行搜索'
+            'message': 'Please enter at least 2 characters to search'
         })
     
-    # 使用service层搜索商品
+    # Use the service layer to search for products
     products = search_products(query, active_only=True)
     
-    # 格式化返回数据
+    # Format output data
     result = []
-    for product in products[:10]:  # 限制返回10条结果
+    for product in products[:10]:  # Limit to 10 results
         try:
             inventory_obj = inventory.models.Inventory.objects.get(product=product)
             stock = inventory_obj.quantity

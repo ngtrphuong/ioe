@@ -1,44 +1,44 @@
-# 从各模块导入所有模型
+# Import all models from respective modules
 
-# 产品相关模型
+# Product models
 from .product import Product, Category, Color, Size, Store, ProductImage, ProductBatch, Supplier
 
-# 库存相关模型
+# Inventory models
 from .inventory import (
     Inventory, InventoryTransaction, 
     check_inventory, update_inventory, StockAlert
 )
 
-# 库存盘点相关模型
+# Inventory check models
 from .inventory_check import InventoryCheck, InventoryCheckItem
 
-# 会员相关模型
+# Member models
 from .member import Member, MemberLevel, RechargeRecord, MemberTransaction
 
-# 销售相关模型
+# Sales models
 from .sales import Sale, SaleItem
 
-# 通用模型
+# Common models
 from .common import OperationLog, SystemConfig
 
-# 导出所有模型，使它们可以通过inventory.models访问
+# Export all models to make them accessible via inventory.models
 __all__ = [
-    # 产品模型
-    'Product', 'Category', 'Color', 'Size', 'Store', 'ProductImage', 'ProductBatch', 'Supplier','Category',
+    # Product models
+    'Product', 'Category', 'Color', 'Size', 'Store', 'ProductImage', 'ProductBatch', 'Supplier', 'Category',
     
-    # 库存模型
+    # Inventory models
     'Inventory', 'InventoryTransaction', 'check_inventory', 
     'update_inventory', 'StockAlert',
     
-    # 库存盘点模型
+    # Inventory check models
     'InventoryCheck', 'InventoryCheckItem',
     
-    # 会员模型
+    # Member models
     'Member', 'MemberLevel', 'RechargeRecord', 'MemberTransaction',
     
-    # 销售模型
+    # Sales models
     'Sale', 'SaleItem',
     
-    # 通用模型
+    # Common models
     'OperationLog', 'SystemConfig',
 ] 

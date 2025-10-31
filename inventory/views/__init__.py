@@ -1,4 +1,4 @@
-# 导入会员相关视图
+# Import member-related views
 from .member import (
     member_search_by_phone,
     member_list,
@@ -6,13 +6,13 @@ from .member import (
     member_create,
     member_update,
     member_delete,
-    member_edit,  # 别名函数，保持兼容性
-    member_details,  # 别名函数，保持兼容性
+    member_edit,  # Alias function for compatibility
+    member_details,  # Alias function for compatibility
     member_add_ajax,
     member_level_list,
     member_level_create,
     member_level_update,
-    member_level_edit,  # 别名函数，保持兼容性
+    member_level_edit,  # Alias function for compatibility
     member_level_delete,
     member_import,
     member_export,
@@ -22,7 +22,7 @@ from .member import (
     member_balance_adjust
 )
 
-# 导入商品相关视图
+# Import product-related views
 from .product import (
     product_list,
     product_create,
@@ -41,7 +41,7 @@ from .product import (
     product_export
 )
 
-# 导入条码相关视图
+# Import barcode-related views
 from .barcode import (
     barcode_lookup,
     barcode_scan,
@@ -49,20 +49,20 @@ from .barcode import (
     product_by_barcode,
     scan_barcode,
     get_product_batches,
-    # 以下是已停用的功能但API仍兼容
+    # The following features are deprecated but API compatibility is maintained
     generate_barcode_view,
     batch_barcode_view,
     bulk_barcode_generation,
     barcode_template
 )
 
-# 导入核心视图
+# Import core views
 from .core import (
     index,
     reports_index
 )
 
-# 导入库存相关视图
+# Import inventory-related views
 from .inventory import (
     inventory_list,
     inventory_transaction_list,
@@ -72,7 +72,7 @@ from .inventory import (
     inventory_transaction_create,
 )
 
-# 导入报表相关视图
+# Import report-related views
 from .report import (
     sales_report,
     inventory_report,
@@ -84,7 +84,7 @@ from .report import (
     inventory_batch_report
 )
 
-# 导入系统相关视图
+# Import system-related views
 from .system import (
     system_settings,
     store_settings,
@@ -94,7 +94,7 @@ from .system import (
     system_maintenance,
 )
 
-# 导入销售相关视图
+# Import sales-related views
 from .sales import (
     sale_list,
     sale_detail,
@@ -107,9 +107,9 @@ from .sales import (
     birthday_members_report,
 )
 
-# 通配符导入已移除以避免循环引用
+# Wildcard imports removed to avoid circular imports
 # from inventory.views.barcode import *
-# 其他视图模块导入，根据需要逐步添加
+# Add other view module imports as needed
 # from inventory.views.product import *
 # from inventory.views.inventory import *
 # from inventory.views.inventory_check import *

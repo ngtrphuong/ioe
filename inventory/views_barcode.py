@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.contrib.contenttypes.models import ContentType
 
-# 显式导入原始models
+# Explicitly import models
 import inventory.models
 from .models.common import OperationLog 
 from . import forms
@@ -13,39 +13,38 @@ from .ali_barcode_service import AliBarcodeService
 @login_required
 def barcode_product_create(request):
     """
-    通过条码查询商品信息并创建商品的视图
-    支持GET方式查询条码，POST方式保存商品
-    先查询数据库，如果不存在再调用API
+    View for querying product info by barcode and creating products
+    Supports GET barcode lookup and POST save
+    Checks DB first, then API if not found
     """
     barcode = request.GET.get('barcode', '')
     barcode_data = None
     initial_data = {}
     
-    # 如果提供了条码，尝试查询商品信息
+    # If barcode given, try lookup
     if barcode:
-        # 首先检查数据库中是否已存在该条码的商品
+        # First check DB for existing product with barcode
         try:
             existing_product = inventory.models.Product.objects.get(barcode=barcode)
-            messages.warning(request, f'条码 {barcode} 的商品已存在，请勿重复添加')
+            messages.warning(request, f'Product with barcode {barcode} already exists, do not add duplicates')
             return redirect('product_list')
         except inventory.models.Product.DoesNotExist:
-            # 调用阿里云条码服务查询商品信息
+            # Use Aliyun barcode service to query product info
             barcode_data = AliBarcodeService.search_barcode(barcode)
             
             if barcode_data:
-                # 预填表单数据
+                # Pre-fill form data
                 initial_data = {
                     'barcode': barcode,
                     'name': barcode_data.get('name', ''),
                     'specification': barcode_data.get('specification', ''),
                     'manufacturer': barcode_data.get('manufacturer', ''),
                     'price': barcode_data.get('suggested_price', 0),
-                    'cost': barcode_data.get('suggested_price', 0) * 0.8 if barcode_data.get('suggested_price') else 0,  # 默认成本价为建议售价的80%
+                    'cost': barcode_data.get('suggested_price', 0) * 0.8 if barcode_data.get('suggested_price') else 0,  # Default cost is 80% of suggest price
                     'description': barcode_data.get('description', ''),
-                    'is_active': True  # 确保初始化时is_active为True
+                    'is_active': True
                 }
-                
-                # 尝试从数据库中查找匹配的商品类别
+                # Try to look up matching category in DB
                 category_name = barcode_data.get('category', '')
                 if category_name:
                     try:
@@ -53,23 +52,20 @@ def barcode_product_create(request):
                         if category:
                             initial_data['category'] = category.id
                     except Exception as e:
-                        print(f"查找商品类别出错: {e}")
-                        # 错误处理，但不影响表单的其他字段
-                messages.success(request, '成功获取商品信息，请确认并完善商品详情')
+                        print(f"Error finding category: {e}")
+                        # Keeps going for other fields
+                messages.success(request, 'Fetched product info successfully, please confirm and complete details')
             else:
-                messages.info(request, f'未找到条码 {barcode} 的商品信息，请手动填写')
-                initial_data = {'barcode': barcode, 'is_active': True}  # 确保初始化时is_active为True
-    
-    # 处理表单提交
+                messages.info(request, f'No product info found for barcode {barcode}, please enter by hand')
+                initial_data = {'barcode': barcode, 'is_active': True}
+    # Form post
     if request.method == 'POST':
         form = forms.ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            # 确保is_active为True
             product = form.save(commit=False)
             product.is_active = True
             product.save()
-            
-            # 创建初始库存记录
+            # Create initial inventory record
             initial_stock = request.POST.get('initial_stock', 0)
             try:
                 initial_stock = int(initial_stock)
@@ -77,37 +73,31 @@ def barcode_product_create(request):
                     initial_stock = 0
             except ValueError:
                 initial_stock = 0
-                
-            # 检查是否已存在该商品的库存记录
+            # Check for existing inventory record
             inventory_record, created = inventory.models.Inventory.objects.get_or_create(
                 product=product,
                 defaults={'quantity': initial_stock}
             )
-            
-            # 如果已存在库存记录，则更新数量
+            # If already exists, update quantity
             if not created:
                 inventory_record.quantity += initial_stock
                 inventory_record.save()
-            
-            # 记录操作日志
+            # Log operation
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'添加新商品: {product.name} (条码: {product.barcode}), 初始库存: {initial_stock}',
+                details=f'Added new product: {product.name} (barcode: {product.barcode}), initial stock: {initial_stock}',
                 related_object_id=product.id,
                 related_content_type=ContentType.objects.get_for_model(product)
             )
-            
-            messages.success(request, '商品添加成功')
+            messages.success(request, 'Product added successfully')
             return redirect('product_list')
     else:
         form = forms.ProductForm(initial=initial_data)
-    
-    # 确保barcode_data不为None时为字典类型
+    # Ensure barcode_data is a dict if None
     if barcode_data is None:
         barcode_data = {}
-        
-    # 渲染模板
+    # Render template
     return render(request, 'inventory/barcode_product_form.html', {
         'form': form,
         'barcode': barcode,
@@ -117,14 +107,13 @@ def barcode_product_create(request):
 @login_required
 def barcode_lookup(request):
     """
-    AJAX接口，用于查询条码信息
-    先查询数据库，如果不存在再调用API
+    AJAX endpoint for barcode info lookup
+    Checks DB, then calls API if not found
     """
     barcode = request.GET.get('barcode', '')
     if not barcode:
-        return JsonResponse({'success': False, 'message': '请提供条码'})
-        
-    # 首先检查数据库中是否已存在该条码的商品
+        return JsonResponse({'success': False, 'message': 'Please provide barcode'})
+    # Check DB
     try:
         product = inventory.models.Product.objects.get(barcode=barcode)
         return JsonResponse({
@@ -136,22 +125,21 @@ def barcode_lookup(request):
             'specification': product.specification,
             'manufacturer': product.manufacturer,
             'description': product.description,
-            'message': '商品已存在于系统中'
+            'message': 'Product already exists in the system'
         })
     except inventory.models.Product.DoesNotExist:
-        # 调用阿里云条码服务查询商品信息
+        # Call Aliyun barcode service
         barcode_data = AliBarcodeService.search_barcode(barcode)
-        
         if barcode_data:
             return JsonResponse({
                 'success': True,
                 'exists': False,
                 'data': barcode_data,
-                'message': '成功获取商品信息'
+                'message': 'Fetched product info successfully'
             })
         else:
             return JsonResponse({
                 'success': False,
                 'exists': False,
-                'message': '未找到商品信息'
+                'message': 'No product info found'
             })

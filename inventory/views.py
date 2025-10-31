@@ -13,9 +13,9 @@ import re
 
 def product_by_barcode(request, barcode):
     try:
-        # 先尝试精确匹配条码
+        # First try exact barcode match
         product = Product.objects.get(barcode=barcode)
-        # 获取库存信息
+        # Get inventory information
         try:
             inventory = Inventory.objects.get(product=product)
             stock = inventory.quantity
@@ -33,10 +33,10 @@ def product_by_barcode(request, barcode):
             'manufacturer': product.manufacturer
         })
     except Product.DoesNotExist:
-        # 如果精确匹配失败，尝试模糊匹配条码
+        # If no exact match, try fuzzy match with barcode
         products = Product.objects.filter(barcode__icontains=barcode).order_by('barcode')[:5]
         if products.exists():
-            # 返回匹配的多个商品
+            # Return multiple matching products
             product_list = []
             for product in products:
                 try:
@@ -44,7 +44,6 @@ def product_by_barcode(request, barcode):
                     stock = inventory.quantity
                 except Inventory.DoesNotExist:
                     stock = 0
-                    
                 product_list.append({
                     'product_id': product.id,
                     'barcode': product.barcode,
@@ -52,23 +51,22 @@ def product_by_barcode(request, barcode):
                     'price': float(product.price),
                     'stock': stock
                 })
-                
             return JsonResponse({
                 'success': True,
                 'multiple_matches': True,
                 'products': product_list
             })
         else:
-            return JsonResponse({'success': False, 'message': '未找到商品'})
+            return JsonResponse({'success': False, 'message': 'Product not found'})
 
-# 新增会员搜索API
+# New member search API
 def member_search_by_phone(request, phone):
     """
-    根据手机号搜索会员的API
-    支持精确匹配和模糊匹配，返回多个匹配结果
+    API to search members by phone number
+    Supports exact match and fuzzy match, returns multiple matching results
     """
     try:
-        # 先尝试精确匹配手机号
+        # First try exact phone number match
         member = Member.objects.get(phone=phone)
         return JsonResponse({
             'success': True,
@@ -84,14 +82,14 @@ def member_search_by_phone(request, phone):
             'member_purchase_count': member.purchase_count
         })
     except Member.DoesNotExist:
-        # 如果精确匹配失败，尝试模糊匹配手机号或姓名
+        # If exact match fails, try fuzzy match on phone number or name
         members = Member.objects.filter(
-            models.Q(phone__icontains=phone) | 
-            models.Q(name__icontains=phone)
-        ).order_by('phone')[:5]  # 限制返回数量
+            Q(phone__icontains=phone) | 
+            Q(name__icontains=phone)
+        ).order_by('phone')[:5]  # Limit number of results
         
         if members.exists():
-            # 如果只有一个匹配结果
+            # If only one match result
             if members.count() == 1:
                 member = members.first()
                 return JsonResponse({
@@ -107,7 +105,7 @@ def member_search_by_phone(request, phone):
                     'member_total_spend': float(member.total_spend),
                     'member_purchase_count': member.purchase_count
                 })
-            # 如果有多个匹配结果
+            # If multiple match results
             else:
                 member_list = []
                 for member in members:
@@ -125,14 +123,14 @@ def member_search_by_phone(request, phone):
                     'members': member_list
                 })
         else:
-            return JsonResponse({'success': False, 'message': '未找到会员'})
+            return JsonResponse({'success': False, 'message': 'Member not found'})
             
 from .forms import ProductForm, InventoryTransactionForm, SaleForm, SaleItemForm, MemberForm
 
 @login_required
 def index(request):
-    products = Product.objects.all()[:5]  # 获取最新的5个商品
-    low_stock_items = Inventory.objects.filter(quantity__lte=F('warning_level'))[:5]  # 获取库存预警商品
+    products = Product.objects.all()[:5]  # Get latest 5 products
+    low_stock_items = Inventory.objects.filter(quantity__lte=F('warning_level'))[:5]  # Get low stock alert items
     context = {
         'products': products,
         'low_stock_items': low_stock_items,
@@ -147,16 +145,16 @@ def product_list(request):
 
 @login_required
 def inventory_list(request):
-    # 获取筛选参数
+    # Get filter parameters
     category_id = request.GET.get('category', '')
     color = request.GET.get('color', '')
     size = request.GET.get('size', '')
     search_query = request.GET.get('search', '')
     
-    # 基础查询
+    # Base query
     inventory_items = Inventory.objects.select_related('product', 'product__category').all()
     
-    # 应用筛选条件
+    # Apply filter conditions
     if category_id:
         inventory_items = inventory_items.filter(product__category_id=category_id)
     
@@ -172,10 +170,10 @@ def inventory_list(request):
             Q(product__barcode__icontains=search_query)
         )
     
-    # 获取所有分类
+    # Get all categories
     categories = Category.objects.all()
     
-    # 获取所有可用的颜色和尺码
+    # Get all available colors and sizes
     colors = Product.COLOR_CHOICES
     sizes = Product.SIZE_CHOICES
     
@@ -199,7 +197,7 @@ def sale_list(request):
 
 @login_required
 def sale_detail(request, sale_id):
-    """销售单详情视图"""
+    """Sale order detail view"""
     sale = get_object_or_404(Sale, pk=sale_id)
     items = sale.items.all()
     
@@ -214,7 +212,7 @@ def sale_detail(request, sale_id):
 def product_create(request):
     initial_data = {}
     
-    # 如果是从条码API跳转过来的，预填表单
+    # If redirected from barcode API, pre-fill form
     if request.method == 'GET' and 'barcode' in request.GET:
         initial_data = {
             'barcode': request.GET.get('barcode', ''),
@@ -231,17 +229,17 @@ def product_create(request):
             product = form.save()
             Inventory.objects.create(product=product)
             
-            # 记录操作日志
+            # Log operation
             from django.contrib.contenttypes.models import ContentType
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'添加新商品: {product.name} (条码: {product.barcode})',
+                details=f'Add new product: {product.name} (Barcode: {product.barcode})',
                 related_object_id=product.id,
                 related_content_type=ContentType.objects.get_for_model(Product)
             )
             
-            messages.success(request, '商品添加成功')
+            messages.success(request, 'Product added successfully')
             return redirect('product_list')
     else:
         form = ProductForm(initial=initial_data)
@@ -253,7 +251,7 @@ def product_create(request):
 
 @login_required
 def product_edit(request, product_id):
-    """编辑商品信息"""
+    """Edit product information"""
     product = get_object_or_404(Product, id=product_id)
     
     if request.method == 'POST':
@@ -261,17 +259,17 @@ def product_edit(request, product_id):
         if form.is_valid():
             form.save()
             
-            # 记录操作日志
+            # Log operation
             from django.contrib.contenttypes.models import ContentType
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'编辑商品: {product.name} (条码: {product.barcode})',
+                details=f'Edit product: {product.name} (Barcode: {product.barcode})',
                 related_object_id=product.id,
                 related_content_type=ContentType.objects.get_for_model(Product)
             )
             
-            messages.success(request, '商品信息更新成功')
+            messages.success(request, 'Product info updated successfully')
             return redirect('product_list')
     else:
         form = ProductForm(instance=product)
@@ -296,7 +294,7 @@ def inventory_transaction_create(request):
             inventory.quantity += transaction.quantity
             inventory.save()
             
-            messages.success(request, '入库操作成功')
+            messages.success(request, 'Stock-in operation succeeded')
             return redirect('inventory_list')
     else:
         form = InventoryTransactionForm()
@@ -310,7 +308,7 @@ def sale_create(request):
             sale = form.save(commit=False)
             sale.operator = request.user
             
-            # 添加会员关联
+            # Add member association
             member_id = request.POST.get('member')
             if member_id:
                 try:
@@ -320,12 +318,12 @@ def sale_create(request):
                     pass
                 
             sale.save()
-            messages.success(request, '销售单创建成功')
+            messages.success(request, 'Sale order created successfully')
             return redirect('sale_item_create', sale_id=sale.id)
     else:
         form = SaleForm()
     
-    # 获取会员等级列表，用于添加会员模态框
+    # Get member level list for add member modal
     member_levels = MemberLevel.objects.all()
     
     return render(request, 'inventory/sale_form.html', {
@@ -355,23 +353,23 @@ def sale_item_create(request, sale_id):
                     transaction_type='OUT',
                     quantity=sale_item.quantity,
                     operator=request.user,
-                    notes=f'销售单号：{sale.id}'
+                    notes=f'Sale order number: {sale.id}'
                 )
                 
-                messages.success(request, '商品添加成功')
+                messages.success(request, 'Product added successfully')
                 
-                # 记录操作日志
+                # Log operation
                 from django.contrib.contenttypes.models import ContentType
                 OperationLog.objects.create(
                     operator=request.user,
                     operation_type='SALE',
-                    details=f'销售商品 {sale_item.product.name} 数量 {sale_item.quantity}',
+                    details=f'Sell product {sale_item.product.name} quantity {sale_item.quantity}',
                     related_object_id=sale.id,
                     related_content_type=ContentType.objects.get_for_model(Sale)
                 )
                 return redirect('sale_item_create', sale_id=sale.id)
             else:
-                messages.error(request, '库存不足')
+                messages.error(request, 'Insufficient stock')
     else:
         form = SaleItemForm()
     
@@ -386,17 +384,17 @@ def sale_item_create(request, sale_id):
 def member_list(request):
     sort_by = request.GET.get('sort', 'name')
     
-    # 根据排序参数查询会员
+    # Query members based on sort parameter
     if sort_by == 'total_spend':
         members = Member.objects.all().order_by('-total_spend')
-        sort_label = '累计消费'
+        sort_label = 'Total Spend'
     elif sort_by == 'purchase_count':
         members = Member.objects.all().order_by('-purchase_count')
-        sort_label = '消费次数'
+        sort_label = 'Purchase Count'
     else:
         members = Member.objects.all().order_by('name')
-        sort_by = 'name'  # 防止注入
-        sort_label = '姓名'
+        sort_by = 'name'  # Prevent injection
+        sort_label = 'Name'
     
     member_levels = MemberLevel.objects.all()
     
@@ -409,14 +407,14 @@ def member_list(request):
 
 @login_required
 def member_create(request):
-    # 移除对当前用户是否已有会员记录的检查，允许管理员创建多个会员
+    # Allow administrators to create multiple members
     if request.method == 'POST':
         form = MemberForm(request.POST)
         if form.is_valid():
             member = form.save(commit=False)
-            # 不再将会员与当前用户关联，允许创建独立的会员记录
+            # Allow creating independent member records
             member.save()
-            messages.success(request, '会员添加成功')
+            messages.success(request, 'Member added successfully')
             return redirect('member_list')
     else:
         form = MemberForm()
@@ -429,7 +427,7 @@ def member_edit(request, member_id):
         form = MemberForm(request.POST, instance=member)
         if form.is_valid():
             form.save()
-            messages.success(request, '会员信息更新成功')
+            messages.success(request, 'Member info updated successfully')
             return redirect('member_list')
     else:
         form = MemberForm(instance=member)
@@ -437,23 +435,23 @@ def member_edit(request, member_id):
 
 @login_required
 def member_purchases(request):
-    """会员消费记录查询视图"""
+    """Member consumption record query view"""
     search_term = request.GET.get('search', '')
     
     if search_term:
-        # 根据名称或手机号查询会员
+        # Query member by name or phone number
         member = None
         sales = []
         
         try:
-            # 先尝试按手机号查找
+            # First try to find by phone number
             member = Member.objects.get(phone=search_term)
             sales = Sale.objects.filter(member=member).order_by('-created_at')
         except Member.DoesNotExist:
-            # 再尝试按名称模糊查找
+            # Then try fuzzy search by name
             members = Member.objects.filter(name__icontains=search_term)
             if members.exists():
-                # 如果找到多个会员，使用第一个
+                # Use first one if multiple members found
                 member = members.first()
                 sales = Sale.objects.filter(member=member).order_by('-created_at')
                 
@@ -471,20 +469,20 @@ def member_purchases(request):
 
 @login_required
 def member_level_list(request):
-    """会员等级列表视图"""
+    """Member level list view"""
     levels = MemberLevel.objects.all().order_by('points_threshold')
     return render(request, 'inventory/member_level_list.html', {'levels': levels})
 
 @login_required
 def member_level_create(request):
-    """创建会员等级视图"""
+    """Create member level view"""
     from .forms import MemberLevelForm
     
     if request.method == 'POST':
         form = MemberLevelForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, '会员等级添加成功')
+            messages.success(request, 'Member level added successfully')
             return redirect('member_level_list')
     else:
         form = MemberLevelForm()
@@ -493,7 +491,7 @@ def member_level_create(request):
 
 @login_required
 def member_level_edit(request, level_id):
-    """编辑会员等级视图"""
+    """Edit member level view"""
     from .forms import MemberLevelForm
     
     level = get_object_or_404(MemberLevel, id=level_id)
@@ -501,7 +499,7 @@ def member_level_edit(request, level_id):
         form = MemberLevelForm(request.POST, instance=level)
         if form.is_valid():
             form.save()
-            messages.success(request, '会员等级更新成功')
+            messages.success(request, 'Member level updated successfully')
             return redirect('member_level_list')
     else:
         form = MemberLevelForm(instance=level)
@@ -510,7 +508,7 @@ def member_level_edit(request, level_id):
 
 @login_required
 def member_recharge(request, member_id):
-    """会员充值视图"""
+    """Member recharge view"""
     member = get_object_or_404(Member, id=member_id)
     
     if request.method == 'POST':
@@ -520,10 +518,10 @@ def member_recharge(request, member_id):
         remark = request.POST.get('remark', '')
         
         if amount <= 0:
-            messages.error(request, '充值金额必须大于0')
+            messages.error(request, 'Recharge amount must be greater than 0')
             return redirect('member_recharge', member_id=member_id)
         
-        # 创建充值记录
+        # Create recharge record
         recharge = RechargeRecord.objects.create(
             member=member,
             amount=amount,
@@ -533,22 +531,22 @@ def member_recharge(request, member_id):
             remark=remark
         )
         
-        # 更新会员余额和状态
+        # Update member balance and status
         member.balance += amount
         member.is_recharged = True
         member.save()
         
-        # 记录操作日志
+        # Log operation
         from django.contrib.contenttypes.models import ContentType
         OperationLog.objects.create(
             operator=request.user,
             operation_type='MEMBER',
-            details=f'为会员 {member.name} 充值 {amount} 元',
+            details=f'Recharge {amount} for member {member.name}',
             related_object_id=recharge.id,
             related_content_type=ContentType.objects.get_for_model(RechargeRecord)
         )
         
-        messages.success(request, f'已成功为 {member.name} 充值 {amount} 元')
+        messages.success(request, f'Successfully recharged {amount} for {member.name}')
         return redirect('member_list')
     
     return render(request, 'inventory/member_recharge.html', {
@@ -557,7 +555,7 @@ def member_recharge(request, member_id):
 
 @login_required
 def member_recharge_records(request, member_id):
-    """会员充值记录视图"""
+    """Member recharge record view"""
     member = get_object_or_404(Member, id=member_id)
     recharge_records = RechargeRecord.objects.filter(member=member).order_by('-created_at')
     
@@ -568,18 +566,18 @@ def member_recharge_records(request, member_id):
 
 @login_required
 def birthday_members_report(request):
-    """当月生日会员报表"""
-    # 获取当前月份
+    """Current month birthday members report"""
+    # Get current month
     current_month = timezone.now().month
     current_month_name = {
-        1: '一月', 2: '二月', 3: '三月', 4: '四月', 5: '五月', 6: '六月',
-        7: '七月', 8: '八月', 9: '九月', 10: '十月', 11: '十一月', 12: '十二月'
+        1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June',
+        7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'
     }[current_month]
     
-    # 获取当月生日的会员
+    # Get members with birthdays this month
     members = Member.objects.filter(birthday__month=current_month).order_by('id')
     
-    # 统计会员等级分布
+    # Count member level distribution
     level_counts = {}
     levels_data = []
     
@@ -598,7 +596,7 @@ def birthday_members_report(request):
     
     levels_data = list(level_counts.values())
     
-    # 统计生日日期分布 (1-31日)
+    # Count birthday date distribution (days 1-31)
     days_distribution = [0] * 31
     for member in members:
         if member.birthday:
@@ -617,13 +615,13 @@ def birthday_members_report(request):
 
 @login_required
 def member_details(request, member_id):
-    """会员详细信息视图，包括消费记录和充值记录"""
+    """Member detail information view, including consumption records and recharge records"""
     member = get_object_or_404(Member, id=member_id)
     
-    # 获取会员的消费记录
+    # Get member's consumption records
     sales = Sale.objects.filter(member=member).order_by('-created_at')
     
-    # 获取会员的充值记录
+    # Get member's recharge records
     recharge_records = RechargeRecord.objects.filter(member=member).order_by('-created_at')
     
     return render(request, 'inventory/member_details.html', {
@@ -632,30 +630,30 @@ def member_details(request, member_id):
         'recharge_records': recharge_records
     })
 
-# 报表中心相关视图
+# Reports center related views
 @login_required
 def reports_index(request):
-    """报表中心首页，显示所有可用报表及其统计信息"""
-    # 获取当月生日会员数量
+    """Reports center home page, showing all available reports and their statistics"""
+    # Get current month birthday member count
     current_month = timezone.now().month
     birthday_members_count = Member.objects.filter(birthday__month=current_month).count()
     
-    # 获取销售记录数量
+    # Get sales record count
     total_sales_count = Sale.objects.count()
     
-    # 获取库存偏低的商品数量
+    # Get low stock product count
     low_stock_count = Inventory.objects.filter(quantity__lt=F('warning_level')).count() or 0
     
-    # 获取充值总金额
+    # Get total recharge amount
     total_recharge_amount = RechargeRecord.objects.aggregate(total=Sum('amount'))['total'] or 0
     
-    # 获取本月销售额
+    # Get current month sales amount
     current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     monthly_sales_amount = Sale.objects.filter(
         created_at__gte=current_month_start
     ).aggregate(total=Sum('final_amount'))['total'] or 0
     
-    # 获取今日操作日志数量
+    # Get today's operation log count
     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_log_count = OperationLog.objects.filter(timestamp__gte=today_start).count()
     
@@ -672,48 +670,48 @@ def reports_index(request):
 
 @login_required
 def member_add_ajax(request):
-    """AJAX添加会员"""
+    """AJAX add member"""
     if request.method == 'POST':
         try:
             name = request.POST.get('name')
             phone = request.POST.get('phone')
             level_id = request.POST.get('level')
             
-            # 详细验证数据
+            # Detailed data validation
             errors = {}
             if not name:
-                errors['name'] = '会员姓名不能为空'
+                errors['name'] = 'Member name cannot be empty'
             if not phone:
-                errors['phone'] = '手机号不能为空'
+                errors['phone'] = 'Phone number cannot be empty'
             elif not re.match(r'^\d{11}$', phone):
-                errors['phone'] = '请输入11位手机号码'
+                errors['phone'] = 'Please enter an 11-digit mobile number'
             if not level_id:
-                errors['level'] = '请选择会员等级'
+                errors['level'] = 'Please select a member level'
             
             if errors:
                 return JsonResponse({
                     'success': False, 
-                    'message': '表单验证失败',
+                    'message': 'Form validation failed',
                     'errors': errors
                 })
             
-            # 检查手机号是否已存在
+            # Check if phone number already exists
             if Member.objects.filter(phone=phone).exists():
                 return JsonResponse({
                     'success': False, 
-                    'message': '该手机号已注册为会员，请使用其他手机号'
+                    'message': 'This phone number is already registered as a member, please use another phone number'
                 })
             
-            # 获取会员等级
+            # Get member level
             try:
                 level = MemberLevel.objects.get(id=level_id)
             except MemberLevel.DoesNotExist:
                 return JsonResponse({
                     'success': False, 
-                    'message': '所选会员等级不存在，请重新选择'
+                    'message': 'Selected member level does not exist, please select again'
                 })
             
-            # 创建会员
+            # Create member
             member = Member.objects.create(
                 name=name,
                 phone=phone,
@@ -722,12 +720,12 @@ def member_add_ajax(request):
                 balance=0
             )
             
-            # 记录操作日志
+            # Log operation
             from django.contrib.contenttypes.models import ContentType
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='MEMBER',
-                details=f'添加会员: {name} (手机: {phone})',
+                details=f'Add member: {name} (Phone: {phone})',
                 related_object_id=member.id,
                 related_content_type=ContentType.objects.get_for_model(Member)
             )
@@ -742,11 +740,11 @@ def member_add_ajax(request):
             
         except Exception as e:
             import traceback
-            print(f"会员添加错误: {str(e)}")
+            print(f"Member add error: {str(e)}")
             print(traceback.format_exc())
             return JsonResponse({
                 'success': False, 
-                'message': f'添加会员时发生错误: {str(e)}'
+                'message': f'Error adding member: {str(e)}'
             })
     
-    return JsonResponse({'success': False, 'message': '不支持的请求方法'})
+    return JsonResponse({'success': False, 'message': 'Unsupported request method'})

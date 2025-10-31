@@ -3,28 +3,28 @@ from django.conf import settings
 
 class BarcodeService:
     """
-    与中国商品信息服务平台通信的服务类
+    Service class for communicating with the China Product Information Service Platform.
     """
-    BASE_URL = "https://api.example.com/barcode"  # 替换为实际的API地址
+    BASE_URL = "https://api.example.com/barcode"  # Replace with the actual API URL
     
     @classmethod
     def search_barcode(cls, barcode):
         """
-        根据条码查询商品信息
+        Query product info by barcode
         
         Args:
-            barcode: 商品条码
+            barcode: product barcode
             
         Returns:
-            dict: 包含商品信息的字典，如果未找到则返回None
+            dict: a dictionary with product information, or None if not found
         """
         try:
-            # 这里需要替换为实际的API密钥和参数
+            # Replace this with your actual API key and parameters
             api_key = getattr(settings, 'BARCODE_API_KEY', '')
             
             if not api_key:
                 return None
-                
+            
             response = requests.get(
                 f"{cls.BASE_URL}/query",
                 params={
@@ -48,5 +48,5 @@ class BarcodeService:
                     }
             return None
         except Exception as e:
-            print(f"条码查询出错: {e}")
+            print(f"Barcode query error: {e}")
             return None

@@ -5,15 +5,15 @@
 
 {% block content %}
 <div class="container-fluid">
-    <!-- 面包屑导航 -->
+    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-white py-2">
-            <li class="breadcrumb-item"><a href="{% url 'index' %}">主页</a></li>
-            <li class="breadcrumb-item active" aria-current="page">生日会员报表</li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Birthday Members Report</li>
         </ol>
     </nav>
     
-    <!-- 页面标题 -->
+    <!-- Page Title -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0">{{ month_name }}生日会员</h1>
         <div class="btn-group">
@@ -21,30 +21,30 @@
                 {{ month_name }} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item {% if month == 1 %}active{% endif %}" href="?month=1">一月</a></li>
-                <li><a class="dropdown-item {% if month == 2 %}active{% endif %}" href="?month=2">二月</a></li>
-                <li><a class="dropdown-item {% if month == 3 %}active{% endif %}" href="?month=3">三月</a></li>
-                <li><a class="dropdown-item {% if month == 4 %}active{% endif %}" href="?month=4">四月</a></li>
-                <li><a class="dropdown-item {% if month == 5 %}active{% endif %}" href="?month=5">五月</a></li>
-                <li><a class="dropdown-item {% if month == 6 %}active{% endif %}" href="?month=6">六月</a></li>
-                <li><a class="dropdown-item {% if month == 7 %}active{% endif %}" href="?month=7">七月</a></li>
-                <li><a class="dropdown-item {% if month == 8 %}active{% endif %}" href="?month=8">八月</a></li>
-                <li><a class="dropdown-item {% if month == 9 %}active{% endif %}" href="?month=9">九月</a></li>
-                <li><a class="dropdown-item {% if month == 10 %}active{% endif %}" href="?month=10">十月</a></li>
-                <li><a class="dropdown-item {% if month == 11 %}active{% endif %}" href="?month=11">十一月</a></li>
-                <li><a class="dropdown-item {% if month == 12 %}active{% endif %}" href="?month=12">十二月</a></li>
+                <li><a class="dropdown-item {% if month == 1 %}active{% endif %}" href="?month=1">January</a></li>
+                <li><a class="dropdown-item {% if month == 2 %}active{% endif %}" href="?month=2">February</a></li>
+                <li><a class="dropdown-item {% if month == 3 %}active{% endif %}" href="?month=3">March</a></li>
+                <li><a class="dropdown-item {% if month == 4 %}active{% endif %}" href="?month=4">April</a></li>
+                <li><a class="dropdown-item {% if month == 5 %}active{% endif %}" href="?month=5">May</a></li>
+                <li><a class="dropdown-item {% if month == 6 %}active{% endif %}" href="?month=6">June</a></li>
+                <li><a class="dropdown-item {% if month == 7 %}active{% endif %}" href="?month=7">July</a></li>
+                <li><a class="dropdown-item {% if month == 8 %}active{% endif %}" href="?month=8">August</a></li>
+                <li><a class="dropdown-item {% if month == 9 %}active{% endif %}" href="?month=9">September</a></li>
+                <li><a class="dropdown-item {% if month == 10 %}active{% endif %}" href="?month=10">October</a></li>
+                <li><a class="dropdown-item {% if month == 11 %}active{% endif %}" href="?month=11">November</a></li>
+                <li><a class="dropdown-item {% if month == 12 %}active{% endif %}" href="?month=12">December</a></li>
             </ul>
         </div>
     </div>
     
     <div class="row">
-        <!-- 左侧：会员列表 -->
+        <!-- Left: Member List -->
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">{{ month_name }}生日会员列表</h5>
-                        <span class="badge bg-light text-dark">共 {{ total_members }} 位会员</span>
+                        <h5 class="card-title mb-0">{{ month_name }} Birthday Members List</h5>
+                        <span class="badge bg-light text-dark">{{ total_members }} members</span>
                     </div>
                 </div>
                 <div class="card-body p-0">
@@ -53,12 +53,12 @@
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>姓名</th>
-                                    <th>生日</th>
-                                    <th>联系电话</th>
-                                    <th>会员等级</th>
-                                    <th>积分</th>
-                                    <th>操作</th>
+                                    <th>Name</th>
+                                    <th>Birthday</th>
+                                    <th>Phone</th>
+                                    <th>Member Level</th>
+                                    <th>Points</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,13 +80,13 @@
                                     <td>{{ member.points }}</td>
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="{% url 'member_detail' member.id %}" class="btn btn-outline-primary" title="查看详情">
+                                            <a href="{% url 'member_detail' member.id %}" class="btn btn-outline-primary" title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{% url 'member_edit' member.id %}" class="btn btn-outline-secondary" title="编辑会员">
+                                            <a href="{% url 'member_edit' member.id %}" class="btn btn-outline-secondary" title="Edit Member">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="{% url 'member_recharge' member.id %}" class="btn btn-outline-success" title="会员充值">
+                                            <a href="{% url 'member_recharge' member.id %}" class="btn btn-outline-success" title="Member Recharge">
                                                 <i class="fas fa-wallet"></i>
                                             </a>
                                         </div>
@@ -98,19 +98,19 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info m-3 mb-0">
-                        <i class="fas fa-info-circle me-2"></i> {{ month_name }}没有会员生日
+                        <i class="fas fa-info-circle me-2"></i> No member birthdays in {{ month_name }}
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
         
-        <!-- 右侧：近期生日和统计 -->
+        <!-- Right: Upcoming Birthdays and Statistics -->
         <div class="col-lg-4">
-            <!-- 即将到来的生日 -->
+            <!-- Upcoming Birthdays -->
             <div class="card mb-4">
                 <div class="card-header bg-warning text-dark">
-                    <h5 class="card-title mb-0"><i class="fas fa-birthday-cake me-2"></i> 近期生日会员</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-birthday-cake me-2"></i> Upcoming Birthday Members</h5>
                 </div>
                 <div class="card-body p-0">
                     {% if upcoming_birthdays %}
@@ -129,9 +129,9 @@
                                         {% elif item.days_until_birthday <= 3 %}text-warning fw-bold
                                         {% else %}text-muted{% endif %}">
                                         {% if item.days_until_birthday == 0 %}
-                                            今天生日
+                                            Birthday Today
                                         {% else %}
-                                            还有 {{ item.days_until_birthday }} 天
+                                            {{ item.days_until_birthday }} days left
                                         {% endif %}
                                     </div>
                                 </div>
@@ -141,16 +141,16 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info m-3 mb-0">
-                        <i class="fas fa-info-circle me-2"></i> 近期没有会员生日
+                        <i class="fas fa-info-circle me-2"></i> No upcoming member birthdays
                     </div>
                     {% endif %}
                 </div>
             </div>
             
-            <!-- 生日会员营销建议 -->
+            <!-- Birthday Member Marketing Suggestions -->
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0"><i class="fas fa-lightbulb me-2"></i> 营销建议</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-lightbulb me-2"></i> Marketing Suggestions</h5>
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
@@ -158,10 +158,10 @@
                             <div class="icon-circle bg-primary text-white me-2">
                                 <i class="fas fa-gift"></i>
                             </div>
-                            <h6 class="mb-0">生日礼包</h6>
+                            <h6 class="mb-0">Birthday Gift Pack</h6>
                         </div>
                         <p class="text-muted small mb-0">
-                            为生日会员提供专属生日礼包，包含优惠券、积分奖励等生日特权。
+                            Provide exclusive birthday gift packs for birthday members, including coupons, points rewards, and other birthday privileges.
                         </p>
                     </div>
                     
@@ -170,10 +170,10 @@
                             <div class="icon-circle bg-success text-white me-2">
                                 <i class="fas fa-percentage"></i>
                             </div>
-                            <h6 class="mb-0">生日折扣</h6>
+                            <h6 class="mb-0">Birthday Discount</h6>
                         </div>
                         <p class="text-muted small mb-0">
-                            在会员生日当天或生日周提供特别折扣，鼓励会员在生日期间消费。
+                            Offer special discounts on the member's birthday or birthday week to encourage spending during the birthday period.
                         </p>
                     </div>
                     
@@ -182,10 +182,10 @@
                             <div class="icon-circle bg-warning text-white me-2">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <h6 class="mb-0">生日祝福</h6>
+                            <h6 class="mb-0">Birthday Greeting</h6>
                         </div>
                         <p class="text-muted small mb-0">
-                            发送个性化的生日祝福短信或邮件，增强会员归属感和忠诚度。
+                            Send personalized birthday greeting SMS or emails to enhance member sense of belonging and loyalty.
                         </p>
                     </div>
                 </div>

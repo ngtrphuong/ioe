@@ -1,1 +1,1 @@
-# 这是Django管理命令包的初始化文件 
+# This is the initialization file for the Django management command package 

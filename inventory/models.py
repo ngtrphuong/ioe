@@ -1,7 +1,7 @@
-# 这是一个过渡文件，用于确保向后兼容性
-# 模型现在已经重构到inventory/models/目录下的各个文件中
+# This is a transitional file for backward compatibility.
+# Models are now refactored into separate files under inventory/models/.
 
-# 从重构后的模型结构中导入所有模型
+# Import all models from the refactored model structure
 from inventory.models.product import (
     Product, Category, Color, Size, Store
 )
@@ -27,6 +27,6 @@ from inventory.models.common import (
     OperationLog
 )
 
-# 警告：这个文件将在重构完成后删除
-# 请直接从inventory.models导入模型，例如:
+# WARNING: This file will be deleted after refactoring is complete.
+# Please import models directly from inventory.models, e.g.:
 # from inventory.models import Product

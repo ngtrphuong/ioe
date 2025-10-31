@@ -1,6 +1,6 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}会员消费记录 - {{ block.super }}{% endblock %}
+{% block title %}Member Purchase Records - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -9,12 +9,12 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <h2 class="card-title mb-0">会员消费记录查询</h2>
-                        <p class="text-muted mb-md-0">根据会员手机号或姓名查询消费记录</p>
+                        <h2 class="card-title mb-0">Member Purchase Records Query</h2>
+                        <p class="text-muted mb-md-0">Query purchase records by member phone number or name</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{% url 'member_list' %}" class="btn btn-outline-secondary">
-                            <i class="bi bi-people me-1"></i> 会员管理
+                            <i class="bi bi-people me-1"></i> Member Management
                         </a>
                     </div>
                 </div>
@@ -32,8 +32,8 @@
                         <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                                <input type="text" name="search" class="form-control" value="{{ search_term }}" placeholder="输入会员手机号或姓名..." required>
-                                <button type="submit" class="btn btn-primary">查询</button>
+                                <input type="text" name="search" class="form-control" value="{{ search_term }}" placeholder="Enter member phone number or name..." required>
+                                <button type="submit" class="btn btn-primary">Query</button>
                             </div>
                         </div>
                     </div>
@@ -48,25 +48,25 @@
                                 </div>
                                 <div>
                                     <h5 class="mb-1">{{ member.name }}</h5>
-                                    <p class="mb-0">手机号: {{ member.phone }} | 会员等级: {{ member.level.name }} | 消费次数: {{ member.purchase_count }} | 累计消费: ¥{{ member.total_spend }}</p>
+                                    <p class="mb-0">Phone: {{ member.phone }} | Member Level: {{ member.level.name }} | Purchase Count: {{ member.purchase_count }} | Total Spend: ¥{{ member.total_spend }}</p>
                                 </div>
                             </div>
                         </div>
                         
                         {% if sales %}
-                            <h5 class="mb-3">消费记录 (共{{ sales|length }}条)</h5>
+                            <h5 class="mb-3">Purchase Records (Total: {{ sales|length }})</h5>
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>订单编号</th>
-                                            <th>消费日期</th>
-                                            <th>消费金额</th>
-                                            <th>折扣金额</th>
-                                            <th>实付金额</th>
-                                            <th>获得积分</th>
-                                            <th>销售员</th>
-                                            <th>备注</th>
+                                            <th>Order Number</th>
+                                            <th>Purchase Date</th>
+                                            <th>Purchase Amount</th>
+                                            <th>Discount Amount</th>
+                                            <th>Amount Paid</th>
+                                            <th>Points Earned</th>
+                                            <th>Salesperson</th>
+                                            <th>Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -89,12 +89,12 @@
                             </div>
                         {% else %}
                             <div class="alert alert-warning">
-                                <i class="bi bi-exclamation-triangle me-2"></i> 该会员暂无消费记录
+                                <i class="bi bi-exclamation-triangle me-2"></i> This member has no purchase records yet
                             </div>
                         {% endif %}
                     {% else %}
                         <div class="alert alert-danger">
-                            <i class="bi bi-x-circle me-2"></i> 未找到手机号或姓名为 "{{ search_term }}" 的会员
+                            <i class="bi bi-x-circle me-2"></i> No member found with phone number or name "{{ search_term }}"
                         </div>
                     {% endif %}
                 {% endif %}

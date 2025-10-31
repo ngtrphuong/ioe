@@ -1,39 +1,39 @@
 {% extends 'inventory/base.html' %}
 {% load static %}
 
-{% block title %}用户详情 - {{ user.username }}{% endblock %}
+{% block title %}User Details - {{ user.username }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <!-- 面包屑导航 -->
+    <!-- Breadcrumb navigation -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-white py-2">
-            <li class="breadcrumb-item"><a href="{% url 'index' %}">主页</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'system_settings' %}">系统设置</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'user_list' %}">用户管理</a></li>
-            <li class="breadcrumb-item active" aria-current="page">用户详情</li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'system_settings' %}">System Settings</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user_list' %}">User Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">User Details</li>
         </ol>
     </nav>
     
-    <!-- 页面标题 -->
+    <!-- Page Title -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">用户详情 - {{ user.username }}</h1>
+        <h1 class="h3 mb-0">User Details - {{ user.username }}</h1>
         <div>
             <a href="{% url 'user_update' user.id %}" class="btn btn-primary">
-                <i class="fas fa-edit me-1"></i> 编辑用户
+                <i class="fas fa-edit me-1"></i> Edit User
             </a>
             <a href="{% url 'user_list' %}" class="btn btn-outline-secondary ms-2">
-                <i class="fas fa-arrow-left me-1"></i> 返回列表
+                <i class="fas fa-arrow-left me-1"></i> Back to List
             </a>
         </div>
     </div>
     
     <div class="row">
-        <!-- 用户基本信息 -->
+        <!-- User Basic Information -->
         <div class="col-lg-4">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">基本信息</h5>
+                    <h5 class="card-title mb-0">Basic Information</h5>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
@@ -41,42 +41,42 @@
                             <i class="fas fa-user-circle text-primary" style="font-size: 80px;"></i>
                         </div>
                         <h4 class="mb-0">{{ user.get_full_name|default:user.username }}</h4>
-                        <p class="text-muted">{{ user.email|default:"未设置邮箱" }}</p>
+                        <p class="text-muted">{{ user.email|default:"Email not set" }}</p>
                         
                         <span class="badge {% if user.is_active %}bg-success{% else %}bg-danger{% endif %} me-1">
-                            {{ user.is_active|yesno:"活跃,禁用" }}
+                            {{ user.is_active|yesno:"Active,Inactive" }}
                         </span>
                         {% if user.is_staff %}
-                        <span class="badge bg-secondary me-1">后台访问</span>
+                        <span class="badge bg-secondary me-1">Admin Access</span>
                         {% endif %}
                         {% if user.is_superuser %}
-                        <span class="badge bg-warning text-dark">超级管理员</span>
+                        <span class="badge bg-warning text-dark">Superuser</span>
                         {% endif %}
                     </div>
                     
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            用户ID
+                            User ID
                             <span class="text-muted">{{ user.id }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            用户名
+                            Username
                             <span>{{ user.username }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            姓名
+                            Name
                             <span>{{ user.get_full_name|default:"-" }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            电子邮箱
+                            Email
                             <span>{{ user.email|default:"-" }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            最后登录
-                            <span>{{ user.last_login|date:"Y-m-d H:i"|default:"从未登录" }}</span>
+                            Last Login
+                            <span>{{ user.last_login|date:"Y-m-d H:i"|default:"Never logged in" }}</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            注册时间
+                            Registration Date
                             <span>{{ user.date_joined|date:"Y-m-d H:i"|default:"-" }}</span>
                         </li>
                     </ul>
@@ -84,18 +84,18 @@
                 {% if user.id != request.user.id %}
                 <div class="card-footer">
                     <a href="{% url 'user_delete' user.id %}" class="btn btn-danger w-100">
-                        <i class="fas fa-trash me-1"></i> 删除此用户
+                        <i class="fas fa-trash me-1"></i> Delete This User
                     </a>
                 </div>
                 {% endif %}
             </div>
         </div>
         
-        <!-- 用户角色和权限 -->
+        <!-- User Roles and Permissions -->
         <div class="col-lg-4">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">用户角色</h5>
+                    <h5 class="card-title mb-0">User Roles</h5>
                 </div>
                 <div class="card-body">
                     {% if user.groups.exists %}
@@ -104,20 +104,20 @@
                         <div class="card mb-3 border-0 bg-light">
                             <div class="card-body">
                                 <h5 class="card-title d-flex align-items-center">
-                                    <i class="fas {% if group.name == '销售员' %}fa-user-tag{% elif group.name == '仓库管理员' %}fa-warehouse{% elif group.name == '财务人员' %}fa-file-invoice-dollar{% elif group.name == '管理员' %}fa-user-shield{% else %}fa-users{% endif %} me-2"></i>
+                                    <i class="fas {% if group.name == 'Salesperson' %}fa-user-tag{% elif group.name == 'Warehouse Manager' %}fa-warehouse{% elif group.name == 'Financial Staff' %}fa-file-invoice-dollar{% elif group.name == 'Administrator' %}fa-user-shield{% else %}fa-users{% endif %} me-2"></i>
                                     {{ group.name }}
                                 </h5>
                                 <p class="card-text text-muted small">
-                                    {% if group.name == '销售员' %}
-                                    负责销售和会员管理，可以创建销售记录和管理会员信息。
-                                    {% elif group.name == '仓库管理员' %}
-                                    负责库存和产品管理，可以添加商品和调整库存。
-                                    {% elif group.name == '财务人员' %}
-                                    负责财务数据查看和报表分析，可以查看销售和库存数据。
-                                    {% elif group.name == '管理员' %}
-                                    拥有系统大部分功能的管理权限，可以管理用户和系统设置。
+                                    {% if group.name == 'Salesperson' %}
+                                    Responsible for sales and member management, can create sales records and manage member information.
+                                    {% elif group.name == 'Warehouse Manager' %}
+                                    Responsible for inventory and product management, can add products and adjust inventory.
+                                    {% elif group.name == 'Financial Staff' %}
+                                    Responsible for viewing financial data and report analysis, can view sales and inventory data.
+                                    {% elif group.name == 'Administrator' %}
+                                    Has administrative permissions for most system functions, can manage users and system settings.
                                     {% else %}
-                                    拥有该用户组设定的权限。
+                                    Has the permissions set for this user group.
                                     {% endif %}
                                 </p>
                             </div>
@@ -126,24 +126,24 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info mb-4">
-                        <i class="fas fa-info-circle me-2"></i> 该用户未分配任何角色
+                        <i class="fas fa-info-circle me-2"></i> This user has no roles assigned
                     </div>
                     {% endif %}
                     
                     <div class="d-grid gap-2">
                         <a href="{% url 'user_update' user.id %}" class="btn btn-outline-primary">
-                            <i class="fas fa-user-cog me-1"></i> 管理用户角色和权限
+                            <i class="fas fa-user-cog me-1"></i> Manage User Roles and Permissions
                         </a>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- 最近操作记录 -->
+        <!-- Recent Operation Records -->
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">最近操作记录</h5>
+                    <h5 class="card-title mb-0">Recent Operation Records</h5>
                 </div>
                 <div class="card-body">
                     {% if logs %}
@@ -172,7 +172,7 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info mb-0">
-                        <i class="fas fa-info-circle me-2"></i> 没有找到操作记录
+                        <i class="fas fa-info-circle me-2"></i> No operation records found
                     </div>
                     {% endif %}
                 </div>

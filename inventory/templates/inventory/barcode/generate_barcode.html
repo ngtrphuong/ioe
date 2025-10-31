@@ -1,13 +1,13 @@
 {% extends "inventory/base.html" %}
 {% load static %}
 
-{% block title %}生成商品条码{% endblock %}
+{% block title %}Generate Product Barcode{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">生成商品条码</h5>
+            <h5 class="mb-0">Generate Product Barcode</h5>
         </div>
         <div class="card-body">
             <form method="post" id="barcode-form">
@@ -17,13 +17,13 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">选择商品</h6>
+                                <h6 class="mb-0">Select Product</h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="category-filter" class="form-label">按分类筛选</label>
+                                    <label for="category-filter" class="form-label">Filter by Category</label>
                                     <select class="form-select" id="category-filter">
-                                        <option value="">所有分类</option>
+                                        <option value="">All Categories</option>
                                         {% for category in categories %}
                                             <option value="{{ category.id }}">{{ category.name }}</option>
                                         {% endfor %}
@@ -31,12 +31,12 @@
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="product_id" class="form-label">选择商品 <span class="text-danger">*</span></label>
+                                    <label for="product_id" class="form-label">Select Product <span class="text-danger">*</span></label>
                                     <select class="form-select" id="product_id" name="product_id" required>
-                                        <option value="">-- 请选择商品 --</option>
+                                        <option value="">-- Please Select Product --</option>
                                         {% for product in products %}
                                             <option value="{{ product.id }}" {% if product.id == product.id %}selected{% endif %}>
-                                                {{ product.name }} ({{ product.barcode|default:"无条码" }})
+                                                {{ product.name }} ({{ product.barcode|default:"No Barcode" }})
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -48,23 +48,23 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">条码设置</h6>
+                                <h6 class="mb-0">Barcode Settings</h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="quantity" class="form-label">打印数量</label>
+                                    <label for="quantity" class="form-label">Print Quantity</label>
                                     <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="100">
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="price_type" class="form-label">价格类型</label>
+                                    <label for="price_type" class="form-label">Price Type</label>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="price_type" id="retail_price" value="retail" checked>
-                                        <label class="form-check-label" for="retail_price">零售价</label>
+                                        <label class="form-check-label" for="retail_price">Retail Price</label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="price_type" id="wholesale_price" value="wholesale">
-                                        <label class="form-check-label" for="wholesale_price">批发价</label>
+                                        <label class="form-check-label" for="wholesale_price">Wholesale Price</label>
                                     </div>
                                 </div>
                             </div>
@@ -74,10 +74,10 @@
                 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-barcode"></i> 生成条码
+                        <i class="fas fa-barcode"></i> Generate Barcode
                     </button>
                     <a href="{% url 'bulk_barcode_generation' %}" class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-th"></i> 批量生成
+                        <i class="fas fa-th"></i> Bulk Generate
                     </a>
                 </div>
             </form>
@@ -86,16 +86,16 @@
             <div class="mt-4">
                 <div class="card">
                     <div class="card-header bg-light">
-                        <h6 class="mb-0">商品信息</h6>
+                        <h6 class="mb-0">Product Information</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>商品名称:</strong> {{ product.name }}</p>
-                                <p><strong>条码:</strong> {{ product.barcode|default:"未设置" }}</p>
-                                <p><strong>分类:</strong> {{ product.category.name|default:"未分类" }}</p>
-                                <p><strong>零售价:</strong> ¥{{ product.retail_price }}</p>
-                                <p><strong>批发价:</strong> ¥{{ product.wholesale_price }}</p>
+                                <p><strong>Product Name:</strong> {{ product.name }}</p>
+                                <p><strong>Barcode:</strong> {{ product.barcode|default:"Not Set" }}</p>
+                                <p><strong>Category:</strong> {{ product.category.name|default:"Uncategorized" }}</p>
+                                <p><strong>Retail Price:</strong> ¥{{ product.retail_price }}</p>
+                                <p><strong>Wholesale Price:</strong> ¥{{ product.wholesale_price }}</p>
                             </div>
                             <div class="col-md-6">
                                 {% if product.image %}
@@ -103,7 +103,7 @@
                                 {% else %}
                                 <div class="text-center p-4 bg-light">
                                     <i class="fas fa-image fa-3x text-muted"></i>
-                                    <p class="mt-2 text-muted">无商品图片</p>
+                                    <p class="mt-2 text-muted">No Product Image</p>
                                 </div>
                                 {% endif %}
                             </div>
@@ -120,34 +120,34 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        // 增强商品选择器
+        // Enhance product selector
         $('#product_id').select2({
-            placeholder: '请选择商品',
+            placeholder: 'Please select product',
             allowClear: true
         });
         
-        // 分类筛选
+        // Filter by category
         $('#category-filter').change(function() {
             let categoryId = $(this).val();
             let $productSelect = $('#product_id');
             
             if (categoryId) {
-                // 只显示选定分类的商品
+                // Only show products from selected category
                 $productSelect.find('option').hide();
                 $productSelect.find('option[value=""]').show();
                 $productSelect.find('option[data-category="' + categoryId + '"]').show();
                 
-                // 如果当前选择的选项不可见，则清除选择
+                // Clear selection if currently selected option is hidden
                 if ($productSelect.find('option:selected').is(':hidden')) {
                     $productSelect.val('').trigger('change');
                 }
             } else {
-                // 显示所有商品
+                // Show all products
                 $productSelect.find('option').show();
             }
         });
         
-        // 为每个商品选项添加分类数据属性
+        // Add category data attribute to each product option
         {% for product in products %}
             {% if product.category %}
                 $('#product_id option[value="{{ product.id }}"]').attr('data-category', '{{ product.category.id }}');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>商品管理 - 库存管理系统</title>
+    <title>Product Management - Inventory Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
@@ -36,7 +36,7 @@
             flex-direction: column;
         }
         
-        /* 导航栏样式优化 */
+        /* Navigation bar style optimization */
         .navbar {
             box-shadow: var(--box-shadow);
             background-color: var(--primary-color) !important;
@@ -64,7 +64,7 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* 卡片样式优化 */
+        /* Card style optimization */
         .card {
             border: none;
             border-radius: var(--border-radius);
@@ -90,7 +90,7 @@
             padding: 1.25rem;
         }
         
-        /* 按钮样式优化 */
+        /* Button style optimization */
         .btn {
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
@@ -120,7 +120,7 @@
             box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
         }
         
-        /* 表单样式优化 */
+        /* Form style optimization */
         .form-control, .form-select {
             border-radius: 0.5rem;
             padding: 0.5rem 0.75rem;
@@ -138,7 +138,7 @@
             margin-bottom: 0.5rem;
         }
         
-        /* 表格样式优化 */
+        /* Table style optimization */
         .table-container {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -164,7 +164,7 @@
             vertical-align: middle;
         }
         
-        /* 警告框样式优化 */
+        /* Alert box style optimization */
         .alert {
             border-radius: var(--border-radius);
             border: none;
@@ -172,20 +172,20 @@
             margin-bottom: 1.5rem;
         }
         
-        /* 徽章样式优化 */
+        /* Badge style optimization */
         .badge {
             font-weight: 500;
             padding: 0.35em 0.65em;
             border-radius: 0.5rem;
         }
         
-        /* 主内容区域 */
+        /* Main content area */
         .main-content {
             flex: 1;
             padding: 1.5rem 0;
         }
         
-        /* 内容容器优化 */
+        /* Content container optimization */
         .container {
             padding-left: 1rem;
             padding-right: 1rem;
@@ -193,9 +193,9 @@
             width: 100%;
         }
         
-        /* 响应式调整 */
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            /* 基础元素调整 */
+            /* Basic element adjustments */
             body {
                 padding-top: 0;
                 font-size: var(--mobile-font-size);
@@ -212,18 +212,18 @@
                 padding: 1rem 0;
             }
             
-            /* 导航栏优化 */
+            /* Navigation bar optimization */
             .navbar-brand {
                 font-size: 1.2rem;
             }
             
-            /* 卡片优化 */
+            /* Card optimization */
             .card {
                 margin-bottom: 1rem;
                 border-radius: calc(var(--border-radius) * 0.75);
             }
             
-            /* 表格响应式优化 */
+            /* Table responsive optimization */
             .table-responsive {
                 border-radius: var(--border-radius);
                 overflow-x: auto;
@@ -232,7 +232,7 @@
                 margin-bottom: 0.5rem;
             }
             
-            /* 改善表格在移动设备上的显示 */
+            /* Improve table display on mobile devices */
             .table th, .table td {
                 white-space: nowrap;
                 padding: 0.5rem 0.75rem;
@@ -244,12 +244,12 @@
                 position: relative;
             }
             
-            /* 增强表格单元格触摸反馈 */
+            /* Enhance table cell touch feedback */
             .table td:active {
                 background-color: rgba(52, 152, 219, 0.1);
             }
             
-            /* 优化表格内容显示 */
+            /* Optimize table content display */
             .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
@@ -257,13 +257,13 @@
                 margin-bottom: 1rem;
             }
             
-            /* 改善表单在移动设备上的布局 */
+            /* Improve form layout on mobile devices */
             .input-group {
                 flex-wrap: nowrap;
                 width: 100%;
             }
             
-            /* 确保下拉菜单不会溢出屏幕 */
+            /* Ensure dropdown menus do not overflow the screen */
             .dropdown-menu {
                 position: absolute;
                 left: auto;
@@ -295,7 +295,7 @@
                 transition: background-color 0.15s ease-in-out;
             }
             
-            /* 优化按钮组在移动设备上的显示 */
+            /* Optimize button group display on mobile devices */
             .btn-group {
                 display: flex;
                 flex-wrap: wrap;
@@ -304,7 +304,7 @@
                 justify-content: center;
             }
             
-            /* 确保表单元素在小屏幕上正确显示 */
+            /* Ensure form elements display correctly on small screens */
             .form-control, .form-select {
                 width: 100%;
                 max-width: 100%;
@@ -312,7 +312,7 @@
                 height: auto;
             }
             
-            /* 优化导航栏在移动设备上的显示 */
+            /* Optimize navigation bar display on mobile devices */
             .navbar-collapse {
                 max-height: 80vh;
                 overflow-y: auto;
@@ -329,19 +329,19 @@
                 border-radius: var(--border-radius);
             }
             
-            /* 优化表单布局 */
+            /* Optimize form layout */
             .row > [class*="col-"] {
                 margin-bottom: 0.75rem;
             }
             
-            /* 优化按钮在移动设备上的显示 */
+            /* Optimize button display on mobile devices */
             .d-flex.flex-wrap.gap-2 {
                 justify-content: center;
                 margin-top: 0.5rem;
                 width: 100%;
             }
             
-            /* 优化表单提交按钮区域 */
+            /* Optimize form submit button area */
             .form-actions {
                 display: flex;
                 flex-wrap: wrap;
@@ -351,12 +351,12 @@
                 width: 100%;
             }
             
-            /* 确保搜索框和筛选器在移动设备上正确显示 */
+            /* Ensure search box and filters display correctly on mobile devices */
             .d-flex.flex-column.flex-md-row {
                 gap: 0.5rem;
             }
             
-            /* 优化移动端表格内容显示 */
+            /* Optimize mobile table content display */
             .table-container {
                 padding: 0;
                 margin-bottom: 1rem;
@@ -367,18 +367,18 @@
                 box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.05);
             }
             
-            /* 优化移动端按钮大小 */
+            /* Optimize mobile button size */
             .btn {
                 padding: 0.4rem 0.75rem;
                 font-size: var(--mobile-font-size);
             }
             
-            /* 优化移动端卡片内容 */
+            /* Optimize mobile card content */
             .card-body {
                 padding: var(--mobile-padding);
             }
             
-            /* 确保表单在移动端正确对齐 */
+            /* Ensure form is correctly aligned on mobile */
             .form-label {
                 font-size: var(--mobile-font-size);
                 margin-bottom: 0.25rem;
@@ -386,7 +386,7 @@
                 width: 100%;
             }
             
-            /* 优化移动端表单布局 */
+            /* Optimize mobile form layout */
             .row {
                 margin-left: -0.25rem;
                 margin-right: -0.25rem;
@@ -397,7 +397,7 @@
                 padding-right: 0.25rem;
             }
             
-            /* 优化移动端搜索和筛选区域 */
+            /* Optimize mobile search and filter area */
             .d-flex.flex-wrap {
                 flex-direction: column;
                 align-items: stretch;
@@ -405,7 +405,7 @@
                 gap: 0.5rem;
             }
             
-            /* 确保下拉选择框在移动端正确显示 */
+            /* Ensure dropdown select box displays correctly on mobile */
             select.form-select[style="width: auto;"] {
                 width: 100% !important;
                 margin-bottom: 0.5rem;
@@ -413,14 +413,14 @@
                 appearance: auto;
             }
             
-            /* 优化移动端表单组 */
+            /* Optimize mobile form group */
             .form-group {
                 margin-bottom: 0.75rem;
                 width: 100%;
                 position: relative;
             }
             
-            /* 优化表单验证反馈 */
+            /* Optimize form validation feedback */
             .invalid-feedback {
                 display: block;
                 font-size: 0.8rem;
@@ -428,7 +428,7 @@
                 margin-top: 0.25rem;
             }
             
-            /* 增强表单控件触摸区域 */
+            /* Enhance form control touch area */
             .form-control, .form-select, .btn {
                 min-height: 44px;
                 touch-action: manipulation;
@@ -437,12 +437,12 @@
                 transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, transform 0.1s ease;
             }
             
-            /* 增强表单控件触摸反馈 */
+            /* Enhance form control touch feedback */
             .form-control:focus, .form-select:focus {
                 transform: translateY(-1px);
             }
             
-            /* 优化表单验证状态显示 */
+            /* Optimize form validation state display */
             .was-validated .form-control:invalid,
             .form-control.is-invalid {
                 border-color: var(--accent-color);
@@ -453,20 +453,20 @@
                 background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
             }
             
-            /* 优化移动端搜索框 */
+            /* Optimize mobile search box */
             .input-group.mb-3 {
                 width: 100%;
                 margin-bottom: 0.5rem !important;
             }
             
-            /* 增强搜索框交互体验 */
+            /* Enhance search box interaction experience */
             .input-group .form-control:focus + .input-group-text,
             .input-group .form-control:focus ~ .btn {
                 border-color: var(--secondary-color);
                 background-color: rgba(52, 152, 219, 0.1);
             }
             
-            /* 优化筛选按钮组交互 */
+            /* Optimize filter button group interaction */
             .btn-group .btn {
                 position: relative;
                 overflow: hidden;
@@ -493,7 +493,7 @@
                 transition: transform 0s, opacity 0.3s;
             }
             
-            /* 优化移动端分页 */
+            /* Optimize mobile pagination */
             .pagination {
                 flex-wrap: wrap;
                 justify-content: center;
@@ -505,7 +505,7 @@
                 font-size: var(--mobile-font-size);
             }
             
-            /* 优化移动端警告框 */
+            /* Optimize mobile alert box */
             .alert {
                 padding: 0.75rem 1rem;
                 margin-bottom: 1rem;
@@ -513,7 +513,7 @@
             }
         }
         
-        /* 列表组样式优化 */
+        /* List group style optimization */
         .list-group-item {
             border: none;
             padding: 0.75rem 1.25rem;
@@ -524,14 +524,14 @@
             background-color: rgba(0, 0, 0, 0.03);
         }
         
-        /* 触摸反馈效果 */
+        /* Touch feedback effect */
         .active-touch {
             background-color: rgba(0, 0, 0, 0.05) !important;
             transform: scale(0.98);
             transition: all 0.1s ease-in-out;
         }
         
-        /* 表单验证增强 */
+        /* Form validation enhancement */
         .was-validated .form-control:invalid:focus,
         .was-validated .form-select:invalid:focus {
             box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
@@ -542,7 +542,7 @@
             box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
         }
         
-        /* 改进移动端导航栏交互 */
+        /* Improve mobile navigation bar interaction */
         @media (max-width: 768px) {
             .navbar-collapse {
                 max-height: 0;
@@ -554,13 +554,13 @@
                 max-height: 80vh;
             }
             
-            /* 增强移动端表单元素可访问性 */
+            /* Enhance mobile form element accessibility */
             .form-label {
                 font-size: 1rem;
                 margin-bottom: 0.5rem;
             }
             
-            /* 改进移动端按钮触摸区域 */
+            /* Improve mobile button touch area */
             .btn, .nav-link, .dropdown-item {
                 min-height: 44px;
                 display: flex;
@@ -573,7 +573,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <i class="bi bi-box-seam me-2"></i>库存管理系统
+                <i class="bi bi-box-seam me-2"></i>Inventory Management System
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -582,41 +582,41 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link " href="/products/">
-                            <i class="bi bi-box me-1"></i>商品管理
+                            <i class="bi bi-box me-1"></i>Product Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/categories/">
-                            <i class="bi bi-tag"></i> 分类管理
+                            <i class="bi bi-tag"></i> Category Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/inventory/">
-                            <i class="bi bi-clipboard-data me-1"></i>库存管理
+                            <i class="bi bi-clipboard-data me-1"></i>Inventory Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/inventory-checks/">
-                            <i class="bi bi-clipboard-check"></i> 库存盘点
+                            <i class="bi bi-clipboard-check"></i> Inventory Check
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/sales/">
-                            <i class="bi bi-cart me-1"></i>销售管理
+                            <i class="bi bi-cart me-1"></i>Sales Management
                         </a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-people me-1"></i>会员管理
+                            <i class="bi bi-people me-1"></i>Member Management
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/members/"><i class="bi bi-person-vcard me-2"></i>会员列表</a></li>
-                            <li><a class="dropdown-item" href="/member-levels/"><i class="bi bi-list-stars me-2"></i>会员等级</a></li>
+                            <li><a class="dropdown-item" href="/members/"><i class="bi bi-person-vcard me-2"></i>Member List</a></li>
+                            <li><a class="dropdown-item" href="/member-levels/"><i class="bi bi-list-stars me-2"></i>Member Levels</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/reports/">
-                            <i class="bi bi-graph-up"></i> 报表中心
+                            <i class="bi bi-graph-up"></i> Reports Center
                         </a>
                     </li>
                 </ul>
@@ -627,14 +627,14 @@
                             admin
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>设置</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <!-- 使用表单代替链接 -->
+                                <!-- Use form instead of link -->
                                 <form action="{% url 'logout' %}" method="post" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="dropdown-item" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
-                                        <i class="bi bi-box-arrow-right me-2"></i>退出登录
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
                                     </button>
                                 </form>
                             </li>
@@ -651,7 +651,7 @@
                 
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle me-2"></i>
-                    商品 测试商品-3587 创建成功
+                    Product Test Product-3587 created successfully
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 
@@ -664,15 +664,15 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <h2 class="card-title mb-0">商品列表</h2>
-                        <p class="text-muted mb-md-0">管理所有商品信息</p>
+                        <h2 class="card-title mb-0">Product List</h2>
+                        <p class="text-muted mb-md-0">Manage all product information</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="/products/barcode/" class="btn btn-success">
-                            <i class="bi bi-upc-scan me-1"></i> 扫码添加商品
+                            <i class="bi bi-upc-scan me-1"></i> Scan to Add Product
                         </a>
                         <a href="/products/create/" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> 手动添加商品
+                            <i class="bi bi-plus-circle me-1"></i> Manual Add Product
                         </a>
                     </div>
                 </div>
@@ -689,33 +689,33 @@
                     <div class="col-md-6">
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                            <input type="text" class="form-control" id="searchInput" placeholder="搜索商品名称或条码...">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search product name or barcode...">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="d-flex justify-content-md-end">
                             <div class="btn-group" id="categoryFilter">
-                                <button type="button" class="btn btn-outline-primary active" data-category="">全部</button>
+                                <button type="button" class="btn btn-outline-primary active" data-category="">All</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="30">家居家装</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="30">Home & Furniture</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="25">家用电器</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="25">Home Appliances</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="23">手机数码</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="23">Mobile & Digital</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="27">服装鞋帽</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="27">Clothing & Shoes</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="29">母婴用品</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="29">Baby & Mother</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="31">玩具乐器</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="31">Toys & Musical Instruments</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="24">电脑办公</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="24">Computer & Office</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="28">美妆护肤</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="28">Beauty & Skincare</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="32">运动户外</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="32">Sports & Outdoor</button>
                                 
-                                <button type="button" class="btn btn-outline-primary" data-category="26">食品饮料</button>
+                                <button type="button" class="btn btn-outline-primary" data-category="26">Food & Beverages</button>
                                 
                             </div>
                         </div>
@@ -726,13 +726,13 @@
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>商品名称</th>
-                                <th>类别</th>
-                                <th>颜色</th>
-                                <th>尺码</th>
-                                <th>单价</th>
-                                <th class="d-none d-md-table-cell">描述</th>
-                                <th>操作</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Unit Price</th>
+                                <th class="d-none d-md-table-cell">Description</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -754,28 +754,28 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">红色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Red</span>
                                     
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-dark d-inline-block mb-1">均码</span>
+                                    <span class="badge bg-dark d-inline-block mb-1">One Size</span>
                                     
                                 </td>
                                 <td>
                                     <span class="fw-bold">¥275.47</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">OPPO Lite 6的详细描述</td>
+                                <td class="d-none d-md-table-cell">OPPO Lite 6Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/304/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/304/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -799,11 +799,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">白色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">White</span>
                                     
                                 </td>
                                 <td>
@@ -814,13 +814,13 @@
                                 <td>
                                     <span class="fw-bold">¥307.39</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">OPPO Max 19的详细描述</td>
+                                <td class="d-none d-md-table-cell">OPPO Max 19Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/124/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/124/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -844,28 +844,28 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">绿色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Green</span>
                                     
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-dark d-inline-block mb-1">均码</span>
+                                    <span class="badge bg-dark d-inline-block mb-1">One Size</span>
                                     
                                 </td>
                                 <td>
                                     <span class="fw-bold">¥600.29</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">OPPO Ultra 17的详细描述</td>
+                                <td class="d-none d-md-table-cell">OPPO Ultra 17Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/205/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/205/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -889,11 +889,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">红色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Red</span>
                                     
                                 </td>
                                 <td>
@@ -904,13 +904,13 @@
                                 <td>
                                     <span class="fw-bold">¥1031.32</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">OPPO Ultra 9的详细描述</td>
+                                <td class="d-none d-md-table-cell">OPPO Ultra 9Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/290/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/290/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -934,28 +934,28 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">紫色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Purple</span>
                                     
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-dark d-inline-block mb-1">均码</span>
+                                    <span class="badge bg-dark d-inline-block mb-1">One Size</span>
                                     
                                 </td>
                                 <td>
                                     <span class="fw-bold">¥1797.54</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">vivo Lite 6的详细描述</td>
+                                <td class="d-none d-md-table-cell">vivo Lite 6Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/240/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/240/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -979,11 +979,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">服装鞋帽</span>
+                                    <span class="badge bg-info text-dark">Clothing & Shoes</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">绿色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Green</span>
                                     
                                 </td>
                                 <td>
@@ -994,13 +994,13 @@
                                 <td>
                                     <span class="fw-bold">¥226.57</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">休闲 T恤的详细描述</td>
+                                <td class="d-none d-md-table-cell">休闲 T恤Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/213/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/213/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1024,11 +1024,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">服装鞋帽</span>
+                                    <span class="badge bg-info text-dark">Clothing & Shoes</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">紫色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Purple</span>
                                     
                                 </td>
                                 <td>
@@ -1039,13 +1039,13 @@
                                 <td>
                                     <span class="fw-bold">¥1253.31</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">休闲 T恤的详细描述</td>
+                                <td class="d-none d-md-table-cell">休闲 T恤Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/316/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/316/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1069,11 +1069,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">服装鞋帽</span>
+                                    <span class="badge bg-info text-dark">Clothing & Shoes</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">紫色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Purple</span>
                                     
                                 </td>
                                 <td>
@@ -1084,13 +1084,13 @@
                                 <td>
                                     <span class="fw-bold">¥185.37</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">休闲 外套的详细描述</td>
+                                <td class="d-none d-md-table-cell">休闲 外套Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/126/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/126/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1114,11 +1114,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">服装鞋帽</span>
+                                    <span class="badge bg-info text-dark">Clothing & Shoes</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">紫色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Purple</span>
                                     
                                 </td>
                                 <td>
@@ -1129,13 +1129,13 @@
                                 <td>
                                     <span class="fw-bold">¥1423.75</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">休闲 衬衫的详细描述</td>
+                                <td class="d-none d-md-table-cell">休闲 衬衫Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/135/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/135/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1159,11 +1159,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">服装鞋帽</span>
+                                    <span class="badge bg-info text-dark">Clothing & Shoes</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">黑色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Black</span>
                                     
                                 </td>
                                 <td>
@@ -1174,13 +1174,13 @@
                                 <td>
                                     <span class="fw-bold">¥1465.10</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">休闲 衬衫的详细描述</td>
+                                <td class="d-none d-md-table-cell">休闲 衬衫Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/231/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/231/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1204,11 +1204,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">绿色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Green</span>
                                     
                                 </td>
                                 <td>
@@ -1219,13 +1219,13 @@
                                 <td>
                                     <span class="fw-bold">¥995.87</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">华为 Lite 19的详细描述</td>
+                                <td class="d-none d-md-table-cell">华为 Lite 19Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/223/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/223/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1249,11 +1249,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">绿色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Green</span>
                                     
                                 </td>
                                 <td>
@@ -1264,13 +1264,13 @@
                                 <td>
                                     <span class="fw-bold">¥1788.58</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">华为 Max 11的详细描述</td>
+                                <td class="d-none d-md-table-cell">华为 Max 11Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/131/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/131/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1294,11 +1294,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">黄色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Yellow</span>
                                     
                                 </td>
                                 <td>
@@ -1309,13 +1309,13 @@
                                 <td>
                                     <span class="fw-bold">¥1853.63</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">华为 Max 5的详细描述</td>
+                                <td class="d-none d-md-table-cell">华为 Max 5Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/202/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/202/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1339,11 +1339,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">灰色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Gray</span>
                                     
                                 </td>
                                 <td>
@@ -1354,13 +1354,13 @@
                                 <td>
                                     <span class="fw-bold">¥1816.49</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">华为 Ultra 17的详细描述</td>
+                                <td class="d-none d-md-table-cell">华为 Ultra 17Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/229/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/229/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1384,11 +1384,11 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info text-dark">手机数码</span>
+                                    <span class="badge bg-info text-dark">Mobile & Digital</span>
                                 </td>
                                 <td>
                                     
-                                    <span class="badge bg-secondary d-inline-block mb-1">灰色</span>
+                                    <span class="badge bg-secondary d-inline-block mb-1">Gray</span>
                                     
                                 </td>
                                 <td>
@@ -1399,13 +1399,13 @@
                                 <td>
                                     <span class="fw-bold">¥918.94</span>
                                 </td>
-                                <td class="d-none d-md-table-cell">华为 Ultra 17的详细描述</td>
+                                <td class="d-none d-md-table-cell">华为 Ultra 17Description</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="/products/263/edit/" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="/products/263/edit/" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -1422,17 +1422,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 搜索功能
+        // Search functionality
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', filterProducts);
         
-        // 分类筛选功能
+        // Category filter functionality
         const categoryButtons = document.querySelectorAll('#categoryFilter button');
         categoryButtons.forEach(button => {
             button.addEventListener('click', function() {
-                // 移除所有按钮的active类
+                // Remove active class from all buttons
                 categoryButtons.forEach(btn => btn.classList.remove('active'));
-                // 给当前点击的按钮添加active类
+                // Add active class to currently clicked button
                 this.classList.add('active');
                 
                 filterProducts();
@@ -1446,20 +1446,20 @@
             const rows = document.querySelectorAll('tbody tr');
             
             rows.forEach(row => {
-                // 忽略空行
+                // Ignore empty rows
                 if (!row.querySelector('td:first-child')) return;
                 
                 const productName = row.querySelector('h6')?.textContent.toLowerCase() || '';
                 const barcode = row.querySelector('small')?.textContent.toLowerCase() || '';
                 const rowCategory = row.dataset.category;
                 
-                // 检查搜索条件
+                // Check search conditions
                 const matchesSearch = productName.includes(searchTerm) || barcode.includes(searchTerm);
                 
-                // 检查分类条件
+                // Check category conditions
                 const matchesCategory = !activeCategory || rowCategory === activeCategory;
                 
-                // 同时满足搜索和分类条件才显示
+                // Display only if both search and category conditions are met
                 if (matchesSearch && matchesCategory) {
                     row.style.display = '';
                 } else {
@@ -1475,7 +1475,7 @@
 
     <footer class="bg-light py-3 mt-auto border-top">
         <div class="container text-center text-muted">
-            <small>&copy; 2025 库存管理系统 | 版本 1.0</small>
+            <small>&copy; 2025 库存管理系统 | Version 1.0</small>
         </div>
     </footer>
 
@@ -1483,9 +1483,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     
     <script>
-    // 页面加载完成后执行增强功能
+    // Execute enhanced functionality after page load
     document.addEventListener('DOMContentLoaded', function() {
-         // 为表单元素添加Bootstrap样式
+         // Add Bootstrap styles to form elements
          document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, select').forEach(function(element) {
              if (!element.classList.contains('form-control') && !element.classList.contains('form-select')) {
                  if (element.tagName === 'SELECT') {
@@ -1496,7 +1496,7 @@
              }
          });
          
-         // 自动隐藏警告消息
+         // Auto-hide alert messages
          setTimeout(function() {
              document.querySelectorAll('.alert').forEach(function(alert) {
                 if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
@@ -1506,11 +1506,11 @@
              });
          }, 5000);
          
-         // 优化移动端导航栏交互
+         // Optimize mobile navigation bar interaction
          const navbarToggler = document.querySelector('.navbar-toggler');
          if (navbarToggler) {
              navbarToggler.addEventListener('click', function() {
-                 // 添加过渡效果
+                 // Add transition effect
                 const navbarCollapse = document.querySelector('.navbar-collapse');
                 if (navbarCollapse) {
                     navbarCollapse.style.transition = 'all 0.3s ease-in-out';
@@ -1518,7 +1518,7 @@
             });
         }
         
-        // 添加表单验证
+        // Add form validation
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
             form.addEventListener('submit', function(event) {

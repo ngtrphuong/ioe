@@ -1,5 +1,5 @@
 """
-CSV文件处理工具函数
+CSV file utility functions
 """
 import csv
 import io
@@ -7,70 +7,70 @@ import io
 
 def validate_csv(csv_file, required_headers=None, expected_headers=None, max_rows=1000):
     """
-    验证CSV文件的格式和内容
+    Validate the CSV file format and content.
     
-    参数:
-    - csv_file: 上传的CSV文件对象
-    - required_headers: 必填的列标题列表
-    - expected_headers: 预期可能存在的列标题列表
-    - max_rows: 最大行数限制
+    Args:
+    - csv_file: Uploaded CSV file object
+    - required_headers: Required column headers
+    - expected_headers: Optional/expected column headers
+    - max_rows: Maximum allowed rows
     
-    返回:
-    - dict: 包含验证结果的字典
+    Returns:
+    - dict: Validation result
     """
     if required_headers is None:
         required_headers = []
     if expected_headers is None:
         expected_headers = []
     
-    # 重置文件指针
+    # Reset file pointer
     csv_file.seek(0)
     
-    # 读取CSV文件
+    # Read CSV file
     try:
-        csv_data = csv_file.read().decode('utf-8-sig')  # 处理带BOM的UTF-8文件
+        csv_data = csv_file.read().decode('utf-8-sig')  # Handle UTF-8 with BOM
     except UnicodeDecodeError:
         try:
-            # 尝试其他编码
+            # Try alternative encodings
             csv_file.seek(0)
-            csv_data = csv_file.read().decode('gb18030')  # 中文Windows常用编码
+            csv_data = csv_file.read().decode('gb18030')  # Common on Chinese Windows
         except UnicodeDecodeError:
             return {
                 'valid': False,
-                'errors': '无法解析CSV文件编码，请使用UTF-8或GB18030编码保存'
+                'errors': 'Unable to parse CSV encoding. Please save as UTF-8 or GB18030.'
             }
     
-    # 创建CSV读取器
+    # Create CSV reader
     csv_reader = csv.reader(io.StringIO(csv_data))
     
-    # 读取标题行
+    # Read header row
     try:
         headers = next(csv_reader)
     except StopIteration:
         return {
             'valid': False,
-            'errors': 'CSV文件为空或格式错误'
+            'errors': 'CSV file is empty or invalid format'
         }
     
-    # 验证必填的标题
+    # Validate required headers
     missing_headers = [header for header in required_headers if header not in headers]
     if missing_headers:
         return {
             'valid': False,
-            'errors': f'缺少必填列: {", ".join(missing_headers)}'
+            'errors': f'Missing required columns: {", ".join(missing_headers)}'
         }
     
-    # 验证行数
-    row_count = 1  # 已经读取了标题行
+    # Validate row count
+    row_count = 1  # Already read header row
     for _ in csv_reader:
         row_count += 1
         if row_count > max_rows:
             return {
                 'valid': False,
-                'errors': f'CSV文件行数超过限制 ({max_rows}行)'
+                'errors': f'CSV file row count exceeds limit ({max_rows} rows)'
             }
     
-    # 重置文件指针供后续使用
+    # Reset file pointer for subsequent uses
     csv_file.seek(0)
     
     return {
@@ -82,71 +82,71 @@ def validate_csv(csv_file, required_headers=None, expected_headers=None, max_row
 
 def validate_csv_data(csv_file, validators=None, required_headers=None):
     """
-    验证CSV文件中的数据是否符合要求
+    Validate CSV data rows according to provided rules.
     
-    参数:
-    - csv_file: 上传的CSV文件对象
-    - validators: 字段验证函数的字典，键为字段名，值为验证函数
-    - required_headers: 必填的列标题列表
+    Args:
+    - csv_file: Uploaded CSV file object
+    - validators: Dict of field -> validator callables
+    - required_headers: Required column headers
     
-    返回:
-    - dict: 包含验证结果的字典
+    Returns:
+    - dict: Validation result
     """
     if validators is None:
         validators = {}
     if required_headers is None:
         required_headers = []
     
-    # 首先验证CSV基本格式
+    # First validate basic CSV structure
     basic_validation = validate_csv(csv_file, required_headers=required_headers)
     if not basic_validation['valid']:
         return basic_validation
     
-    # 重置文件指针
+    # Reset file pointer
     csv_file.seek(0)
     
-    # 读取CSV内容
+    # Read CSV content
     csv_data = csv_file.read().decode('utf-8-sig')
     csv_reader = csv.DictReader(io.StringIO(csv_data))
     
     errors = []
-    row_num = 2  # 从2开始（1是标题行）
+    row_num = 2  # Start from 2 (1 is header row)
     
-    # 逐行验证数据
+    # Validate rows one by one
     for row in csv_reader:
         row_errors = []
         
-        # 验证必填字段不为空
+        # Check required fields are not empty
         for header in required_headers:
             if not row.get(header):
-                row_errors.append(f'"{header}"列不能为空')
+                row_errors.append(f'Column "{header}" cannot be empty')
         
-        # 应用自定义验证器
+        # Apply custom validators
         for field, validator in validators.items():
             if field in row:
                 try:
                     validator_result = validator(row[field])
                     if validator_result is not True:
-                        row_errors.append(f'"{field}"列: {validator_result}')
+                        row_errors.append(f'Column "{field}": {validator_result}')
                 except Exception as e:
-                    row_errors.append(f'"{field}"列验证错误: {str(e)}')
+                    row_errors.append(f'Validation error for column "{field}": {str(e)}')
         
         if row_errors:
             errors.append((row_num, row_errors))
         
         row_num += 1
     
-    # 重置文件指针供后续使用
+    # Reset file pointer for subsequent uses
     csv_file.seek(0)
     
     if errors:
         return {
             'valid': False,
-            'errors': f'CSV数据验证失败，共有{len(errors)}行数据有问题',
+            'errors': f'CSV data validation failed; {len(errors)} rows have issues',
             'detail_errors': errors
         }
     
     return {
         'valid': True,
-        'row_count': row_num - 1  # 减去标题行
+        'row_count': row_num - 1  # Exclude header row
     } 

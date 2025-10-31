@@ -1,7 +1,7 @@
 {% extends 'inventory/base.html' %}
 {% load static %}
 
-{% block title %}扫码添加商品 - {{ block.super }}{% endblock %}
+{% block title %}Scan Barcode to Add Product - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -10,11 +10,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="card-title mb-0">扫码添加商品</h2>
-                        <p class="text-muted">通过条码快速添加商品信息</p>
+                        <h2 class="card-title mb-0">Scan Barcode to Add Product</h2>
+                        <p class="text-muted">Quickly add product information via barcode</p>
                     </div>
                     <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> 返回列表
+                        <i class="bi bi-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
             </div>
@@ -23,29 +23,29 @@
 </div>
 
 <div class="row">
-    <!-- 左侧：条码扫描和结果 -->
+    <!-- Left: Barcode Scan and Results -->
     <div class="col-lg-5 col-md-12">
-        <!-- 条码扫描和查询结果区域 -->
+        <!-- Barcode Scan and Query Results Area -->
         <div class="card h-100 mb-4 mb-lg-0">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-upc-scan me-2"></i>扫描条码与商品信息</h5>
+                <h5 class="card-title mb-0"><i class="bi bi-upc-scan me-2"></i>Scan Barcode and Product Information</h5>
             </div>
             <div class="card-body">
-                <!-- 条码扫描输入框 -->
+                <!-- Barcode Scan Input -->
                 <form method="get" action="{% url 'barcode_product_create' %}" class="mb-3">
                     <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-upc"></i></span>
-                        <input type="text" name="barcode" class="form-control form-control-lg" placeholder="输入或扫描条码" value="{{ barcode }}" required autofocus>
+                        <input type="text" name="barcode" class="form-control form-control-lg" placeholder="Enter or scan barcode" value="{{ barcode }}" required autofocus>
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search me-1"></i> 查询
+                            <i class="bi bi-search me-1"></i> Query
                         </button>
                     </div>
-                    <div class="form-text text-center mt-2">将条码扫描枪对准商品条码，或手动输入条码号码</div>
+                    <div class="form-text text-center mt-2">Aim the barcode scanner at the product barcode, or manually enter the barcode number</div>
                 </form>
                 
                 <hr class="my-3">
                 
-                <!-- 条码查询结果 -->
+                <!-- Barcode Query Results -->
                 <div class="barcode-result overflow-auto" style="max-height: 500px;">
                 {% if barcode_data %}
                     <div class="text-center mb-4">
@@ -73,28 +73,28 @@
                             <tbody>
                                 {% if barcode_data.specification %}
                                 <tr>
-                                    <th style="width: 35%"><i class="bi bi-rulers me-2"></i>规格</th>
+                                    <th style="width: 35%"><i class="bi bi-rulers me-2"></i>Specification</th>
                                     <td>{{ barcode_data.specification }}</td>
                                 </tr>
                                 {% endif %}
                                 
                                 {% if barcode_data.manufacturer %}
                                 <tr>
-                                    <th><i class="bi bi-building me-2"></i>制造商</th>
+                                    <th><i class="bi bi-building me-2"></i>Manufacturer</th>
                                     <td>{{ barcode_data.manufacturer }}</td>
                                 </tr>
                                 {% endif %}
                                 
                                 {% if barcode_data.suggested_price %}
                                 <tr>
-                                    <th><i class="bi bi-tag me-2"></i>建议售价</th>
+                                    <th><i class="bi bi-tag me-2"></i>Suggested Price</th>
                                     <td class="fw-bold">¥{{ barcode_data.suggested_price }}</td>
                                 </tr>
                                 {% endif %}
                                 
                                 {% if barcode_data.description %}
                                 <tr>
-                                    <th><i class="bi bi-card-text me-2"></i>描述</th>
+                                    <th><i class="bi bi-card-text me-2"></i>Description</th>
                                     <td>{{ barcode_data.description }}</td>
                                 </tr>
                                 {% endif %}
@@ -104,27 +104,27 @@
                     
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <div class="alert alert-success mb-0 flex-grow-1">
-                            <i class="bi bi-check-circle-fill me-2"></i> 已自动填充商品信息，请确认并完善详情
+                            <i class="bi bi-check-circle-fill me-2"></i> Product information has been auto-filled, please confirm and complete details
                         </div>
                         <button type="button" id="quickSaveBtn" class="btn btn-success ms-3">
-                            <i class="bi bi-save me-1"></i> 一键录入
+                            <i class="bi bi-save me-1"></i> Quick Save
                         </button>
                     </div>
                 {% else %}
                     {% if barcode %}
                     <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i> 未找到条码 <strong>{{ barcode }}</strong> 的商品信息，请手动填写。
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> No product information found for barcode <strong>{{ barcode }}</strong>, please fill in manually.
                     </div>
                     <div class="text-center py-5">
                         <i class="bi bi-search text-muted" style="font-size: 3rem;"></i>
-                        <p class="mt-3 mb-0">没有查询到商品信息</p>
-                        <small class="text-muted">您可以在右侧手动填写商品详情</small>
+                        <p class="mt-3 mb-0">No product information found</p>
+                        <small class="text-muted">You can manually fill in product details on the right</small>
                     </div>
                     {% else %}
                     <div class="text-center py-5">
                         <i class="bi bi-upc-scan text-muted" style="font-size: 3rem;"></i>
-                        <p class="mt-3 mb-0">请扫描或输入商品条码</p>
-                        <small class="text-muted">系统将自动查询商品信息</small>
+                        <p class="mt-3 mb-0">Please scan or enter product barcode</p>
+                        <small class="text-muted">System will automatically query product information</small>
                     </div>
                     {% endif %}
                 {% endif %}
@@ -133,18 +133,18 @@
         </div>
     </div>
     
-    <!-- 右侧：商品表单 -->
+    <!-- Right: Product Form -->
     <div class="col-lg-7 col-md-12">
         <div class="card h-100 mb-4 mb-lg-0">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0"><i class="bi bi-pencil-square me-2"></i>商品录入</h5>
+                <h5 class="card-title mb-0"><i class="bi bi-pencil-square me-2"></i>Product Entry</h5>
             </div>
             <div class="card-body overflow-auto" style="max-height: 700px;">
                 <form method="post" enctype="multipart/form-data" id="productForm">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_barcode" class="form-label">商品条码</label>
+                            <label for="id_barcode" class="form-label">Product Barcode</label>
                             {% if form.barcode.errors %}
                                 <div class="alert alert-danger">{{ form.barcode.errors }}</div>
                             {% endif %}
@@ -154,7 +154,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="id_name" class="form-label">商品名称</label>
+                            <label for="id_name" class="form-label">Product Name</label>
                             {% if form.name.errors %}
                                 <div class="alert alert-danger">{{ form.name.errors }}</div>
                             {% endif %}
@@ -167,14 +167,14 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_category" class="form-label">商品分类</label>
+                            <label for="id_category" class="form-label">Product Category</label>
                             {% if form.category.errors %}
                                 <div class="alert alert-danger">{{ form.category.errors }}</div>
                             {% endif %}
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-folder"></i></span>
                                 <select name="category" id="id_category" class="form-select">
-                                    <option value="">--选择分类--</option>
+                                    <option value="">--Select Category--</option>
                                     {% for choice in form.category.field.choices %}
                                         {% if choice.0 %}
                                             <option value="{{ choice.0 }}" {% if form.category.value == choice.0|stringformat:"s" %}selected{% elif barcode_data and barcode_data.category == choice.1 %}selected{% endif %}>{{ choice.1 }}</option>
@@ -184,7 +184,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="id_specification" class="form-label">规格</label>
+                            <label for="id_specification" class="form-label">Specification</label>
                             {% if form.specification.errors %}
                                 <div class="alert alert-danger">{{ form.specification.errors }}</div>
                             {% endif %}
@@ -197,7 +197,7 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_price" class="form-label">售价</label>
+                            <label for="id_price" class="form-label">Selling Price</label>
                             {% if form.price.errors %}
                                 <div class="alert alert-danger">{{ form.price.errors }}</div>
                             {% endif %}
@@ -207,7 +207,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="id_cost" class="form-label">成本价</label>
+                            <label for="id_cost" class="form-label">Cost Price</label>
                             {% if form.cost.errors %}
                                 <div class="alert alert-danger">{{ form.cost.errors }}</div>
                             {% endif %}
@@ -220,7 +220,7 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_manufacturer" class="form-label">制造商</label>
+                            <label for="id_manufacturer" class="form-label">Manufacturer</label>
                             {% if form.manufacturer.errors %}
                                 <div class="alert alert-danger">{{ form.manufacturer.errors }}</div>
                             {% endif %}
@@ -230,7 +230,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="id_initial_stock" class="form-label">初始库存数量</label>
+                            <label for="id_initial_stock" class="form-label">Initial Stock Quantity</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-box-seam"></i></span>
                                 <input type="number" name="initial_stock" id="id_initial_stock" class="form-control" value="1" min="0">
@@ -240,7 +240,7 @@
                     
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_color" class="form-label">颜色</label>
+                            <label for="id_color" class="form-label">Color</label>
                             {% if form.color.errors %}
                                 <div class="alert alert-danger">{{ form.color.errors }}</div>
                             {% endif %}
@@ -254,7 +254,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="id_size" class="form-label">尺码</label>
+                            <label for="id_size" class="form-label">Size</label>
                             {% if form.size.errors %}
                                 <div class="alert alert-danger">{{ form.size.errors }}</div>
                             {% endif %}
@@ -272,7 +272,7 @@
                     <div class="mb-3">
                         <div class="form-check">
                             <input type="checkbox" name="is_active" id="id_is_active" class="form-check-input" {% if form.is_active.value %}checked{% else %}checked{% endif %}>
-                            <label for="id_is_active" class="form-check-label">启用商品</label>
+                            <label for="id_is_active" class="form-check-label">Enable Product</label>
                             {% if form.is_active.errors %}
                                 <div class="alert alert-danger mt-1">{{ form.is_active.errors }}</div>
                             {% endif %}
@@ -280,7 +280,7 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="id_description" class="form-label">商品描述</label>
+                        <label for="id_description" class="form-label">Product Description</label>
                         {% if form.description.errors %}
                             <div class="alert alert-danger">{{ form.description.errors }}</div>
                         {% endif %}
@@ -288,21 +288,21 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label for="id_image" class="form-label">商品图片</label>
+                        <label for="id_image" class="form-label">Product Image</label>
                         {% if form.image.errors %}
                             <div class="alert alert-danger">{{ form.image.errors }}</div>
                         {% endif %}
                         <input type="file" name="image" id="id_image" class="form-control" accept="image/*">
-                        <div class="form-text">支持JPG、PNG格式，建议尺寸500x500像素</div>
+                        <div class="form-text">Supports JPG, PNG formats, recommended size 500x500 pixels</div>
                         <div class="image-preview mt-2"></div>
                     </div>
                     
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{% url 'product_list' %}" class="btn btn-secondary me-md-2">
-                            <i class="bi bi-x-circle me-1"></i> 取消
+                            <i class="bi bi-x-circle me-1"></i> Cancel
                         </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle me-1"></i> 保存商品
+                            <i class="bi bi-check-circle me-1"></i> Save Product
                         </button>
                     </div>
                 </form>
@@ -314,7 +314,7 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 自动计算成本价为售价的80%
+        // Automatically calculate cost price as 80% of selling price
         const priceInput = document.getElementById('id_price');
         const costInput = document.getElementById('id_cost');
         
@@ -326,7 +326,7 @@
             });
         }
         
-        // 一键录入按钮点击事件
+        // Quick save button click event
         const quickSaveBtn = document.getElementById('quickSaveBtn');
         if(quickSaveBtn) {
             quickSaveBtn.addEventListener('click', function() {
@@ -334,7 +334,7 @@
             });
         }
         
-        // 图片预览功能
+        // Image preview functionality
         const imageInput = document.getElementById('id_image');
         if(imageInput) {
             imageInput.addEventListener('change', function() {

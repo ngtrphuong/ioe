@@ -9,6 +9,7 @@ from django.urls import reverse
 
 from inventory.exceptions import AuthorizationError
 
+
 def permission_required(perm):
     """
     Decorator for views that checks whether a user has a particular permission.
@@ -18,11 +19,12 @@ def permission_required(perm):
         @functools.wraps(view_func)
         def wrapper(request, *args, **kwargs):
             if not request.user.has_perm(perm):
-                error_message = f"您没有权限执行此操作: {perm}"
+                error_message = f"You do not have permission to perform this action: {perm}"
                 raise AuthorizationError(error_message, code="permission_denied")
             return view_func(request, *args, **kwargs)
         return wrapper
     return decorator
+
 
 def group_required(group_name):
     """
@@ -40,11 +42,12 @@ def group_required(group_name):
         @functools.wraps(view_func)
         def wrapper(request, *args, **kwargs):
             if not check_group(request.user):
-                error_message = f"您不属于 {group_name} 组，无法执行此操作"
+                error_message = f"You are not in the '{group_name}' group and cannot perform this action"
                 raise AuthorizationError(error_message, code="group_required")
             return view_func(request, *args, **kwargs)
         return wrapper
     return decorator
+
 
 def superuser_required(view_func):
     """
@@ -54,10 +57,11 @@ def superuser_required(view_func):
     @functools.wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_superuser:
-            error_message = "需要超级管理员权限才能执行此操作"
+            error_message = "Superuser permissions are required to perform this action"
             raise AuthorizationError(error_message, code="superuser_required")
         return view_func(request, *args, **kwargs)
     return wrapper
+
 
 def owner_or_permission_required(owner_field, permission):
     """
@@ -84,28 +88,29 @@ def owner_or_permission_required(owner_field, permission):
             
             # If not owner, check permission
             if not is_owner and not request.user.has_perm(permission):
-                error_message = f"您不是此资源的拥有者，也没有执行此操作的权限: {permission}"
+                error_message = f"You are not the owner of this resource and lack permission: {permission}"
                 raise AuthorizationError(error_message, code="not_owner_or_perm_denied")
                 
             return view_func(request, *args, **kwargs)
         return wrapper
     return decorator
 
+
 def system_admin_required(view_func):
     """
-    装饰器，检查用户是否是系统管理员。
-    如果不是，会重定向到首页或显示权限错误页面。
+    Decorator that checks whether the user is a system administrator.
+    If not, redirect to home page and show a permission error.
     """
     @functools.wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if request.user.is_superuser or (
-            request.user.groups.filter(name='系统管理员').exists() or 
+            request.user.groups.filter(name='System Administrator').exists() or 
             request.user.groups.filter(name='admin').exists()
         ):
             return view_func(request, *args, **kwargs)
         else:
-            # 重定向到首页并显示错误消息
+            # Redirect to home and show an error message
             from django.contrib import messages
-            messages.error(request, "您需要系统管理员权限才能访问此页面")
+            messages.error(request, "You need system administrator permissions to access this page")
             return redirect('index')
     return wrapper 

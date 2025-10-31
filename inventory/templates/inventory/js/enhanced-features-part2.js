@@ -1,57 +1,57 @@
 /**
- * 显示库存调整模态框
- * @param {Array} ids - 选中项目的ID
+ * Show stock adjustment modal
+ * @param {Array} ids - Selected item IDs
  */
 function showStockAdjustmentModal(ids) {
-    // 创建模态框HTML
+    // Create modal HTML
     const modalHtml = `
     <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="adjustStockModalLabel">调整库存</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                    <h5 class="modal-title" id="adjustStockModalLabel">Adjust Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="adjustStockForm" class="needs-validation" novalidate>
                         <div class="mb-3">
-                            <label for="stockAdjustmentType" class="form-label">调整类型</label>
+                            <label for="stockAdjustmentType" class="form-label">Adjustment Type</label>
                             <select class="form-select" id="stockAdjustmentType" required>
-                                <option value="">请选择调整类型</option>
-                                <option value="add">增加库存</option>
-                                <option value="subtract">减少库存</option>
-                                <option value="set">设置库存</option>
+                                <option value="">Please select adjustment type</option>
+                                <option value="add">Add Stock</option>
+                                <option value="subtract">Reduce Stock</option>
+                                <option value="set">Set Stock</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentValue" class="form-label">调整数量</label>
+                            <label for="stockAdjustmentValue" class="form-label">Adjustment Quantity</label>
                             <input type="number" class="form-control" id="stockAdjustmentValue" min="0" step="1" required>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentNotes" class="form-label">调整原因</label>
+                            <label for="stockAdjustmentNotes" class="form-label">Adjustment Reason</label>
                             <textarea class="form-control" id="stockAdjustmentNotes" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">确认调整</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">Confirm Adjustment</button>
                 </div>
             </div>
         </div>
     </div>
     `;
     
-    // 添加模态框到页面
+    // Add modal to page
     if (!document.getElementById('adjustStockModal')) {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
     
-    // 获取模态框元素
+    // Get modal elements
     const modal = document.getElementById('adjustStockModal');
     const bsModal = new bootstrap.Modal(modal);
     
-    // 确认按钮点击事件
+    // Confirm button click event
     document.getElementById('confirmAdjustStock').addEventListener('click', function() {
         const form = document.getElementById('adjustStockForm');
         if (form.checkValidity()) {
@@ -59,7 +59,7 @@ function showStockAdjustmentModal(ids) {
             const value = document.getElementById('stockAdjustmentValue').value;
             const notes = document.getElementById('stockAdjustmentNotes').value;
             
-            // 提交调整请求
+            // Submit adjustment request
             submitStockAdjustment(ids, type, value, notes);
             bsModal.hide();
         } else {
@@ -67,25 +67,25 @@ function showStockAdjustmentModal(ids) {
         }
     });
     
-    // 显示模态框
+    // Show modal
     bsModal.show();
 }
 
 /**
- * 提交库存调整请求
- * @param {Array} ids - 选中项目的ID
- * @param {string} type - 调整类型
- * @param {number} value - 调整值
- * @param {string} notes - 调整原因
+ * Submit stock adjustment request
+ * @param {Array} ids - Selected item IDs
+ * @param {string} type - Adjustment type
+ * @param {number} value - Adjustment value
+ * @param {string} notes - Adjustment reason
  */
 function submitStockAdjustment(ids, type, value, notes) {
-    // 创建一个表单来提交调整请求
+    // Create a form to submit adjustment request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'batch-adjust-stock/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -93,7 +93,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加调整参数
+    // Add adjustment parameters
     const typeInput = document.createElement('input');
     typeInput.type = 'hidden';
     typeInput.name = 'adjustment_type';
@@ -112,7 +112,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     notesInput.value = notes;
     form.appendChild(notesInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -121,15 +121,15 @@ function submitStockAdjustment(ids, type, value, notes) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }
 
 /**
- * 显示提示信息
- * @param {string} message - 提示信息
- * @param {string} type - 提示类型
+ * Show alert message
+ * @param {string} message - Alert message
+ * @param {string} type - Alert type
  */
 function showAlert(message, type = 'info') {
     Swal.fire({
@@ -144,29 +144,29 @@ function showAlert(message, type = 'info') {
 }
 
 /**
- * 增强密码策略和二次确认机制
+ * Enhance password policy and secondary confirmation mechanism
  */
 function enhanceSecurityFeatures() {
-    // 增强密码输入字段
+    // Enhance password input fields
     enhancePasswordFields();
     
-    // 添加敏感操作二次确认
+    // Add secondary confirmation for sensitive operations
     addConfirmationForSensitiveActions();
 }
 
 /**
- * 增强密码输入字段
+ * Enhance password input fields
  */
 function enhancePasswordFields() {
-    // 获取所有密码输入字段
+    // Get all password input fields
     const passwordFields = document.querySelectorAll('input[type="password"]');
     
     passwordFields.forEach(field => {
-        // 创建密码强度指示器容器
+        // Create password strength indicator container
         const strengthContainer = document.createElement('div');
         strengthContainer.className = 'password-strength-meter mt-2 d-none';
         
-        // 创建密码强度进度条
+        // Create password strength progress bar
         const strengthBar = document.createElement('div');
         strengthBar.className = 'progress';
         strengthBar.style.height = '5px';
@@ -181,42 +181,42 @@ function enhancePasswordFields() {
         
         strengthBar.appendChild(strengthIndicator);
         
-        // 创建密码强度文本
+        // Create password strength text
         const strengthText = document.createElement('small');
         strengthText.className = 'text-muted';
         
-        // 添加到容器
+        // Add to container
         strengthContainer.appendChild(strengthBar);
         strengthContainer.appendChild(strengthText);
         
-        // 添加到密码字段后面
+        // Add after password field
         field.parentNode.insertBefore(strengthContainer, field.nextSibling);
         
-        // 添加密码可见性切换按钮
+        // Add password visibility toggle button
         const toggleButton = document.createElement('button');
         toggleButton.type = 'button';
         toggleButton.className = 'btn btn-outline-secondary password-toggle';
         toggleButton.innerHTML = '<i class="bi bi-eye"></i>';
-        toggleButton.setAttribute('aria-label', '显示密码');
+        toggleButton.setAttribute('aria-label', 'Show password');
         
-        // 将密码字段包装在输入组中
+        // Wrap password field in input group
         const inputGroup = document.createElement('div');
         inputGroup.className = 'input-group';
         
-        // 重新排列元素
+        // Rearrange elements
         field.parentNode.insertBefore(inputGroup, field);
         inputGroup.appendChild(field);
         inputGroup.appendChild(toggleButton);
         
-        // 添加密码可见性切换功能
+        // Add password visibility toggle functionality
         toggleButton.addEventListener('click', function() {
             const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
             field.setAttribute('type', type);
             this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
-            this.setAttribute('aria-label', type === 'password' ? '显示密码' : '隐藏密码');
+            this.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
         });
         
-        // 添加密码强度检查
+        // Add password strength check
         field.addEventListener('input', function() {
             if (this.value) {
                 strengthContainer.classList.remove('d-none');
@@ -227,7 +227,7 @@ function enhancePasswordFields() {
             }
         });
         
-        // 添加密码规则提示
+        // Add password rule hints
         if (!field.getAttribute('aria-describedby')) {
             const passwordHelpId = `password-help-${Math.random().toString(36).substr(2, 9)}`;
             field.setAttribute('aria-describedby', passwordHelpId);
@@ -235,7 +235,7 @@ function enhancePasswordFields() {
             const passwordHelp = document.createElement('div');
             passwordHelp.id = passwordHelpId;
             passwordHelp.className = 'form-text';
-            passwordHelp.innerHTML = '密码必须至少包含8个字符，包括大小写字母、数字和特殊字符';
+            passwordHelp.innerHTML = 'Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters';
             
             field.parentNode.parentNode.appendChild(passwordHelp);
         }

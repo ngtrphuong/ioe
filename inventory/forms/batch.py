@@ -6,148 +6,127 @@ import io
 
 class BatchProductImportForm(forms.Form):
     """
-    批量导入商品表单
+    Batch import product form
     """
     file = forms.FileField(
-        label='CSV文件',
+        label='CSV File',
         validators=[FileExtensionValidator(allowed_extensions=['csv'])],
-        help_text='请上传CSV格式文件，包含商品信息',
+        help_text='Please upload a CSV file containing product information.',
         widget=forms.FileInput(attrs={'class': 'form-control'})
     )
     
     category = forms.ModelChoiceField(
         queryset=Category.objects.all(),
-        label='默认分类',
+        label='Default Category',
         required=False,
-        help_text='如果CSV中未指定分类，将使用此分类',
+        help_text='If not specified per product, this category will be used.',
         widget=forms.Select(attrs={'class': 'form-control form-select'})
     )
     
     update_existing = forms.BooleanField(
-        label='更新已存在商品',
+        label='Update Existing Products',
         required=False,
         initial=False,
-        help_text='如果勾选，将更新已存在的商品信息',
+        help_text='Check to update existing products.',
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
     )
     
     def clean_file(self):
         file = self.cleaned_data.get('file')
         if file:
-            # 检查CSV文件格式
+            # Validate CSV format
             try:
-                # 读取CSV文件
+                # Read the CSV
                 csv_file = file.read().decode('utf-8')
                 csv_data = csv.reader(io.StringIO(csv_file))
-                
-                # 获取表头
+                # Get headers
                 headers = next(csv_data)
-                
-                # 检查必要的列是否存在
+                # Check required columns
                 required_columns = ['barcode', 'name', 'price', 'cost']
                 missing_columns = [col for col in required_columns if col not in headers]
-                
                 if missing_columns:
-                    raise forms.ValidationError(f"CSV文件缺少必要的列: {', '.join(missing_columns)}")
-                
-                # 重置文件指针
+                    raise forms.ValidationError(f"The CSV is missing required columns: {', '.join(missing_columns)}")
+                # Reset pointer
                 file.seek(0)
-                
             except Exception as e:
-                raise forms.ValidationError(f"CSV文件格式错误: {str(e)}")
-        
+                raise forms.ValidationError(f"CSV file format error: {str(e)}")
         return file
 
 class BatchInventoryUpdateForm(forms.Form):
     """
-    批量调整库存表单
+    Batch inventory adjustment form
     """
     file = forms.FileField(
-        label='CSV文件',
+        label='CSV File',
         validators=[FileExtensionValidator(allowed_extensions=['csv'])],
-        help_text='请上传CSV格式文件，包含商品条码和库存数量',
+        help_text='Please upload a CSV file with product barcodes and inventory quantities.',
         widget=forms.FileInput(attrs={'class': 'form-control'})
     )
     
     adjustment_type = forms.ChoiceField(
-        label='调整类型',
+        label='Adjustment Type',
         choices=[
-            ('set', '设置为指定数量'),
-            ('add', '增加指定数量'),
-            ('subtract', '减少指定数量'),
+            ('set', 'Set to specified quantity'),
+            ('add', 'Increase by specified amount'),
+            ('subtract', 'Decrease by specified amount'),
         ],
         initial='set',
         widget=forms.RadioSelect(attrs={'class': 'form-check-input'})
     )
     
     notes = forms.CharField(
-        label='备注',
+        label='Notes',
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-        help_text='批量调整的原因或说明'
+        help_text='Reason or explanation for the batch adjustment.'
     )
     
     def clean_file(self):
         file = self.cleaned_data.get('file')
         if file:
             try:
-                # 读取CSV文件
+                # Read the CSV
                 csv_file = file.read().decode('utf-8')
                 csv_data = csv.reader(io.StringIO(csv_file))
-                
-                # 获取表头
+                # Get headers
                 headers = next(csv_data)
-                
-                # 检查必要的列是否存在
+                # Required columns
                 required_columns = ['barcode', 'quantity']
                 missing_columns = [col for col in required_columns if col not in headers]
-                
                 if missing_columns:
-                    raise forms.ValidationError(f"CSV文件缺少必要的列: {', '.join(missing_columns)}")
-                
-                # 检查数据有效性
-                row_number = 1  # 表头是第1行
+                    raise forms.ValidationError(f"The CSV is missing required columns: {', '.join(missing_columns)}")
+                # Validate data
+                row_number = 1  # header is row 1
                 errors = []
-                
                 for row in csv_data:
                     row_number += 1
                     if len(row) != len(headers):
-                        errors.append(f"第{row_number}行: 列数不匹配")
+                        errors.append(f"Row {row_number}: Number of columns does not match header.")
                         continue
-                    
-                    # 创建行数据字典
                     row_data = dict(zip(headers, row))
-                    
-                    # 检查条码是否存在
                     barcode = row_data.get('barcode', '').strip()
                     if not barcode:
-                        errors.append(f"第{row_number}行: 条码不能为空")
-                    
-                    # 检查数量是否为有效数字
+                        errors.append(f"Row {row_number}: Barcode cannot be empty.")
                     quantity = row_data.get('quantity', '').strip()
                     try:
                         quantity = int(quantity)
                         if quantity < 0 and self.cleaned_data.get('adjustment_type') == 'set':
-                            errors.append(f"第{row_number}行: 设置库存时数量不能为负数")
+                            errors.append(f"Row {row_number}: Quantity cannot be negative when setting inventory.")
                     except ValueError:
-                        errors.append(f"第{row_number}行: 数量必须是整数")
-                
+                        errors.append(f"Row {row_number}: Quantity must be an integer.")
                 if errors:
                     raise forms.ValidationError(errors)
-                
-                # 重置文件指针
+                # Reset pointer
                 file.seek(0)
-                
             except Exception as e:
                 if not isinstance(e, forms.ValidationError):
-                    raise forms.ValidationError(f"CSV文件处理错误: {str(e)}")
+                    raise forms.ValidationError(f"CSV file processing error: {str(e)}")
                 raise
-        
         return file
 
 class ProductBatchDeleteForm(forms.Form):
     """
-    批量删除商品表单
+    Batch product delete form
     """
     product_ids = forms.CharField(
         widget=forms.HiddenInput(),
@@ -155,20 +134,19 @@ class ProductBatchDeleteForm(forms.Form):
     )
     
     confirm = forms.BooleanField(
-        label='确认删除',
+        label='Confirm Delete',
         required=True,
-        help_text='我已了解此操作不可逆，并确认要删除选中的商品'
+        help_text='I understand this action is irreversible and confirm the deletion of the selected products.'
     )
     
     def clean_product_ids(self):
         product_ids_str = self.cleaned_data.get('product_ids')
         if not product_ids_str:
-            raise forms.ValidationError('未选择任何商品')
-        
+            raise forms.ValidationError('No products were selected.')
         try:
             product_ids = [int(id.strip()) for id in product_ids_str.split(',') if id.strip()]
             if not product_ids:
-                raise forms.ValidationError('未选择任何商品')
+                raise forms.ValidationError('No products were selected.')
             return product_ids
         except ValueError:
-            raise forms.ValidationError('商品ID格式错误')
+            raise forms.ValidationError('Invalid product ID format.')

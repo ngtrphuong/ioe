@@ -3,34 +3,34 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 
-# 使用重构后的模型导入
+# Use refactored model imports
 from inventory.models import Category, OperationLog
 from inventory.forms import CategoryForm
 
 @login_required
-def category_list(request):
-    """商品分类列表视图"""
+def category_list_view(request):
+    """Product category list view"""
     categories = Category.objects.all().order_by('name')
     return render(request, 'inventory/category_list.html', {'categories': categories})
 
 @login_required
-def category_create(request):
-    """创建商品分类视图"""
+def create_category_view(request):
+    """Create product category view"""
     if request.method == 'POST':
         form = CategoryForm(request.POST)
         if form.is_valid():
             category = form.save()
             
-            # 记录操作日志
+            # Log operation
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'添加商品分类: {category.name}',
+                details=f'Added product category: {category.name}',
                 related_object_id=category.id,
                 related_content_type=ContentType.objects.get_for_model(category)
             )
             
-            messages.success(request, '商品分类添加成功')
+            messages.success(request, 'Product category added successfully')
             return redirect('category_list')
     else:
         form = CategoryForm()
@@ -39,7 +39,7 @@ def category_create(request):
 
 @login_required
 def category_edit(request, category_id):
-    """编辑商品分类视图"""
+    """Edit product category view"""
     category = get_object_or_404(Category, id=category_id)
     
     if request.method == 'POST':
@@ -47,16 +47,16 @@ def category_edit(request, category_id):
         if form.is_valid():
             form.save()
             
-            # 记录操作日志
+            # Log operation
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='INVENTORY',
-                details=f'编辑商品分类: {category.name}',
+                details=f'Edited product category: {category.name}',
                 related_object_id=category.id,
                 related_content_type=ContentType.objects.get_for_model(category)
             )
             
-            messages.success(request, '商品分类更新成功')
+            messages.success(request, 'Product category updated successfully')
             return redirect('category_list')
     else:
         form = CategoryForm(instance=category)
@@ -67,25 +67,33 @@ def category_edit(request, category_id):
 def category_delete(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     
-    # 检查该分类是否有关联的商品
+    # Check if the category has associated products
     if category.product_set.exists():
-        messages.error(request, f'无法删除分类 "{category.name}"，因为有商品关联到此分类')
+        messages.error(request, f'Cannot delete category "{category.name}" because products are associated with it')
         return redirect('category_list')
     
     if request.method == 'POST':
         category_name = category.name
         category.delete()
         
-        # 记录操作日志
+        # Log operation
         OperationLog.objects.create(
             operator=request.user,
             operation_type='OTHER',
-            details=f'删除商品分类: {category_name}',
-            related_object_id=0,  # 已删除，无ID
+            details=f'Deleted product category: {category_name}',
+            related_object_id=0,  # Deleted, no ID
             related_content_type=ContentType.objects.get_for_model(Category)
         )
         
-        messages.success(request, f'分类 "{category_name}" 已成功删除')
+        messages.success(request, f'Category "{category_name}" deleted successfully')
         return redirect('category_list')
     
     return render(request, 'inventory/category_confirm_delete.html', {'category': category})
+
+@login_required
+def category_list(request):
+    return category_list_view(request)
+
+@login_required
+def category_create(request):
+    return create_category_view(request)

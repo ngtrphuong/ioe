@@ -1,6 +1,6 @@
-# templatetags包初始化文件
-# 为templatetags模块提供包标识
+# templatetags package initialization file
+# Provides package marker for the templatetags module
 
-# 初始化文件，使templatetags成为一个Python包
+# Initialization file to make templatetags a Python package
 
 # Template tags initialization file

@@ -6,15 +6,15 @@ import time
 
 def optimize_query(queryset, select_fields=None, prefetch_fields=None):
     """
-    优化查询，减少数据库访问次数
+    Optimize queryset to reduce database round trips.
     
     Args:
-        queryset: 要优化的查询集
-        select_fields: 要使用select_related的字段列表
-        prefetch_fields: 要使用prefetch_related的字段列表或Prefetch对象列表
+        queryset: The queryset to optimize
+        select_fields: Fields for select_related
+        prefetch_fields: Fields or Prefetch objects for prefetch_related
     
     Returns:
-        优化后的查询集
+        Optimized queryset
     """
     if select_fields:
         queryset = queryset.select_related(*select_fields)
@@ -26,28 +26,28 @@ def optimize_query(queryset, select_fields=None, prefetch_fields=None):
 
 def query_performance_logger(func):
     """
-    装饰器：记录查询执行时间，用于性能分析
+    Decorator: log query execution time for performance analysis.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.time()
         result = func(*args, **kwargs)
         execution_time = time.time() - start_time
-        print(f"查询 {func.__name__} 执行时间: {execution_time:.4f}秒")
+        print(f"Query {func.__name__} execution time: {execution_time:.4f}s")
         return result
     return wrapper
 
 def paginate_queryset(queryset, page_number, items_per_page=20):
     """
-    对查询集进行分页处理
+    Paginate a queryset.
     
     Args:
-        queryset: 要分页的查询集
-        page_number: 当前页码
-        items_per_page: 每页显示的项目数
+        queryset: The queryset to paginate
+        page_number: Current page number
+        items_per_page: Items per page
         
     Returns:
-        分页后的查询集
+        Paginated queryset
     """
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
     
@@ -56,26 +56,26 @@ def paginate_queryset(queryset, page_number, items_per_page=20):
     try:
         paginated_queryset = paginator.page(page_number)
     except PageNotAnInteger:
-        # 如果页码不是整数，返回第一页
+        # If page number is not an integer, return the first page
         paginated_queryset = paginator.page(1)
     except EmptyPage:
-        # 如果页码超出范围，返回最后一页
+        # If page is out of range, return the last page
         paginated_queryset = paginator.page(paginator.num_pages)
     
     return paginated_queryset
 
 def get_filtered_queryset(queryset, filter_params):
     """
-    根据过滤参数过滤查询集
+    Filter a queryset by provided parameters.
     
     Args:
-        queryset: 要过滤的查询集
-        filter_params: 过滤参数字典
+        queryset: The queryset to filter
+        filter_params: Dict of filters
         
     Returns:
-        过滤后的查询集
+        Filtered queryset
     """
-    # 移除空值
+    # Remove empty values
     valid_filters = {k: v for k, v in filter_params.items() if v}
     
     if valid_filters:
@@ -85,15 +85,15 @@ def get_filtered_queryset(queryset, filter_params):
 
 def get_date_range_filter(start_date, end_date, date_field='created_at'):
     """
-    获取日期范围过滤条件
+    Build a date range filter dict.
     
     Args:
-        start_date: 开始日期
-        end_date: 结束日期
-        date_field: 日期字段名
+        start_date: Start date
+        end_date: End date
+        date_field: Date field name
         
     Returns:
-        日期范围过滤条件字典
+        dict: Date range filter kwargs
     """
     filter_kwargs = {}
     
@@ -101,7 +101,7 @@ def get_date_range_filter(start_date, end_date, date_field='created_at'):
         filter_kwargs[f"{date_field}__gte"] = start_date
     
     if end_date:
-        # 将结束日期调整为当天的最后一刻
+        # Adjust end date to end of the day
         end_date = timezone.datetime.combine(
             end_date, 
             timezone.datetime.max.time()
@@ -110,46 +110,46 @@ def get_date_range_filter(start_date, end_date, date_field='created_at'):
     
     return filter_kwargs
 
-# 添加别名函数，保持向后兼容性
+# Add alias function to keep backward compatibility
 def get_paginated_queryset(queryset, page_number, items_per_page=20):
     """
-    paginate_queryset的别名函数，保持向后兼容性
+    Alias for paginate_queryset to keep backward compatibility.
     
     Args:
-        queryset: 要分页的查询集
-        page_number: 当前页码
-        items_per_page: 每页显示的项目数
+        queryset: The queryset to paginate
+        page_number: Current page number
+        items_per_page: Items per page
         
     Returns:
-        分页后的查询集
+        Paginated queryset
     """
     return paginate_queryset(queryset, page_number, items_per_page)
 
 def build_filter_query(filter_dict):
     """
-    构建过滤查询条件
+    Build a combined filter query using Django Q objects.
     
-    此函数从过滤字典创建Django ORM查询对象(Q)的组合
+    This function creates a composite Django ORM query (Q) from a filter dict.
     
     Args:
-        filter_dict: 包含字段和值的过滤字典，格式为 {field_name: value}
+        filter_dict: Dict of {field_name: value}
         
     Returns:
-        Django Q对象的组合，可用于queryset.filter()
+        Combined Django Q object to use with queryset.filter()
     """
     from django.db.models import Q
     
-    # 移除空值
+    # Remove empty values
     valid_filters = {k: v for k, v in filter_dict.items() if v is not None and v != ''}
     
-    # 初始化查询对象
+    # Initialize query object
     query = Q()
     
-    # 为每个过滤条件创建查询子句并组合
+    # Build and combine query clauses for each filter condition
     for field, value in valid_filters.items():
-        # 支持列表值（用于in查询）
+        # Support list values (for __in queries)
         if isinstance(value, list):
-            if value:  # 只有当列表非空时才添加查询
+            if value:  # Only add when list is non-empty
                 query &= Q(**{f"{field}__in": value})
         else:
             query &= Q(**{field: value})

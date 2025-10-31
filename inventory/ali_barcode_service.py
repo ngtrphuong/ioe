@@ -4,39 +4,39 @@ from django.conf import settings
 
 class AliBarcodeService:
     """
-    阿里云条形码查询API服务类
-    使用APPCODE认证方式
+    Aliyun barcode lookup API service
+    Uses APPCODE authentication
     """
     BASE_URL = "https://ali-barcode.showapi.com/barcode"
     
     @classmethod
     def search_barcode(cls, barcode):
         """
-        根据条码查询商品信息
+        Look up product information by barcode
         
         Args:
-            barcode: 商品条码
+            barcode: Product barcode
             
         Returns:
-            dict: 包含商品信息的字典，如果未找到则返回None
+            dict: Dictionary containing product info, or None if not found
         """
         try:
-            # 获取阿里云API的APPCODE
+            # Get APPCODE for Aliyun barcode API
             appcode = getattr(settings, 'ALI_BARCODE_APPCODE', '')
             
             if not appcode:
-                print("未配置阿里云条形码API的APPCODE")
+                print("ALI_BARCODE_APPCODE is not configured")
                 return None
                 
-            # 设置请求头，添加APPCODE认证
+            # Set headers with APPCODE authentication
             headers = {
                 "Authorization": f"APPCODE {appcode}"
             }
             
-            # 构建查询URL
+            # Build request URL
             url = f"{cls.BASE_URL}?code={barcode}"
             
-            # 创建连接池管理器并发送请求
+            # Create pool manager and send request
             http = urllib3.PoolManager()
             response = http.request(
                 'GET',
@@ -45,19 +45,19 @@ class AliBarcodeService:
                 timeout=5.0
             )
             
-            # 检查响应状态码
+            # Check HTTP status code
             if response.status == 200:
-                # 解析JSON响应
+                # Parse JSON response
                 data = json.loads(response.data.decode('utf-8'))
-                # 检查API返回结果
+                # Check API return code/result
                 if data.get('showapi_res_code') == 0:
-                    # 获取商品信息
+                    # Extract product information
                     res_body = data.get('showapi_res_body', {})
                     
-                    # 检查是否查询成功
-                    # 注意：API返回的flag可能是字符串'true'或布尔值True
+                    # Check if query succeeded
+                    # Note: API may return flag as string 'true' or boolean True
                     if res_body.get('flag') == 'true' or res_body.get('flag') is True:
-                        # 将价格字符串转换为浮点数，如果转换失败则默认为0
+                        # Convert price string to float; default to 0 if conversion fails
                         price = 0
                         try:
                             if res_body.get('price'):
@@ -80,18 +80,18 @@ class AliBarcodeService:
                             'english_name': res_body.get('engName', '')
                         }
                     else:
-                        print(f"条码查询失败: {res_body.get('remark')}")
-                        print(f"完整响应体: {res_body}")
+                        print(f"Barcode lookup failed: {res_body.get('remark')}")
+                        print(f"Full response body: {res_body}")
                 else:
-                    print(f"API调用失败: {data.get('showapi_res_error')}")
-                    print(f"完整响应: {data}")
+                    print(f"API call failed: {data.get('showapi_res_error')}")
+                    print(f"Full response: {data}")
             else:
-                print(f"HTTP请求失败，状态码: {response.status}")
-                print(f"响应内容: {response.data.decode('utf-8', errors='replace')}")
+                print(f"HTTP request failed, status: {response.status}")
+                print(f"Response content: {response.data.decode('utf-8', errors='replace')}")
                 
             return None
         except Exception as e:
-            print(f"条码查询出错: {e}")
+            print(f"Barcode lookup error: {e}")
             import traceback
-            print(f"详细错误信息: {traceback.format_exc()}")
+            print(f"Detailed traceback: {traceback.format_exc()}")
             return None

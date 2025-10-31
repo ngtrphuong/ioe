@@ -13,16 +13,16 @@ from ...models.common import OperationLog
 @login_required
 @permission_required('auth.view_user', raise_exception=True)
 def user_list(request):
-    """用户列表视图"""
-    # 获取筛选参数
+    """User list view"""
+    # Get filter parameters
     search_query = request.GET.get('search', '')
     is_active = request.GET.get('is_active', '')
     user_group = request.GET.get('group', '')
     
-    # 基本查询集
+    # Base queryset
     users = User.objects.select_related('profile').prefetch_related('groups').all()
     
-    # 应用筛选
+    # Apply filters
     if search_query:
         users = users.filter(
             Q(username__icontains=search_query) | 
@@ -37,7 +37,7 @@ def user_list(request):
     if user_group:
         users = users.filter(groups__id=user_group)
     
-    # 获取用户组
+    # Get user groups
     groups = Group.objects.all()
     
     context = {
@@ -54,28 +54,26 @@ def user_list(request):
 @login_required
 @permission_required('auth.add_user', raise_exception=True)
 def user_create(request):
-    """创建用户视图"""
+    """Create user view"""
     groups = Group.objects.all()
     
-    # 确保销售员组存在
-    sales_group, created = Group.objects.get_or_create(name='销售员')
+    # Ensure sales group exists
+    sales_group, created = Group.objects.get_or_create(name='Salesperson')
     
-    # 如果是新创建的组，为其设置相应权限
+    # If the group was newly created, set its permissions
     if created:
-        # 销售相关权限
+        # Sales-related permissions
         content_types = ContentType.objects.filter(
             Q(app_label='inventory', model='sale') |
-            Q(app_label='inventory', model='saleitem') |
-            Q(app_label='inventory', model='member')
+            Q(app_label='inventory', model='saleitem')
         )
         permissions = Permission.objects.filter(content_type__in=content_types)
         sales_group.permissions.add(*permissions)
-        
-        # 记录日志
+        # Log creation
         OperationLog.objects.create(
             operator=request.user,
             operation_type='ADD',
-            details=f'创建销售员用户组并设置权限',
+            details=f'Created Salesperson user group and set permissions',
             ip_address=request.META.get('REMOTE_ADDR', '')
         )
     
@@ -91,24 +89,24 @@ def user_create(request):
         is_superuser = request.POST.get('is_superuser') == 'on'
         group_ids = request.POST.getlist('groups')
         
-        # 表单验证
+        # Form validation
         errors = []
         
-        # 用户名验证
+        # Username validation
         if not username:
-            errors.append('用户名不能为空')
+            errors.append('Username cannot be empty')
         elif User.objects.filter(username=username).exists():
-            errors.append('用户名已存在')
+            errors.append('Username already exists')
         
-        # 密码验证
+        # Password validation
         if not password:
-            errors.append('密码不能为空')
+            errors.append('Password cannot be empty')
         elif len(password) < 8:
-            errors.append('密码长度至少为8个字符')
+            errors.append('Password must be at least 8 characters')
         elif password != password_confirm:
-            errors.append('两次输入的密码不一致')
+            errors.append('Passwords do not match')
         
-        # 如果有错误，返回错误信息
+        # If there are errors, return them
         if errors:
             messages.error(request, '\n'.join(errors))
             return render(request, 'inventory/system/user_create.html', {
@@ -116,7 +114,7 @@ def user_create(request):
                 'form_data': request.POST
             })
         
-        # 创建用户
+        # Create user
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -128,22 +126,22 @@ def user_create(request):
             is_superuser=is_superuser
         )
         
-        # 分配用户组
+        # Assign user group
         if group_ids:
             selected_groups = Group.objects.filter(id__in=group_ids)
             user.groups.add(*selected_groups)
         
-        # 记录操作日志
+        # Log operation
         OperationLog.objects.create(
             operator=request.user,
             operation_type='ADD',
-            details=f'创建用户: {username}',
+            details=f'Created user: {username}',
             related_object_id=user.id,
             related_content_type=ContentType.objects.get_for_model(user),
             ip_address=request.META.get('REMOTE_ADDR', '')
         )
         
-        messages.success(request, f'用户 {username} 创建成功')
+        messages.success(request, f'User {username} created successfully')
         return redirect('user_list')
     
     return render(request, 'inventory/system/user_create.html', {
@@ -154,7 +152,7 @@ def user_create(request):
 @login_required
 @permission_required('auth.change_user', raise_exception=True)
 def user_update(request, pk):
-    """更新用户视图"""
+    """Update user view"""
     user = get_object_or_404(User, pk=pk)
     groups = Group.objects.all()
     
@@ -169,17 +167,17 @@ def user_update(request, pk):
         new_password = request.POST.get('new_password', '')
         new_password_confirm = request.POST.get('new_password_confirm', '')
         
-        # 表单验证
+        # Form validation
         errors = []
         
-        # 密码验证
+        # Password validation
         if new_password:
             if len(new_password) < 8:
-                errors.append('密码长度至少为8个字符')
+                errors.append('Password must be at least 8 characters')
             elif new_password != new_password_confirm:
-                errors.append('两次输入的密码不一致')
+                errors.append('Passwords do not match')
         
-        # 如果有错误，返回错误信息
+        # If there are errors, return them
         if errors:
             messages.error(request, '\n'.join(errors))
             return render(request, 'inventory/system/user_update.html', {
@@ -188,7 +186,7 @@ def user_update(request, pk):
                 'form_data': request.POST
             })
         
-        # 更新用户信息
+        # Update user information
         user.email = email
         user.first_name = first_name
         user.last_name = last_name
@@ -196,29 +194,29 @@ def user_update(request, pk):
         user.is_staff = is_staff
         user.is_superuser = is_superuser
         
-        # 如果提供了新密码，更新密码
+        # If a new password is provided, update it
         if new_password:
             user.set_password(new_password)
         
         user.save()
         
-        # 更新用户组
+        # Update user groups
         user.groups.clear()
         if group_ids:
             selected_groups = Group.objects.filter(id__in=group_ids)
             user.groups.add(*selected_groups)
         
-        # 记录操作日志
+        # Log operation
         OperationLog.objects.create(
             operator=request.user,
             operation_type='CHANGE',
-            details=f'更新用户: {user.username}',
+            details=f'Updated user: {user.username}',
             related_object_id=user.id,
             related_content_type=ContentType.objects.get_for_model(user),
             ip_address=request.META.get('REMOTE_ADDR', '')
         )
         
-        messages.success(request, f'用户 {user.username} 更新成功')
+        messages.success(request, f'User {user.username} updated successfully')
         return redirect('user_list')
     
     return render(request, 'inventory/system/user_update.html', {
@@ -230,27 +228,27 @@ def user_update(request, pk):
 @login_required
 @permission_required('auth.delete_user', raise_exception=True)
 def user_delete(request, pk):
-    """删除用户视图"""
+    """Delete user view"""
     user = get_object_or_404(User, pk=pk)
     
-    # 防止删除自己
+    # Prevent deleting yourself
     if user == request.user:
-        messages.error(request, '不能删除当前登录的用户')
+        messages.error(request, 'Cannot delete the currently logged-in user')
         return redirect('user_list')
     
     if request.method == 'POST':
         username = user.username
         user.delete()
         
-        # 记录操作日志
+        # Log operation
         OperationLog.objects.create(
             operator=request.user,
             operation_type='DELETE',
-            details=f'删除用户: {username}',
+            details=f'Deleted user: {username}',
             ip_address=request.META.get('REMOTE_ADDR', '')
         )
         
-        messages.success(request, f'用户 {username} 已删除')
+        messages.success(request, f'User {username} deleted')
         return redirect('user_list')
     
     return render(request, 'inventory/system/user_delete.html', {
@@ -261,10 +259,10 @@ def user_delete(request, pk):
 @login_required
 @permission_required('auth.view_user', raise_exception=True)
 def user_detail(request, pk):
-    """用户详情视图"""
+    """User detail view"""
     user = get_object_or_404(User, pk=pk)
     
-    # 获取用户最近的操作日志
+    # Get user's recent operation logs
     logs = OperationLog.objects.filter(operator=user).order_by('-timestamp')[:20]
     
     return render(request, 'inventory/system/user_detail.html', {

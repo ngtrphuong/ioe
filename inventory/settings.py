@@ -20,11 +20,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'p5k!d@$v_z@6i*+j$9x7b!n=o(h&w#q)s@l^m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-allowed_hosts_str = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+allowed_hosts_str = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,zephyrexec')
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
 
-# 第三方条码API配置
-BARCODE_API_KEY = ''  # 替换为实际的API密钥
+# Third-party Barcode API configuration
+BARCODE_API_KEY = ''  # Replace with your actual API key
 ALI_BARCODE_APPCODE =''
 
 # Application definition
@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'inventory.exceptions.middleware.ExceptionMiddleware',  # 添加自定义异常处理中间件
+    'inventory.exceptions.middleware.ExceptionMiddleware',  # Add custom exception handling middleware
 ]
 
 ROOT_URLCONF = 'inventory.urls'
@@ -73,7 +73,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inventory.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -83,7 +82,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db' / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -103,13 +101,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'zh-hans'
+LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Shanghai'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -140,7 +137,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # EMAIL_HOST_PASSWORD = 'your-password'
 DEFAULT_FROM_EMAIL = 'noreply@example.com'
 
-# 日志配置
+# Logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

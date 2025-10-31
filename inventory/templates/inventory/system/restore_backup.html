@@ -1,6 +1,6 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}恢复备份 - {{ block.super }}{% endblock %}
+{% block title %}Restore Backup - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -9,11 +9,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="card-title mb-0">恢复备份</h2>
-                        <p class="text-muted">从备份恢复系统数据</p>
+                        <h2 class="card-title mb-0">Restore Backup</h2>
+                        <p class="text-muted">Restore system data from backup</p>
                     </div>
                     <a href="{% url 'backup_list' %}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i> 返回备份列表
+                        <i class="bi bi-arrow-left me-1"></i> Back to Backup List
                     </a>
                 </div>
             </div>
@@ -26,7 +26,7 @@
         <div class="card">
             <div class="card-header bg-warning text-dark">
                 <h5 class="card-title mb-0">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 恢复确认
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Restore Confirmation
                 </h5>
             </div>
             <div class="card-body">
@@ -36,30 +36,30 @@
                             <i class="bi bi-exclamation-triangle-fill"></i>
                         </div>
                         <div>
-                            <h6 class="alert-heading">警告！恢复备份将覆盖当前数据</h6>
-                            <p class="mb-0">此操作不可逆，将用备份数据替换当前系统中的所有数据。请确保已经了解可能的影响。</p>
+                            <h6 class="alert-heading">Warning! Restore Backup will overwrite current data</h6>
+                            <p class="mb-0">This operation is irreversible and will replace all data in the current system with backup data. Please ensure you understand the possible impact.</p>
                         </div>
                     </div>
                 </div>
                 
-                <h5 class="mb-3">备份详情</h5>
+                <h5 class="mb-3">Backup Details</h5>
                 <div class="table-responsive mb-4">
                     <table class="table table-bordered">
                         <tbody>
                             <tr>
-                                <th style="width: 150px;">备份名称</th>
+                                <th style="width: 150px;">Backup Name</th>
                                 <td>{{ backup.name }}</td>
                             </tr>
                             <tr>
-                                <th>创建时间</th>
+                                <th>Created At</th>
                                 <td>{{ backup.created_at|date:"Y-m-d H:i:s" }}</td>
                             </tr>
                             <tr>
-                                <th>创建者</th>
+                                <th>Created By</th>
                                 <td>{{ backup.created_by }}</td>
                             </tr>
                             <tr>
-                                <th>备份大小</th>
+                                <th>Backup Size</th>
                                 <td>{{ backup.size }}</td>
                             </tr>
                         </tbody>
@@ -73,13 +73,13 @@
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="restore_db" name="restore_db" checked disabled>
                             <label class="form-check-label" for="restore_db">
-                                恢复数据库 <span class="badge bg-success">必选</span>
+                                Restore Database <span class="badge bg-success">Required</span>
                             </label>
                         </div>
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="restore_media" name="restore_media" checked>
                             <label class="form-check-label" for="restore_media">
-                                恢复媒体文件
+                                Restore Media Files
                             </label>
                         </div>
                     </div>
@@ -87,16 +87,16 @@
                     <div class="form-check mb-4">
                         <input class="form-check-input" type="checkbox" id="confirm_restore" name="confirm_restore" required>
                         <label class="form-check-label" for="confirm_restore">
-                            <strong>我确认要恢复此备份，并且了解此操作会覆盖当前系统数据</strong>
+                            <strong>I confirm that I want to restore this backup and understand that this operation will overwrite current system data</strong>
                         </label>
                     </div>
                     
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'backup_list' %}" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle me-1"></i> 取消
+                            <i class="bi bi-x-circle me-1"></i> Cancel
                         </a>
                         <button type="button" class="btn btn-warning" id="confirmRestoreBtn">
-                            <i class="bi bi-arrow-clockwise me-1"></i> 恢复备份
+                            <i class="bi bi-arrow-clockwise me-1"></i> Restore Backup
                         </button>
                     </div>
                 </form>
@@ -122,7 +122,7 @@
                 <ul class="text-muted mb-4">
                     <li>创建当前系统的备份</li>
                     <li>通知所有用户暂停使用系统</li>
-                    <li>选择系统使用较少的时间进行恢复</li>
+                    <li>Choose a time when system usage is low for restoration</li>
                 </ul>
                 
                 <div class="alert alert-primary">
@@ -134,28 +134,28 @@
     </div>
 </div>
 
-<!-- 确认恢复模态框 -->
+<!-- Confirm Restore Modal -->
 <div class="modal fade" id="confirmRestoreModal" tabindex="-1" aria-labelledby="confirmRestoreModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title" id="confirmRestoreModalLabel">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 最终确认
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Final Confirmation
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="fw-bold">请输入 "RESTORE" 确认恢复操作：</p>
-                <input type="text" class="form-control" id="confirmText" placeholder="请输入 RESTORE">
+                <p class="fw-bold">Please enter "RESTORE" to confirm restore operation:</p>
+                <input type="text" class="form-control" id="confirmText" placeholder="Please enter RESTORE">
                 <p class="text-danger mt-3">
                     <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                    此操作完成后，当前系统中的所有数据将被替换为备份中的数据，无法撤销！
+                    After this operation completes, all data in the current system will be replaced with data from the backup, and this cannot be undone!
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-danger" id="finalRestoreBtn" disabled>
-                    <i class="bi bi-arrow-clockwise me-1"></i> 确认恢复
+                    <i class="bi bi-arrow-clockwise me-1"></i> Confirm Restore
                 </button>
             </div>
         </div>
@@ -164,7 +164,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 恢复确认
+        // Restore confirmation
         const confirmRestoreBtn = document.getElementById('confirmRestoreBtn');
         const confirmRestoreModal = new bootstrap.Modal(document.getElementById('confirmRestoreModal'));
         const confirmText = document.getElementById('confirmText');

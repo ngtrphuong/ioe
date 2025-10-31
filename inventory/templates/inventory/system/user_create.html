@@ -1,79 +1,79 @@
 {% extends 'inventory/base.html' %}
 {% load static %}
 
-{% block title %}创建新用户{% endblock %}
+{% block title %}Create New User{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <!-- 面包屑导航 -->
+    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-white py-2">
-            <li class="breadcrumb-item"><a href="{% url 'index' %}">主页</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'system_settings' %}">系统设置</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'user_list' %}">用户管理</a></li>
-            <li class="breadcrumb-item active" aria-current="page">创建新用户</li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'system_settings' %}">System Settings</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user_list' %}">User Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create New User</li>
         </ol>
     </nav>
     
-    <!-- 页面标题 -->
+    <!-- Page Title -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">创建新用户</h1>
+        <h1 class="h3 mb-0">Create New User</h1>
         <a href="{% url 'user_list' %}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> 返回用户列表
+            <i class="fas fa-arrow-left me-1"></i> Back to User List
         </a>
     </div>
     
-    <!-- 创建用户表单 -->
+    <!-- Create User Form -->
     <div class="row">
         <div class="col-lg-8">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">用户信息</h5>
+                    <h5 class="card-title mb-0">User Information</h5>
                 </div>
                 <div class="card-body">
                     <form method="post" id="userForm">
                         {% csrf_token %}
                         
-                        <!-- 基本信息 -->
+                        <!-- Basic Information -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="username" class="form-label">用户名 <span class="text-danger">*</span></label>
+                                <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                                 <input type="text" name="username" id="username" class="form-control" required value="{{ form_data.username|default:'' }}">
-                                <div class="form-text">登录系统时使用的唯一标识符</div>
+                                <div class="form-text">Unique identifier used when logging into the system</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="email" class="form-label">电子邮箱</label>
+                                <label for="email" class="form-label">Email</label>
                                 <input type="email" name="email" id="email" class="form-control" value="{{ form_data.email|default:'' }}">
                             </div>
                         </div>
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="first_name" class="form-label">名字</label>
+                                <label for="first_name" class="form-label">First Name</label>
                                 <input type="text" name="first_name" id="first_name" class="form-control" value="{{ form_data.first_name|default:'' }}">
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name" class="form-label">姓氏</label>
+                                <label for="last_name" class="form-label">Last Name</label>
                                 <input type="text" name="last_name" id="last_name" class="form-control" value="{{ form_data.last_name|default:'' }}">
                             </div>
                         </div>
                         
-                        <!-- 密码设置 -->
+                        <!-- Password Settings -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="password" class="form-label">密码 <span class="text-danger">*</span></label>
+                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                                 <input type="password" name="password" id="password" class="form-control" required>
-                                <div class="form-text">密码长度至少为8个字符</div>
+                                <div class="form-text">Password must be at least 8 characters long</div>
                             </div>
                             <div class="col-md-6">
-                                <label for="password_confirm" class="form-label">确认密码 <span class="text-danger">*</span></label>
+                                <label for="password_confirm" class="form-label">Confirm Password <span class="text-danger">*</span></label>
                                 <input type="password" name="password_confirm" id="password_confirm" class="form-control" required>
                             </div>
                         </div>
                         
-                        <!-- 用户组和权限 -->
+                        <!-- User Groups and Permissions -->
                         <div class="mb-3">
-                            <label class="form-label">用户角色</label>
+                            <label class="form-label">User Roles</label>
                             <div class="row">
                                 {% for group in groups %}
                                 <div class="col-md-4 mb-2">
@@ -89,13 +89,13 @@
                             </div>
                         </div>
                         
-                        <!-- 状态控制 -->
+                        <!-- Status Control -->
                         <div class="row mb-4">
                             <div class="col-md-4">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="is_active" id="is_active" checked>
                                     <label class="form-check-label" for="is_active">
-                                        账户可用
+                                        Account Active
                                     </label>
                                 </div>
                             </div>
@@ -103,7 +103,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="is_staff" id="is_staff" checked>
                                     <label class="form-check-label" for="is_staff">
-                                        可登录后台
+                                        Allow Admin Login
                                     </label>
                                 </div>
                             </div>
@@ -111,16 +111,16 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="is_superuser" id="is_superuser">
                                     <label class="form-check-label" for="is_superuser">
-                                        超级管理员
+                                        Superuser
                                     </label>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- 提交按钮 -->
+                        <!-- Submit Button -->
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> 创建用户
+                                <i class="fas fa-save me-1"></i> Create User
                             </button>
                         </div>
                     </form>
@@ -131,31 +131,31 @@
         <div class="col-lg-4">
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">快速创建销售员</h5>
+                    <h5 class="card-title mb-0">Quick Create Sales Clerk</h5>
                 </div>
                 <div class="card-body">
                     <p class="mb-3">
-                        创建一个只能访问销售相关功能的销售员账号，适合前台收银和客户服务人员使用。
+                        Create a sales clerk account that can only access sales-related features, suitable for front desk cashiers and customer service staff.
                     </p>
                     <button type="button" class="btn btn-success w-100" id="createSalesBtn">
-                        <i class="fas fa-user-tag me-1"></i> 快速创建销售员账号
+                        <i class="fas fa-user-tag me-1"></i> Quick Create Sales Clerk Account
                     </button>
                 </div>
             </div>
             
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">帮助信息</h5>
+                    <h5 class="card-title mb-0">Help Information</h5>
                 </div>
                 <div class="card-body">
-                    <h6>用户角色说明</h6>
+                    <h6>User Role Descriptions</h6>
                     <ul>
-                        <li><strong>销售员</strong>：只能访问销售和会员管理功能</li>
-                        <li><strong>仓库管理员</strong>：可以管理库存和产品</li>
-                        <li><strong>财务人员</strong>：可以查看销售和财务数据</li>
-                        <li><strong>管理员</strong>：可以管理系统的大部分功能</li>
+                        <li><strong>Sales Clerk</strong>: Can only access sales and member management features</li>
+                        <li><strong>Inventory Manager</strong>: Can manage inventory and products</li>
+                        <li><strong>Finance Staff</strong>: Can view sales and financial data</li>
+                        <li><strong>Administrator</strong>: Can manage most system functions</li>
                     </ul>
-                    <p>超级管理员可以访问所有功能，请谨慎分配此权限。</p>
+                    <p>Super administrators can access all functions. Please assign this permission carefully.</p>
                 </div>
             </div>
         </div>
@@ -165,7 +165,7 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 密码一致性检查
+        // Password consistency check
         const password = document.getElementById('password');
         const passwordConfirm = document.getElementById('password_confirm');
         const form = document.getElementById('userForm');
@@ -173,42 +173,42 @@
         form.addEventListener('submit', function(e) {
             if (password.value !== passwordConfirm.value) {
                 e.preventDefault();
-                alert('两次输入的密码不一致，请重新输入。');
+                alert('The two passwords entered do not match, please re-enter.');
                 passwordConfirm.focus();
             }
         });
         
-        // 快速创建销售员按钮
+        // Quick create sales clerk button
         const createSalesBtn = document.getElementById('createSalesBtn');
         if (createSalesBtn) {
             createSalesBtn.addEventListener('click', function() {
-                // 清除所有选中的用户组
+                // Clear all selected user groups
                 document.querySelectorAll('input[name="groups"]').forEach(checkbox => {
                     checkbox.checked = false;
                 });
                 
-                // 选中销售员组
+                // Select sales clerk group
                 const salesGroupCheckbox = document.querySelector('input[name="groups"][id$="group_' + findSalesGroupId() + '"]');
                 if (salesGroupCheckbox) {
                     salesGroupCheckbox.checked = true;
                 }
                 
-                // 设置基本权限
+                // Set basic permissions
                 document.getElementById('is_active').checked = true;
                 document.getElementById('is_staff').checked = true;
                 document.getElementById('is_superuser').checked = false;
                 
-                // 设置焦点到用户名字段
+                // Set focus to username field
                 document.getElementById('username').focus();
             });
         }
         
-        // 查找销售员组ID
+        // Find sales clerk group ID
         function findSalesGroupId() {
             const groups = document.querySelectorAll('input[name="groups"]');
             for (let i = 0; i < groups.length; i++) {
                 const label = groups[i].nextElementSibling;
-                if (label && label.textContent.trim() === '销售员') {
+                if (label && label.textContent.trim() === 'Sales Clerk') {
                     return groups[i].value;
                 }
             }

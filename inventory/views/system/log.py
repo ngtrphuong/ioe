@@ -1,5 +1,5 @@
 """
-系统日志管理相关视图
+System log management related views
 """
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -24,14 +24,14 @@ logger = logging.getLogger(__name__)
 @permission_required('is_superuser')
 @log_view_access('OTHER')
 def log_list(request):
-    """系统日志列表视图"""
-    # 获取查询参数
+    """System log list view"""
+    # Get query parameters
     search_query = request.GET.get('q', '')
     action_type = request.GET.get('action_type', '')
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
     
-    # 构建过滤条件
+    # Build filtering conditions
     query = LogEntry.objects.all()
     
     if search_query:
@@ -49,24 +49,24 @@ def log_list(request):
             date_from_obj = datetime.strptime(date_from, '%Y-%m-%d')
             query = query.filter(action_time__gte=date_from_obj)
         except ValueError:
-            messages.error(request, "开始日期格式无效")
+            messages.error(request, "Invalid start date format")
     
     if date_to:
         try:
             date_to_obj = datetime.strptime(date_to, '%Y-%m-%d')
-            # 添加一天，使其包含结束日期的全天
+            # Add a day to include the entire end date
             date_to_obj = date_to_obj + timedelta(days=1)
             query = query.filter(action_time__lt=date_to_obj)
         except ValueError:
-            messages.error(request, "结束日期格式无效")
+            messages.error(request, "Invalid end date format")
     
-    # 分页
+    # Pagination
     page_size = int(request.GET.get('page_size', 50))
     paginator = Paginator(query.order_by('-action_time'), page_size)
     page_number = request.GET.get('page', 1)
     logs = paginator.get_page(page_number)
     
-    # 准备统计数据
+    # Prepare statistics
     stats = {
         'total': LogEntry.objects.count(),
         'add': LogEntry.objects.filter(action_flag=1).count(),
@@ -74,7 +74,7 @@ def log_list(request):
         'delete': LogEntry.objects.filter(action_flag=3).count(),
     }
     
-    # 准备文件日志数据
+    # Prepare file log data
     log_files = []
     log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'logs')
     
@@ -86,7 +86,7 @@ def log_list(request):
                     size = os.path.getsize(file_path)
                     modified = datetime.fromtimestamp(os.path.getmtime(file_path))
                     
-                    # 将字节转换为人类可读的格式
+                    # Convert bytes to human readable format
                     if size < 1024:
                         size_str = f"{size} bytes"
                     elif size < 1024 * 1024:
@@ -103,7 +103,7 @@ def log_list(request):
                 except OSError:
                     continue
                     
-        # 按修改时间排序
+        # Sort by modification time
         log_files.sort(key=lambda x: x['modified'], reverse=True)
     
     context = {
@@ -123,8 +123,8 @@ def log_list(request):
 @permission_required('is_superuser')
 @log_view_access('OTHER')
 def clear_logs(request):
-    """清除系统日志视图"""
-    # 默认日期为30天前
+    """Clear system logs view"""
+    # Default date is 30 days ago
     default_date = (timezone.now() - timedelta(days=30)).strftime('%Y-%m-%d')
     
     if request.method == 'POST':
@@ -133,40 +133,40 @@ def clear_logs(request):
         confirm = request.POST.get('confirm') == 'on'
         
         if not confirm:
-            messages.error(request, "请确认您要清除日志")
+            messages.error(request, "Please confirm you want to clear logs")
             return redirect('log_list')
         
         try:
-            # 根据日期过滤
+            # Filter by date
             if date_before:
                 try:
                     date_before_obj = datetime.strptime(date_before, '%Y-%m-%d')
                     date_before_obj = date_before_obj.replace(tzinfo=timezone.get_current_timezone())
                     query = LogEntry.objects.filter(action_time__lt=date_before_obj)
                 except ValueError:
-                    messages.error(request, "日期格式无效")
+                    messages.error(request, "Invalid date format")
                     return redirect('log_list')
             else:
                 query = LogEntry.objects.all()
             
-            # 根据类型过滤
+            # Filter by type
             if log_type and log_type.isdigit():
                 query = query.filter(action_flag=int(log_type))
             
-            # 获取要删除的记录数量
+            # Get the number of records to delete
             count = query.count()
             
-            # 删除日志
+            # Delete logs
             query.delete()
             
-            # 记录操作到日志
-            logger.info(f"用户 {request.user.username} 清除了系统日志：类型 {log_type}，日期 {date_before} 之前，共 {count} 条记录")
+            # Log the operation
+            logger.info(f"User {request.user.username} cleared system logs: type {log_type}, before date {date_before}, total {count} records")
             
-            messages.success(request, f"成功清除 {count} 条日志记录")
+            messages.success(request, f"Successfully cleared {count} log records")
             
         except Exception as e:
-            messages.error(request, f"清除日志失败: {str(e)}")
-            logger.error(f"清除日志失败: {str(e)}")
+            messages.error(request, f"Failed to clear logs: {str(e)}")
+            logger.error(f"Failed to clear logs: {str(e)}")
         
         return redirect('log_list')
     
@@ -179,40 +179,40 @@ def clear_logs(request):
 @login_required
 @permission_required('is_superuser')
 def view_log_file(request, file_name):
-    """查看日志文件内容"""
+    """View log file content"""
     log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'logs')
     file_path = os.path.join(log_dir, file_name)
     
-    # 安全检查，确保文件名是一个有效的日志文件名
+    # Security check, ensure file name is a valid log file name
     if not re.match(r'^[\w.-]+\.log$', file_name) or '..' in file_name:
-        messages.error(request, "无效的日志文件名")
+        messages.error(request, "Invalid log file name")
         return redirect('log_list')
     
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
-        messages.error(request, f"日志文件 {file_name} 不存在")
+        messages.error(request, f"Log file {file_name} does not exist")
         return redirect('log_list')
     
-    # 获取行数限制
+    # Get line limit
     lines = request.GET.get('lines', 500)
     try:
         lines = int(lines)
     except ValueError:
         lines = 500
     
-    # 获取文件内容（尾部的指定行数）
+    # Get file content (last specified lines)
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
-            # 读取所有行并反转
+            # Read all lines and reverse
             all_lines = f.readlines()
             total_lines = len(all_lines)
             
-            # 获取最后的 lines 行
+            # Get the last lines
             if lines >= total_lines:
                 content = ''.join(all_lines)
             else:
                 content = ''.join(all_lines[-lines:])
             
-            # 转换内容为安全HTML
+            # Convert content to safe HTML
             content = escape(content)
             
             return render(request, 'inventory/system/view_log_file.html', {
@@ -223,89 +223,89 @@ def view_log_file(request, file_name):
             })
             
     except Exception as e:
-        messages.error(request, f"读取日志文件失败: {str(e)}")
-        logger.error(f"读取日志文件失败: {str(e)}")
+        messages.error(request, f"Failed to read log file: {str(e)}")
+        logger.error(f"Failed to read log file: {str(e)}")
         return redirect('log_list')
 
 @login_required
 @permission_required('is_superuser')
 def download_log_file(request, file_name):
-    """下载日志文件"""
+    """Download log file"""
     log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'logs')
     file_path = os.path.join(log_dir, file_name)
     
-    # 安全检查，确保文件名是一个有效的日志文件名
+    # Security check, ensure file name is a valid log file name
     if not re.match(r'^[\w.-]+\.log$', file_name) or '..' in file_name:
-        messages.error(request, "无效的日志文件名")
+        messages.error(request, "Invalid log file name")
         return redirect('log_list')
     
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
-        messages.error(request, f"日志文件 {file_name} 不存在")
+        messages.error(request, f"Log file {file_name} does not exist")
         return redirect('log_list')
     
     try:
-        # 记录下载操作
+        # Log download operation
         LogEntry.objects.create(
             user=request.user,
             action_flag=1,
             content_type_id=0,
             object_id=file_name,
-            object_repr=f'下载日志: {file_name}',
-            change_message=f'下载了日志文件 {file_name}'
+            object_repr=f'Downloaded log: {file_name}',
+            change_message=f'Downloaded log file {file_name}'
         )
         
-        # 返回文件响应
+        # Return file response
         response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=file_name)
         return response
         
     except Exception as e:
-        messages.error(request, f"下载日志文件失败: {str(e)}")
-        logger.error(f"下载日志文件失败: {str(e)}")
+        messages.error(request, f"Failed to download log file: {str(e)}")
+        logger.error(f"Failed to download log file: {str(e)}")
         return redirect('log_list')
 
 @login_required
 @permission_required('is_superuser')
 def delete_log_file(request, file_name):
-    """删除日志文件"""
+    """Delete log file"""
     log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'logs')
     file_path = os.path.join(log_dir, file_name)
     
-    # 安全检查，确保文件名是一个有效的日志文件名
+    # Security check, ensure file name is a valid log file name
     if not re.match(r'^[\w.-]+\.log$', file_name) or '..' in file_name:
-        messages.error(request, "无效的日志文件名")
+        messages.error(request, "Invalid log file name")
         return redirect('log_list')
     
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
-        messages.error(request, f"日志文件 {file_name} 不存在")
+        messages.error(request, f"Log file {file_name} does not exist")
         return redirect('log_list')
     
     if request.method == 'POST':
-        # 确认删除
+        # Confirm deletion
         confirm = request.POST.get('confirm') == 'on'
         if not confirm:
-            messages.error(request, "请确认您要删除此日志文件")
+            messages.error(request, "Please confirm you want to delete this log file")
             return render(request, 'inventory/system/delete_log_file.html', {'file_name': file_name})
         
         try:
-            # 删除文件
+            # Delete file
             os.remove(file_path)
             
-            # 记录删除操作
+            # Log deletion operation
             LogEntry.objects.create(
                 user=request.user,
                 action_flag=3,
                 content_type_id=0,
                 object_id=file_name,
-                object_repr=f'删除日志: {file_name}',
-                change_message=f'删除了日志文件 {file_name}'
+                object_repr=f'Deleted log: {file_name}',
+                change_message=f'Deleted log file {file_name}'
             )
             
-            messages.success(request, f"成功删除日志文件 {file_name}")
+            messages.success(request, f"Successfully deleted log file {file_name}")
             return redirect('log_list')
             
         except Exception as e:
-            messages.error(request, f"删除日志文件失败: {str(e)}")
-            logger.error(f"删除日志文件失败: {str(e)}")
+            messages.error(request, f"Failed to delete log file: {str(e)}")
+            logger.error(f"Failed to delete log file: {str(e)}")
             return redirect('log_list')
     
     return render(request, 'inventory/system/delete_log_file.html', {'file_name': file_name}) 

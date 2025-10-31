@@ -12,11 +12,11 @@ from django.contrib.auth.models import User
 logger = logging.getLogger(__name__)
 
 class BackupService:
-    """数据库备份和恢复服务"""
+    """Database backup and restore services"""
     
     @staticmethod
     def get_backup_directory():
-        """获取备份目录，如果不存在则创建"""
+        """Get the backup directory, create it if it does not exist"""
         backup_dir = os.path.join(settings.BASE_DIR, 'backups')
         os.makedirs(backup_dir, exist_ok=True)
         return backup_dir
@@ -24,28 +24,25 @@ class BackupService:
     @staticmethod
     def create_backup(backup_name=None, user=None):
         """
-        创建数据库备份
-        :param backup_name: 备份名称，如果为None则使用当前日期时间
-        :param user: 执行备份的用户
-        :return: 备份文件路径
+        Create a database backup
+        :param backup_name: Backup name, defaults to current date/time if None
+        :param user: The user performing the backup
+        :return: Path to backup
         """
         if not backup_name:
             now = datetime.datetime.now()
             backup_name = f"backup_{now.strftime('%Y%m%d_%H%M%S')}"
-        
-        # 创建备份目录
+        # Create backup directory
         backup_dir = BackupService.get_backup_directory()
         backup_path = os.path.join(backup_dir, backup_name)
         os.makedirs(backup_path, exist_ok=True)
-        
         try:
-            # 导出数据库为JSON fixtures
+            # Export database as JSON fixtures
             fixtures_path = os.path.join(backup_path, 'db.json')
             with open(fixtures_path, 'w', encoding='utf-8') as f:
                 call_command('dumpdata', '--exclude', 'contenttypes', '--exclude', 'auth.Permission',
                             '--exclude', 'sessions.session', '--indent', '2', stdout=f)
-            
-            # 备份媒体文件
+            # Backup media files
             media_dir = os.path.join(settings.BASE_DIR, 'media')
             if os.path.exists(media_dir):
                 media_backup_dir = os.path.join(backup_path, 'media')
@@ -57,8 +54,7 @@ class BackupService:
                         shutil.copytree(source, target, dirs_exist_ok=True)
                     else:
                         shutil.copy2(source, target)
-            
-            # 记录备份元数据
+            # Write backup metadata
             metadata = {
                 'backup_name': backup_name,
                 'created_at': datetime.datetime.now().isoformat(),
@@ -66,82 +62,73 @@ class BackupService:
                 'django_version': settings.DJANGO_VERSION,
                 'database_engine': settings.DATABASES['default']['ENGINE'],
             }
-            
             with open(os.path.join(backup_path, 'metadata.json'), 'w', encoding='utf-8') as f:
                 json.dump(metadata, f, indent=2)
-            
-            logger.info(f"备份创建成功: {backup_name}")
+            logger.info(f"Backup created successfully: {backup_name}")
             return backup_path
         except Exception as e:
-            # 如果备份失败，删除可能创建的部分备份
+            # If backup fails, remove any partial backup
             if os.path.exists(backup_path):
                 shutil.rmtree(backup_path)
-            logger.error(f"备份创建失败: {str(e)}")
+            logger.error(f"Failed to create backup: {str(e)}")
             raise
 
     @staticmethod
     def restore_backup(backup_name, user=None):
         """
-        从备份恢复数据库
-        :param backup_name: 备份名称
-        :param user: 执行恢复的用户
-        :return: 成功返回True，失败返回False
+        Restore a database from backup
+        :param backup_name: Backup name
+        :param user: The user performing the restore
+        :return: True if successful, False if failed
         """
         backup_dir = BackupService.get_backup_directory()
         backup_path = os.path.join(backup_dir, backup_name)
-        
         if not os.path.exists(backup_path):
-            logger.error(f"备份不存在: {backup_name}")
+            logger.error(f"Backup does not exist: {backup_name}")
             return False
-        
         try:
-            # 恢复数据库
+            # Restore database
             fixtures_path = os.path.join(backup_path, 'db.json')
             if os.path.exists(fixtures_path):
-                # 先清空数据库，但保留超级用户
+                # Clear database, keep superuser
                 superusers = list(User.objects.filter(is_superuser=True).values_list('username', flat=True))
                 call_command('flush', '--noinput')
                 call_command('loaddata', fixtures_path)
-                
-                # 记录恢复操作
+                # Record restore operation
                 with open(os.path.join(backup_path, 'restore_log.json'), 'w', encoding='utf-8') as f:
                     restore_log = {
                         'restored_at': datetime.datetime.now().isoformat(),
                         'restored_by': user.username if user else 'system',
                     }
                     json.dump(restore_log, f, indent=2)
-                
-                # 恢复媒体文件
+                # Restore media files
                 media_backup_dir = os.path.join(backup_path, 'media')
                 if os.path.exists(media_backup_dir):
                     media_dir = os.path.join(settings.BASE_DIR, 'media')
                     if os.path.exists(media_dir):
-                        # 先备份当前的媒体文件
+                        # Backup current media files first
                         media_backup = os.path.join(settings.BASE_DIR, f"media_backup_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}")
                         shutil.move(media_dir, media_backup)
-                    
-                    # 复制备份的媒体文件
+                    # Copy backup media files
                     shutil.copytree(media_backup_dir, media_dir)
-                
-                logger.info(f"备份恢复成功: {backup_name}")
+                logger.info(f"Backup restored successfully: {backup_name}")
                 return True
             else:
-                logger.error(f"备份文件不完整，缺少db.json: {backup_name}")
+                logger.error(f"Backup is incomplete, missing db.json: {backup_name}")
                 return False
         except Exception as e:
-            logger.error(f"备份恢复失败: {str(e)}")
+            logger.error(f"Failed to restore backup: {str(e)}")
             return False
     
     @staticmethod
     def list_backups():
         """
-        列出所有备份
-        :return: 备份列表，格式为[{'name': name, 'created_at': datetime, 'size': size_in_mb, ...}, ...]
+        List all backups
+        :return: List of backups, e.g. [{'name': name, 'created_at': datetime, 'size': size_in_mb, ...}, ...]
         """
         backup_dir = BackupService.get_backup_directory()
         if not os.path.exists(backup_dir):
             return []
-        
         backups = []
         for backup_name in os.listdir(backup_dir):
             backup_path = os.path.join(backup_dir, backup_name)
@@ -151,15 +138,13 @@ class BackupService:
                     try:
                         with open(metadata_path, 'r', encoding='utf-8') as f:
                             metadata = json.load(f)
-                        
-                        # 计算备份大小
+                        # Calculate backup size
                         size_bytes = sum(
                             os.path.getsize(os.path.join(dirpath, filename))
                             for dirpath, _, filenames in os.walk(backup_path)
                             for filename in filenames
                         )
                         size_mb = size_bytes / (1024 * 1024)
-                        
                         backups.append({
                             'name': backup_name,
                             'created_at': datetime.datetime.fromisoformat(metadata['created_at']),
@@ -169,64 +154,58 @@ class BackupService:
                             'metadata': metadata
                         })
                     except Exception as e:
-                        logger.warning(f"读取备份元数据失败: {backup_name}, 错误: {str(e)}")
-                        # 添加一个简单的备份记录，无元数据
+                        logger.warning(f"Failed to read backup metadata: {backup_name}, error: {str(e)}")
+                        # Add a simple record without metadata
                         backups.append({
                             'name': backup_name,
                             'created_at': datetime.datetime.fromtimestamp(os.path.getctime(backup_path)),
                             'created_by': 'unknown',
-                            'size': '未知',
+                            'size': 'unknown',
                             'size_bytes': 0,
                             'metadata': {}
                         })
-        
-        # 按创建时间排序，最新的在前面
+        # Sort descending by created_at
         backups.sort(key=lambda x: x['created_at'], reverse=True)
         return backups
     
     @staticmethod
     def delete_backup(backup_name):
         """
-        删除指定备份
-        :param backup_name: 备份名称
-        :return: 成功返回True，失败返回False
+        Delete the specified backup
+        :param backup_name: Backup name
+        :return: True if successful, False otherwise
         """
         backup_dir = BackupService.get_backup_directory()
         backup_path = os.path.join(backup_dir, backup_name)
-        
         if not os.path.exists(backup_path):
-            logger.error(f"备份不存在: {backup_name}")
+            logger.error(f"Backup does not exist: {backup_name}")
             return False
-        
         try:
             shutil.rmtree(backup_path)
-            logger.info(f"备份删除成功: {backup_name}")
+            logger.info(f"Backup deleted successfully: {backup_name}")
             return True
         except Exception as e:
-            logger.error(f"备份删除失败: {str(e)}")
+            logger.error(f"Failed to delete backup: {str(e)}")
             return False
     
     @staticmethod
     def auto_backup():
         """
-        执行自动备份，并清理超过60天的旧备份
+        Run automatic backup and clean up backups older than 60 days
         """
         try:
-            # 创建新备份
+            # Create new backup
             backup_name = f"auto_backup_{datetime.datetime.now().strftime('%Y%m%d')}"
             BackupService.create_backup(backup_name=backup_name)
-            
-            # 计算60天前的日期
+            # Compute cut-off date
             days_to_keep = getattr(settings, 'BACKUP_DAYS_TO_KEEP', 60)
             cutoff_date = datetime.datetime.now() - datetime.timedelta(days=days_to_keep)
-            
-            # 列出所有备份并删除旧的自动备份
+            # List all backups and delete old auto backups
             backups = BackupService.list_backups()
             for backup in backups:
                 if backup['name'].startswith('auto_backup_') and backup['created_at'] < cutoff_date:
                     BackupService.delete_backup(backup['name'])
-            
             return True
         except Exception as e:
-            logger.error(f"自动备份失败: {str(e)}")
+            logger.error(f"Automatic backup failed: {str(e)}")
             return False 

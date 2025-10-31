@@ -1,6 +1,6 @@
 """
-商品相关业务服务
-提供商品管理相关的业务逻辑处理
+Product-related business service
+Provides business logic for product management
 """
 import csv
 import io
@@ -12,7 +12,7 @@ from inventory.models import Product, Category, ProductImage, ProductBatch, Inve
 
 
 def import_products_from_csv(csv_file, user):
-    """从CSV文件导入商品"""
+    """Import products from CSV file"""
     result = {
         'success': 0,
         'skipped': 0,
@@ -20,23 +20,23 @@ def import_products_from_csv(csv_file, user):
         'failed_rows': []
     }
     
-    # 读取CSV文件
+    # Read CSV file
     decoded_file = csv_file.read().decode('utf-8')
     csv_data = csv.reader(io.StringIO(decoded_file))
-    headers = next(csv_data)  # 获取表头
+    headers = next(csv_data)  # Get header row
     
-    # 验证必要的表头
+    # Validate required headers
     required_headers = ['name', 'retail_price']
     missing_headers = [h for h in required_headers if h not in headers]
     if missing_headers:
-        raise ValueError(f"CSV文件缺少必要的表头: {', '.join(missing_headers)}")
+        raise ValueError(f"Missing required CSV headers: {', '.join(missing_headers)}")
     
-    # 获取各列索引
+    # Get column indexes
     headers_lower = [h.lower() for h in headers]
     name_idx = headers_lower.index('name')
     retail_price_idx = headers_lower.index('retail_price')
     
-    # 可选列的索引
+    # Indexes of optional columns
     category_idx = headers_lower.index('category') if 'category' in headers_lower else -1
     wholesale_price_idx = headers_lower.index('wholesale_price') if 'wholesale_price' in headers_lower else -1
     cost_price_idx = headers_lower.index('cost_price') if 'cost_price' in headers_lower else -1
@@ -44,49 +44,49 @@ def import_products_from_csv(csv_file, user):
     sku_idx = headers_lower.index('sku') if 'sku' in headers_lower else -1
     specification_idx = headers_lower.index('specification') if 'specification' in headers_lower else -1
     
-    # 处理每一行数据
-    for row_num, row in enumerate(csv_data, start=2):  # 从2开始，因为1是表头
+    # Handle each row of data
+    for row_num, row in enumerate(csv_data, start=2):  # start=2 because row 1 is header
         try:
             if not row or len(row) < len(required_headers):
                 result['skipped'] += 1
                 continue
             
-            # 解析基本信息
+            # Parse basic information
             name = row[name_idx].strip()
             if not name:
                 result['failed'] += 1
-                result['failed_rows'].append((row_num, "商品名称不能为空"))
+                result['failed_rows'].append((row_num, "Product name cannot be empty"))
                 continue
             
-            # 解析价格
+            # Parse price
             try:
                 retail_price = float(row[retail_price_idx].replace(',', ''))
                 if retail_price < 0:
                     result['failed'] += 1
-                    result['failed_rows'].append((row_num, "零售价不能为负数"))
+                    result['failed_rows'].append((row_num, "Retail price cannot be negative"))
                     continue
             except (ValueError, IndexError):
                 result['failed'] += 1
-                result['failed_rows'].append((row_num, "零售价格式不正确"))
+                result['failed_rows'].append((row_num, "Invalid retail price format"))
                 continue
             
-            # 检查商品是否已存在
+            # Check if product already exists
             existing_product = None
             if barcode_idx >= 0 and row[barcode_idx]:
                 barcode = row[barcode_idx].strip()
                 existing_product = Product.objects.filter(barcode=barcode).first()
                 if existing_product:
                     result['skipped'] += 1
-                    result['failed_rows'].append((row_num, f"条码 {barcode} 已存在"))
+                    result['failed_rows'].append((row_num, f"Barcode {barcode} already exists"))
                     continue
             
-            # 解析分类
+            # Parse category
             category = None
             if category_idx >= 0 and row[category_idx]:
                 category_name = row[category_idx].strip()
                 category, _ = Category.objects.get_or_create(name=category_name)
             
-            # 创建商品
+            # Create product
             with transaction.atomic():
                 product = Product.objects.create(
                     name=name,
@@ -98,7 +98,7 @@ def import_products_from_csv(csv_file, user):
                     created_by=user
                 )
                 
-                # 创建初始库存记录
+                # Create initial inventory record
                 Inventory.objects.create(
                     product=product,
                     quantity=0,
@@ -115,7 +115,7 @@ def import_products_from_csv(csv_file, user):
 
 
 def search_products(query, category_id=None, active_only=True):
-    """搜索商品"""
+    """Search for products"""
     products = Product.objects.select_related('category').all()
     
     if query:
@@ -136,7 +136,7 @@ def search_products(query, category_id=None, active_only=True):
 
 
 def get_product_with_inventory(product_id):
-    """获取商品及其库存信息"""
+    """Get product and its inventory information"""
     try:
         product = Product.objects.get(id=product_id)
         inventory = Inventory.objects.get(product=product)

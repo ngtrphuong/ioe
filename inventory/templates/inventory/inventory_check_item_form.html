@@ -14,38 +14,38 @@
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-6">
-                            <h5>商品信息</h5>
+                            <h5>Product Information</h5>
                             <div class="table-responsive">
                                 <table class="table table-sm">
                                     <tr>
-                                        <th>商品名称：</th>
+                                        <th>Product Name:</th>
                                         <td>{{ check_item.product.name }}</td>
                                     </tr>
                                     <tr>
-                                        <th>商品条码：</th>
+                                        <th>Barcode:</th>
                                         <td><code>{{ check_item.product.barcode }}</code></td>
                                     </tr>
                                     <tr>
-                                        <th>商品分类：</th>
+                                        <th>Category:</th>
                                         <td>{{ check_item.product.category.name }}</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h5>盘点信息</h5>
+                            <h5>Inventory Check Info</h5>
                             <div class="table-responsive">
                                 <table class="table table-sm">
                                     <tr>
-                                        <th>盘点名称：</th>
+                                        <th>Check Name:</th>
                                         <td>{{ inventory_check.name }}</td>
                                     </tr>
                                     <tr>
-                                        <th>系统数量：</th>
+                                        <th>System Quantity:</th>
                                         <td><strong class="text-primary">{{ check_item.system_quantity }}</strong></td>
                                     </tr>
                                     <tr>
-                                        <th>状态：</th>
+                                        <th>Status:</th>
                                         <td>
                                             {% if inventory_check.status == 'in_progress' %}
                                             <span class="badge bg-primary">{{ inventory_check.get_status_display }}</span>
@@ -61,7 +61,7 @@
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'inventory_check_detail' check_id=inventory_check.id %}" class="btn btn-outline-secondary">返回</a>
+                            <a href="{% url 'inventory_check_detail' check_id=inventory_check.id %}" class="btn btn-outline-secondary">Back</a>
                             <button type="submit" class="btn btn-primary">{{ submit_text }}</button>
                         </div>
                     </form>
@@ -70,7 +70,7 @@
                     <div class="small text-muted">
                         <p>
                             <i class="bi bi-info-circle"></i>
-                            请输入实际盘点的商品数量。如果与系统数量存在差异，系统会自动计算差异值。
+                            Please enter the actual counted quantity. If it differs from the system quantity, the difference will be calculated automatically.
                         </p>
                     </div>
                 </div>

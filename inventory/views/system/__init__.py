@@ -1,5 +1,5 @@
 """
-系统管理相关视图
+System management related views
 """
 from .base import (
     system_settings,
@@ -36,7 +36,7 @@ from .user import (
 )
 
 __all__ = [
-    # 基础系统设置
+    # Basic system settings
     'system_settings',
     'system_info',
     'store_settings',
@@ -44,14 +44,14 @@ __all__ = [
     'delete_store',
     'system_maintenance',
     
-    # 日志管理
+    # Log management
     'log_list',
     'clear_logs',
     'view_log_file',
     'download_log_file',
     'delete_log_file',
     
-    # 备份管理
+    # Backup management
     'backup_list',
     'create_backup',
     'restore_backup',
@@ -59,7 +59,7 @@ __all__ = [
     'download_backup',
     'manual_backup',
     
-    # 用户管理
+    # User management
     'user_list',
     'user_create',
     'user_update',

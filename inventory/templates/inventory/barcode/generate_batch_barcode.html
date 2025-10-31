@@ -1,13 +1,13 @@
 {% extends "inventory/base.html" %}
 {% load static %}
 
-{% block title %}生成批次条码{% endblock %}
+{% block title %}Generate Batch Barcode{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">生成批次条码</h5>
+            <h5 class="mb-0">Generate Batch Barcode</h5>
         </div>
         <div class="card-body">
             <form method="post" id="batch-barcode-form">
@@ -17,16 +17,16 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">选择商品</h6>
+                                <h6 class="mb-0">Select Product</h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="product-select" class="form-label">选择商品 <span class="text-danger">*</span></label>
+                                    <label for="product-select" class="form-label">Select Product <span class="text-danger">*</span></label>
                                     <select class="form-select" id="product-select" name="product_id" required>
-                                        <option value="">-- 请选择商品 --</option>
+                                        <option value="">-- Please Select Product --</option>
                                         {% for product in products %}
                                             <option value="{{ product.id }}">
-                                                {{ product.name }} ({{ product.barcode|default:"无条码" }})
+                                                {{ product.name }} ({{ product.barcode|default:"No Barcode" }})
                                             </option>
                                         {% endfor %}
                                     </select>
@@ -38,19 +38,19 @@
                     <div class="col-md-6">
                         <div class="card">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">选择批次</h6>
+                                <h6 class="mb-0">Select Batch</h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="batch-select" class="form-label">选择批次 <span class="text-danger">*</span></label>
+                                    <label for="batch-select" class="form-label">Select Batch <span class="text-danger">*</span></label>
                                     <select class="form-select" id="batch-select" name="batch_id" required disabled>
-                                        <option value="">-- 请先选择商品 --</option>
+                                        <option value="">-- Please Select Product First --</option>
                                     </select>
-                                    <div class="form-text text-muted">选择商品后将显示该商品的可用批次</div>
+                                    <div class="form-text text-muted">Available batches for the selected product will be displayed</div>
                                 </div>
                                 
                                 <div class="mb-3">
-                                    <label for="quantity" class="form-label">打印数量</label>
+                                    <label for="quantity" class="form-label">Print Quantity</label>
                                     <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="100">
                                 </div>
                             </div>
@@ -60,10 +60,10 @@
                 
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary" id="generate-btn" disabled>
-                        <i class="fas fa-barcode"></i> 生成批次条码
+                        <i class="fas fa-barcode"></i> Generate Batch Barcode
                     </button>
                     <a href="{% url 'generate_barcode' %}" class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-box"></i> 生成商品条码
+                        <i class="fas fa-box"></i> Generate Product Barcode
                     </a>
                 </div>
             </form>
@@ -72,16 +72,16 @@
             <div class="mt-4">
                 <div class="card">
                     <div class="card-header bg-light">
-                        <h6 class="mb-0">批次信息</h6>
+                        <h6 class="mb-0">Batch Information</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>商品名称:</strong> {{ batch.product.name }}</p>
-                                <p><strong>批次编号:</strong> {{ batch.batch_number }}</p>
-                                <p><strong>生产日期:</strong> {{ batch.manufacturing_date|date:"Y-m-d"|default:"未设置" }}</p>
-                                <p><strong>到期日期:</strong> {{ batch.expiry_date|date:"Y-m-d"|default:"未设置" }}</p>
-                                <p><strong>剩余数量:</strong> {{ batch.remaining_quantity }}</p>
+                                <p><strong>Product Name:</strong> {{ batch.product.name }}</p>
+                                <p><strong>Batch Number:</strong> {{ batch.batch_number }}</p>
+                                <p><strong>Manufacturing Date:</strong> {{ batch.manufacturing_date|date:"Y-m-d"|default:"Not Set" }}</p>
+                                <p><strong>Expiry Date:</strong> {{ batch.expiry_date|date:"Y-m-d"|default:"Not Set" }}</p>
+                                <p><strong>Remaining Quantity:</strong> {{ batch.remaining_quantity }}</p>
                             </div>
                             <div class="col-md-6">
                                 {% if batch.product.image %}
@@ -89,7 +89,7 @@
                                 {% else %}
                                 <div class="text-center p-4 bg-light">
                                     <i class="fas fa-boxes fa-3x text-muted"></i>
-                                    <p class="mt-2 text-muted">无批次图片</p>
+                                    <p class="mt-2 text-muted">No Batch Image</p>
                                 </div>
                                 {% endif %}
                             </div>
@@ -106,53 +106,53 @@
 {% block extra_js %}
 <script>
     $(document).ready(function() {
-        // 增强商品选择器
+        // Enhance product selector
         $('#product-select').select2({
-            placeholder: '请选择商品',
+            placeholder: 'Please select product',
             allowClear: true
         });
         
-        // 增强批次选择器
+        // Enhance batch selector
         $('#batch-select').select2({
-            placeholder: '选择批次',
+            placeholder: 'Select batch',
             allowClear: true
         });
         
-        // 当选择商品时加载批次
+        // Load batches when product is selected
         $('#product-select').change(function() {
             let productId = $(this).val();
             let $batchSelect = $('#batch-select');
             
-            // 重置批次选择框
-            $batchSelect.empty().append('<option value="">-- 选择批次 --</option>');
+            // Reset batch selector
+            $batchSelect.empty().append('<option value="">-- Select Batch --</option>');
             $batchSelect.prop('disabled', true);
             $('#generate-btn').prop('disabled', true);
             
             if (productId) {
-                // 显示加载中
-                $batchSelect.append('<option value="" disabled>正在加载批次...</option>');
+                // Show loading
+                $batchSelect.append('<option value="" disabled>Loading batches...</option>');
                 
-                // AJAX请求获取批次
+                // AJAX request to get batches
                 $.ajax({
                     url: '/api/get-product-batches/',
                     data: { product_id: productId },
                     success: function(batches) {
-                        $batchSelect.empty().append('<option value="">-- 选择批次 --</option>');
+                        $batchSelect.empty().append('<option value="">-- Select Batch --</option>');
                         
                         if (batches.length > 0) {
-                            // 添加批次选项
+                            // Add batch options
                             $.each(batches, function(index, batch) {
                                 let batchText = batch.batch_number;
                                 
                                 if (batch.manufacturing_date) {
-                                    batchText += ' (生产: ' + batch.manufacturing_date + ')';
+                                    batchText += ' (Mfg: ' + batch.manufacturing_date + ')';
                                 }
                                 
                                 if (batch.expiry_date) {
-                                    batchText += ' (到期: ' + batch.expiry_date + ')';
+                                    batchText += ' (Exp: ' + batch.expiry_date + ')';
                                 }
                                 
-                                batchText += ' [库存: ' + batch.remaining_quantity + ']';
+                                batchText += ' [Stock: ' + batch.remaining_quantity + ']';
                                 
                                 $batchSelect.append(
                                     $('<option></option>').val(batch.id).text(batchText)
@@ -161,30 +161,30 @@
                             
                             $batchSelect.prop('disabled', false);
                         } else {
-                            $batchSelect.append('<option value="" disabled>该商品没有可用批次</option>');
+                            $batchSelect.append('<option value="" disabled>No available batches for this product</option>');
                         }
                     },
                     error: function() {
-                        $batchSelect.empty().append('<option value="">-- 加载批次失败 --</option>');
+                        $batchSelect.empty().append('<option value="">-- Failed to Load Batches --</option>');
                     }
                 });
             }
         });
         
-        // 当选择批次时启用生成按钮
+        // Enable generate button when batch is selected
         $('#batch-select').change(function() {
             $('#generate-btn').prop('disabled', !$(this).val());
         });
         
-        // 如果已有选择的批次，加载相关信息
+        // If batch is already selected, load related information
         {% if batch %}
             $('#product-select').val('{{ batch.product.id }}').trigger('change');
             
-            // 延迟一会儿设置批次，因为需要等待AJAX加载完成
+            // Delay setting batch, as we need to wait for AJAX loading to complete
             setTimeout(function() {
                 $('#batch-select').val('{{ batch.id }}').trigger('change');
             }, 1000);
         {% endif %}
     });
 </script>
-{% endblock %} 
+{% endblock %}

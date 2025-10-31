@@ -16,19 +16,19 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="h5 mb-0">需要确认的差异项</h3>
+                    <h3 class="h5 mb-0">Discrepancies to Confirm</h3>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>商品名称</th>
-                                    <th>条码</th>
-                                    <th class="text-center">系统数量</th>
-                                    <th class="text-center">实际数量</th>
-                                    <th class="text-center">差异</th>
-                                    <th>备注</th>
+                                    <th>Product</th>
+                                    <th>Barcode</th>
+                                    <th class="text-center">System Qty</th>
+                                    <th class="text-center">Actual Qty</th>
+                                    <th class="text-center">Difference</th>
+                                    <th>Notes</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -47,7 +47,7 @@
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">没有盘点差异</td>
+                                    <td colspan="6" class="text-center py-4">No discrepancies</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -59,14 +59,14 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="h5 mb-0">审核确认</h3>
+                    <h3 class="h5 mb-0">Approval Confirmation</h3>
                 </div>
                 <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'inventory_check_detail' check_id=inventory_check.id %}" class="btn btn-outline-secondary">返回</a>
+                            <a href="{% url 'inventory_check_detail' check_id=inventory_check.id %}" class="btn btn-outline-secondary">Back</a>
                             <button type="submit" class="btn btn-success">{{ submit_text }}</button>
                         </div>
                     </form>
@@ -75,7 +75,7 @@
                     <div class="small text-muted">
                         <p>
                             <i class="bi bi-info-circle"></i>
-                            审核盘点后，将无法再修改盘点结果。如果选择调整库存，系统将自动根据实际盘点结果调整库存数量。
+                            After approval, results can no longer be modified. If you choose to adjust inventory, the system will update stock based on actual counts.
                         </p>
                     </div>
                 </div>

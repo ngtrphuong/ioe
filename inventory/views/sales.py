@@ -20,7 +20,7 @@ from inventory.utils.query_utils import paginate_queryset
 
 @login_required
 def sale_list(request):
-    """销售单列表视图"""
+    """Sales order list view"""
     today = timezone.now().date()
     today_sales = Sale.objects.filter(created_at__date=today).aggregate(
         total=Sum('total_amount')
@@ -29,17 +29,17 @@ def sale_list(request):
         total=Sum('total_amount')
     )['total'] or 0
 
-    # 从GET参数获取搜索和筛选条件
+    # Get search and filter conditions from GET params
     search_query = request.GET.get('q', '')
     date_from = request.GET.get('date_from', '')
     date_to = request.GET.get('date_to', '')
     
-    # 获取所有销售单
+    # Get all sales
     sales = Sale.objects.all().order_by('-created_at')
     total_sales = sales.count()
-    # 应用筛选条件
+    # Apply filters
     if search_query:
-        # 可以搜索销售单号、会员姓名、手机号等
+        # Search by order ID, member name, phone, etc.
         sales = sales.filter(
             Q(id__icontains=search_query) | 
             Q(member__name__icontains=search_query) | 
@@ -54,10 +54,10 @@ def sale_list(request):
             date_to_obj = datetime.combine(date_to_obj.date(), datetime.max.time())
             sales = sales.filter(created_at__range=[date_from_obj, date_to_obj])
         except ValueError:
-            # 日期格式不正确，忽略筛选
+            # Ignore filter if date format invalid
             pass
     
-    # 分页
+    # Pagination
     page_number = request.GET.get('page', 1)
     paginated_sales = paginate_queryset(sales, page_number)
     
@@ -75,15 +75,15 @@ def sale_list(request):
 
 @login_required
 def sale_detail(request, sale_id):
-    """销售单详情视图"""
+    """Sales order detail view"""
     sale = get_object_or_404(Sale, pk=sale_id)
     items = SaleItem.objects.filter(sale=sale).select_related('product')
     
-    # 确保销售单金额与商品项总和一致
+    # Ensure order amount equals sum of items
     items_total = sum(item.subtotal for item in items)
     if items_total > 0 and (sale.total_amount == 0 or abs(sale.total_amount - items_total) > 1):
-        print(f"警告: 销售单金额({sale.total_amount})与商品项总和({items_total})不一致，正在修复")
-        # 更新销售单金额
+        print(f"Warning: Sales order amount ({sale.total_amount}) does not match sum of items ({items_total}), fixing...")
+        # Update sales order amount
         discount_rate = Decimal('1.0')
         if sale.member and sale.member.level and sale.member.level.discount:
             try:
@@ -94,14 +94,14 @@ def sale_detail(request, sale_id):
         discount_amount = items_total * (Decimal('1.0') - discount_rate)
         final_amount = items_total - discount_amount
         
-        # 使用原始SQL直接更新数据库
+        # Update database with raw SQL to avoid ORM side effects
         with connection.cursor() as cursor:
             cursor.execute(
                 "UPDATE inventory_sale SET total_amount = %s, discount_amount = %s, final_amount = %s WHERE id = %s",
                 [items_total, discount_amount, final_amount, sale.id]
             )
         
-        # 重新加载销售单数据
+        # Reload sales order data
         sale = get_object_or_404(Sale, pk=sale_id)
     
     context = {
@@ -113,16 +113,16 @@ def sale_detail(request, sale_id):
 
 @login_required
 def sale_create(request):
-    """创建销售单视图"""
+    """Create sales order view"""
     if request.method == 'POST':
-        # 添加调试信息
+        # Debug info
         print("=" * 80)
-        print("销售单提交数据：")
+        print("Sales order submitted data:")
         for key, value in request.POST.items():
             print(f"{key}: {value}")
         print("=" * 80)
         
-        # 获取前端提交的商品信息
+        # Get product data submitted from frontend
         products_data = []
         for key, value in request.POST.items():
             if key.startswith('products[') and key.endswith('][id]'):
@@ -137,67 +137,67 @@ def sale_create(request):
                     'price': price
                 })
         
-        # 验证是否有商品数据
+        # Validate if there is product data
         if not products_data:
-            messages.error(request, '销售单创建失败，未能找到任何商品数据。')
+            messages.error(request, 'Failed to create sales order: no products found.')
             return redirect('sale_create')
             
-        # 验证商品数据
+        # Validate product data
         valid_products = True
         valid_products_data = []
         
         for item_data in products_data:
             try:
                 product = Product.objects.get(id=item_data['product_id'])
-                # 解析数量
+                # Parse quantity
                 try:
                     quantity = int(item_data['quantity'])
                     if quantity <= 0:
                         raise ValueError("Quantity must be positive")
                 except (ValueError, TypeError):
                     print(f"Error parsing quantity for product {item_data['product_id']}: Value='{item_data['quantity']}'")
-                    messages.error(request, f"商品 {product.name} 的数量 '{item_data['quantity']}' 无效。")
+                    messages.error(request, f"Invalid quantity '{item_data['quantity']}' for product {product.name}.")
                     valid_products = False
                     continue
 
-                # 解析价格
+                # Parse price
                 try:
-                    # 打印原始价格字符串用于调试
+                    # Print raw price string for debugging
                     raw_price = item_data['price']
-                    print(f"原始价格字符串: '{raw_price}', 类型: {type(raw_price)}")
+                    print(f"Raw price string: '{raw_price}', type: {type(raw_price)}")
                     
-                    # 确保价格是字符串
+                    # Ensure price is a string
                     if not isinstance(raw_price, str):
                         raw_price = str(raw_price)
                     
-                    # 尝试直接从前端获取价格
+                    # Try to get price directly from frontend
                     price = Decimal(raw_price.replace(',', '.'))
                     
                     if price <= 0:
-                        # 如果解析的价格为0或负数，尝试从数据库获取商品价格
+                        # If parsed price is 0 or negative, try to get product price from database
                         db_price = Product.objects.filter(id=item_data['product_id']).values_list('price', flat=True).first()
                         if db_price:
                             price = Decimal(db_price)
-                            print(f"使用数据库中的商品价格: {price}")
+                            print(f"Using product price from database: {price}")
                     
-                    print(f"成功解析商品 {product.name} 的价格: {price}")
+                    print(f"Successfully parsed price for product {product.name}: {price}")
                     
-                    # 安全检查：如果价格仍然为0，中止处理
+                    # Safety check: if price is still 0, abort processing
                     if price <= 0:
-                        raise ValueError(f"商品价格不能为0或负数: {raw_price}")
+                        raise ValueError(f"Product price cannot be zero or negative: {raw_price}")
                         
                 except (InvalidOperation, ValueError, TypeError) as e:
                     print(f"Error parsing price for product {item_data['product_id']}: Value='{item_data['price']}', Error: {str(e)}")
-                    messages.error(request, f"商品 {product.name} 的价格解析错误，请联系管理员。")
+                    messages.error(request, f"Price parsing error for product {product.name}. Please contact administrator.")
                     valid_products = False
                     continue
 
-                # 检查库存
+                # Check inventory
                 inventory_obj = Inventory.objects.get(product=product)
                 if inventory_obj.quantity >= quantity:
-                    # 确保使用Decimal类型计算小计，避免精度问题
+                    # Ensure Decimal type is used for subtotal to avoid precision issues
                     subtotal = price * Decimal(str(quantity))
-                    print(f"商品 {product.name} 的小计: 价格={price} * 数量={quantity} = {subtotal}")
+                    print(f"Product {product.name} subtotal: price={price} * quantity={quantity} = {subtotal}")
                     
                     valid_products_data.append({
                         'product': product,
@@ -208,90 +208,90 @@ def sale_create(request):
                     })
                 else:
                     print(f"Insufficient stock for product {product.id} ({product.name}): needed={quantity}, available={inventory_obj.quantity}")
-                    messages.warning(request, f"商品 {product.name} 库存不足 (需要 {quantity}, 可用 {inventory_obj.quantity})。该商品未添加到销售单。")
+                    messages.warning(request, f"Insufficient stock for {product.name} (needed {quantity}, available {inventory_obj.quantity}). Item not added to order.")
                     valid_products = False
 
             except Product.DoesNotExist:
                 print(f"Error processing sale item: Product with ID {item_data['product_id']} does not exist.")
-                messages.error(request, f"处理商品时出错：无效的商品 ID {item_data['product_id']}。")
+                messages.error(request, f"Error processing item: invalid product ID {item_data['product_id']}.")
                 valid_products = False
             except Inventory.DoesNotExist:
                 print(f"Error processing sale item: Inventory record for product {item_data['product_id']} does not exist.")
-                messages.error(request, f"处理商品 {product.name} 时出错：找不到库存记录。")
+                messages.error(request, f"Error processing {product.name}: inventory record not found.")
                 valid_products = False
             except Exception as e:
                 print(f"Unexpected error processing sale item for product ID {item_data.get('product_id', 'N/A')}: {type(e).__name__} - {e}")
-                messages.error(request, f"处理商品 ID {item_data.get('product_id', 'N/A')} 时发生意外错误。请联系管理员。")
+                messages.error(request, f"Unexpected error processing item ID {item_data.get('product_id', 'N/A')}. Please contact administrator.")
                 valid_products = False
         
-        # 如果没有有效商品，返回错误
+        # If no valid products, return error
         if not valid_products_data:
-            messages.error(request, '销售单创建失败，未能添加任何有效商品。')
+            messages.error(request, 'Failed to create sales order: no valid products added.')
             return redirect('sale_create')
             
-        # 再次确认所有商品价格都有效
+        # Reconfirm all product prices are valid
         for i, item in enumerate(valid_products_data):
             if item['price'] <= 0 or item['subtotal'] <= 0:
-                print(f"警告：商品{i+1} {item['product'].name} 价格或小计为0，尝试从数据库重新获取价格")
+                print(f"Warning: Product {i+1} {item['product'].name} price or subtotal is 0, trying to get price from database")
                 db_price = Product.objects.filter(id=item['product'].id).values_list('price', flat=True).first() or Decimal('0')
                 if db_price > 0:
                     item['price'] = Decimal(db_price)
                     item['subtotal'] = item['price'] * Decimal(str(item['quantity']))
-                    print(f"已更新商品 {item['product'].name} 的价格: {item['price']}, 小计: {item['subtotal']}")
+                    print(f"Updated product {item['product'].name} price: {item['price']}, subtotal: {item['subtotal']}")
             
-        # 计算总金额
+        # Calculate total amount
         total_amount_calculated = sum(item['subtotal'] for item in valid_products_data)
-        print(f"后端计算的总金额: {total_amount_calculated}, 商品数量: {len(valid_products_data)}")
+        print(f"Backend calculated total amount: {total_amount_calculated}, product count: {len(valid_products_data)}")
         
-        # 验证计算是否正确
+        # Verify calculation is correct
         if total_amount_calculated == 0 and valid_products_data:
-            print("警告：后端计算的总金额为0，但有有效商品，检查每个商品的金额:")
+            print("Warning: Backend calculated total amount is 0 but there are valid products, checking each product amount:")
             for i, item in enumerate(valid_products_data):
-                print(f"商品{i+1}: {item['product'].name}, 价格={item['price']}, 数量={item['quantity']}, 小计={item['subtotal']}")
+                print(f"Product {i+1}: {item['product'].name}, price={item['price']}, quantity={item['quantity']}, subtotal={item['subtotal']}")
         
-        # 获取前端提交的金额数据作为参考
+        # Get amounts submitted from frontend as reference
         try:
             total_amount_frontend = Decimal(request.POST.get('total_amount', '0.00'))
             discount_amount_frontend = Decimal(request.POST.get('discount_amount', '0.00'))
             final_amount_frontend = Decimal(request.POST.get('final_amount', '0.00'))
-            print(f"前端提交的金额 - 总金额: {total_amount_frontend}, 折扣: {discount_amount_frontend}, 最终金额: {final_amount_frontend}")
+            print(f"Frontend submitted amounts - Total: {total_amount_frontend}, Discount: {discount_amount_frontend}, Final: {final_amount_frontend}")
             
-            # 决定使用哪个总金额
+            # Decide which total amount to use
             if total_amount_calculated > 0:
-                # 如果后端计算有效，优先使用后端计算的金额
+                # If backend calculation is valid, prefer backend calculated amount
                 total_amount = total_amount_calculated
                 
-                # 重新计算折扣和最终金额，只有当有会员时才应用折扣
+                # Recalculate discount and final amount; apply member discount only if member exists
                 member_id = request.POST.get('member')
-                discount_rate = Decimal('1.0')  # 默认无折扣
+                discount_rate = Decimal('1.0')  # Default no discount
                 
                 if member_id:
                     try:
                         member = Member.objects.get(id=member_id)
                         if member.level and member.level.discount is not None:
                             discount_rate = Decimal(str(member.level.discount))
-                        print(f"会员折扣: 会员ID={member_id}, 折扣率={discount_rate}")
+                        print(f"Member discount: Member ID={member_id}, discount rate={discount_rate}")
                     except Member.DoesNotExist:
-                        print(f"找不到ID为{member_id}的会员，不应用折扣")
+                        print(f"Member with ID {member_id} not found, no discount applied")
                 else:
-                    print("无会员信息，不应用折扣")
+                    print("No member information, no discount applied")
                 
                 discount_amount = total_amount * (Decimal('1.0') - discount_rate)
                 final_amount = total_amount - discount_amount
                 
-                print(f"使用后端计算的金额: 总金额={total_amount}, 折扣率={discount_rate}, 折扣金额={discount_amount}, 最终金额={final_amount}")
+                print(f"Using backend calculated amounts: Total={total_amount}, discount rate={discount_rate}, discount amount={discount_amount}, final amount={final_amount}")
             elif total_amount_frontend > 0:
-                # 如果后端计算无效但前端有值，使用前端数据
+                # If backend calculation is invalid but frontend has values, use frontend data
                 total_amount = total_amount_frontend
                 discount_amount = discount_amount_frontend
                 final_amount = final_amount_frontend
-                print(f"使用前端提交的金额: 总金额={total_amount}, 折扣金额={discount_amount}, 最终金额={final_amount}")
+                print(f"Using frontend submitted amounts: Total={total_amount}, discount amount={discount_amount}, final amount={final_amount}")
             else:
-                # 两者都无效，使用商品数据库价格重新计算
-                print("警告：前端和后端计算的金额都无效，尝试使用数据库价格")
+                # Both are invalid, try using product database prices for recalculation
+                print("Warning: Both frontend and backend calculated amounts are invalid, trying database prices")
                 db_total = Decimal('0.00')
                 
-                # 尝试从数据库获取每个商品的价格
+                # Try to get price for each product from database
                 for item in valid_products_data:
                     product_id = item['product'].id
                     quantity = item['quantity']
@@ -300,16 +300,16 @@ def sale_create(request):
                     if db_price > 0:
                         item_total = db_price * Decimal(str(quantity))
                         db_total += item_total
-                        print(f"使用数据库价格: 商品ID={product_id}, 价格={db_price}, 数量={quantity}, 小计={item_total}")
+                        print(f"Using database price: Product ID={product_id}, price={db_price}, quantity={quantity}, subtotal={item_total}")
                 
                 total_amount = db_total
                 discount_amount = Decimal('0.00')
                 final_amount = total_amount
-                print(f"使用数据库价格计算的总金额: {total_amount}")
+                print(f"Total amount calculated using database prices: {total_amount}")
                 
         except (InvalidOperation, ValueError, TypeError) as e:
-            print(f"解析金额时出错: {e}，尝试使用数据库中的商品价格")
-            # 尝试从数据库获取商品价格重新计算
+            print(f"Error parsing amounts: {e}, trying to use product prices from database")
+            # Try to recalculate using product prices from database
             db_total = Decimal('0.00')
             for item in valid_products_data:
                 product_id = item['product'].id
@@ -319,35 +319,35 @@ def sale_create(request):
                 if db_price > 0:
                     item_total = db_price * Decimal(str(quantity))
                     db_total += item_total
-                    # 更新商品数据
+                    # Update product data
                     item['price'] = db_price
                     item['subtotal'] = item_total
                     
             total_amount = db_total
             discount_amount = Decimal('0.00')
             final_amount = total_amount
-            print(f"使用数据库价格计算的总金额: {total_amount}")
+            print(f"Total amount calculated using database prices: {total_amount}")
         
-        # 最终安全检查，确保总金额大于0
+        # Final safety check to ensure total amount is greater than 0
         if total_amount <= 0 and valid_products_data:
-            print("警告：计算的总金额仍然为0或负数，使用固定价格作为最后的保障")
-            # 使用855.33作为固定价格，这只是一个保底措施
+            print("Warning: Calculated total amount is still 0 or negative, using fixed price as last resort")
+            # Use 855.33 as a fixed price as a last resort
             total_amount = Decimal('855.33')
             discount_amount = Decimal('0.00')
             final_amount = total_amount
         
         form = SaleForm(request.POST)
         if form.is_valid():
-            # 创建销售单，但暂不保存
+            # Create sales order but do not save yet
             sale = form.save(commit=False)
             sale.operator = request.user
             
-            # 设置金额
+            # Set amounts
             sale.total_amount = total_amount
             sale.discount_amount = discount_amount
             sale.final_amount = final_amount
             
-            # 处理会员关联
+            # Handle member association
             member_id = request.POST.get('member')
             if member_id:
                 try:
@@ -356,21 +356,21 @@ def sale_create(request):
                 except Member.DoesNotExist:
                     pass
             
-            # 设置支付方式
+            # Set payment method
             sale.payment_method = request.POST.get('payment_method', 'cash')
             
-            # 设置积分（实付金额的整数部分）
+            # Set points (integer part of final amount)
             sale.points_earned = int(sale.final_amount) if sale.final_amount is not None else 0
             
-            # 保存销售单基本信息
+            # Save basic sales order information
             sale.save()
             
-            # 使用事务处理，确保所有操作要么全部成功，要么全部失败
+            # Use transaction to ensure all operations succeed or fail together
             try:
                 with transaction.atomic():
-                    # 添加商品项并更新库存
+                    # Add product items and update inventory
                     for item_data in valid_products_data:
-                        # 手动创建SaleItem，避免触发连锁更新
+                        # Manually create SaleItem to avoid cascading updates
                         sale_item = SaleItem(
                             sale=sale,
                             product=item_data['product'],
@@ -380,108 +380,108 @@ def sale_create(request):
                             subtotal=item_data['subtotal']
                         )
                         
-                        # 确保小计已设置
+                        # Ensure subtotal is set
                         if not sale_item.subtotal or sale_item.subtotal == 0:
                             sale_item.subtotal = sale_item.price * sale_item.quantity
-                            print(f"重新计算小计: {sale_item.price} * {sale_item.quantity} = {sale_item.subtotal}")
+                            print(f"Recalculate subtotal: {sale_item.price} * {sale_item.quantity} = {sale_item.subtotal}")
                         
-                        # 保存SaleItem到数据库
+                        # Save SaleItem to database
                         models.Model.save(sale_item)
                         
-                        # 打印保存后的数据，确认数据正确
-                        print(f"保存的SaleItem - ID: {sale_item.id}, 商品: {sale_item.product.name}, "
-                              f"价格: {sale_item.price}, 数量: {sale_item.quantity}, 小计: {sale_item.subtotal}")
+                        # Print saved data to confirm correctness
+                        print(f"Saved SaleItem - ID: {sale_item.id}, Product: {sale_item.product.name}, "
+                              f"Price: {sale_item.price}, Quantity: {sale_item.quantity}, Subtotal: {sale_item.subtotal}")
                         
-                        # 直接使用SQL更新记录，确保价格正确
+                        # Directly update record using SQL to ensure correct price
                         with connection.cursor() as cursor:
                             cursor.execute(
                                 "UPDATE inventory_saleitem SET price = %s, actual_price = %s, subtotal = %s WHERE id = %s",
                                 [str(item_data['price']), str(item_data['price']), str(item_data['subtotal']), sale_item.id]
                             )
-                            print(f"直接执行SQL更新SaleItem记录: id={sale_item.id}, price={item_data['price']}, subtotal={item_data['subtotal']}")
+                            print(f"Direct SQL update of SaleItem: id={sale_item.id}, price={item_data['price']}, subtotal={item_data['subtotal']}")
                         
-                        # 强制重新加载销售项
+                        # Force reload sales item
                         sale_item = SaleItem.objects.get(id=sale_item.id)
-                        print(f"重新加载后的SaleItem - ID: {sale_item.id}, 价格: {sale_item.price}, 小计: {sale_item.subtotal}")
+                        print(f"Reloaded SaleItem - ID: {sale_item.id}, Price: {sale_item.price}, Subtotal: {sale_item.subtotal}")
                         
-                        # 更新库存
+                        # Update inventory
                         inventory_obj = item_data['inventory']
                         inventory_obj.quantity -= item_data['quantity']
                         inventory_obj.save()
                         
-                        # 创建库存交易记录
+                        # Create inventory transaction record
                         InventoryTransaction.objects.create(
                             product=item_data['product'],
                             transaction_type='OUT',
                             quantity=item_data['quantity'],
                             operator=request.user,
-                            notes=f'销售单号：{sale.id}'
+                            notes=f'Sales Order ID: {sale.id}'
                         )
                         
-                        # 记录操作日志
+                        # Record operation log
                         OperationLog.objects.create(
                             operator=request.user,
                             operation_type='SALE',
-                            details=f'销售商品 {item_data["product"].name} 数量 {item_data["quantity"]}',
+                            details=f'Sold product {item_data["product"].name} quantity {item_data["quantity"]}',
                             related_object_id=sale.id,
                             related_content_type=ContentType.objects.get_for_model(Sale)
                         )
                     
-                    # 如果有会员，更新会员积分和消费记录
+                    # If member exists, update member points and consumption records
                     if sale.member:
                         sale.member.points += sale.points_earned
                         sale.member.purchase_count += 1
                         sale.member.total_spend += sale.final_amount
                         sale.member.save()
                     
-                    # 记录完成销售操作日志
+                    # Record completed sales operation log
                     OperationLog.objects.create(
                         operator=request.user,
                         operation_type='SALE',
-                        details=f'完成销售单 #{sale.id}，总金额: {sale.final_amount}，支付方式: {sale.get_payment_method_display()}',
+                        details=f'Completed sales order #{sale.id}, total amount: {sale.final_amount}, payment method: {sale.get_payment_method_display()}',
                         related_object_id=sale.id,
                         related_content_type=ContentType.objects.get_for_model(Sale)
                     )
                     
-                    # 最后确保销售单金额正确
+                    # Finally ensure sales order amount is correct
                     with connection.cursor() as cursor:
-                        # 将Decimal转换为字符串，避免数据类型问题
+                        # Convert Decimal to string to avoid data type issues
                         total_str = str(total_amount)
                         discount_str = str(discount_amount)
                         final_str = str(final_amount)
                         points = int(final_amount) if final_amount else 0
                         
-                        print(f"更新销售单最终金额: total={total_str}, discount={discount_str}, final={final_str}, points={points}")
+                        print(f"Update final sale amounts: total={total_str}, discount={discount_str}, final={final_str}, points={points}")
                         
                         cursor.execute(
                             "UPDATE inventory_sale SET total_amount = %s, discount_amount = %s, final_amount = %s, points_earned = %s WHERE id = %s",
                             [total_str, discount_str, final_str, points, sale.id]
                         )
-                        print(f"直接执行SQL更新Sale记录: id={sale.id}, total={total_str}, discount={discount_str}, final={final_str}")
+                        print(f"Direct SQL update of Sale: id={sale.id}, total={total_str}, discount={discount_str}, final={final_str}")
                 
-                # 从数据库重新获取销售单，确保显示正确的金额
+                # Re-fetch sales order from database to ensure amounts are displayed correctly
                 refreshed_sale = get_object_or_404(Sale, pk=sale.id)
-                print(f"刷新后的销售单金额: total={refreshed_sale.total_amount}, discount={refreshed_sale.discount_amount}, final={refreshed_sale.final_amount}")
+                print(f"Refreshed sale amounts: total={refreshed_sale.total_amount}, discount={refreshed_sale.discount_amount}, final={refreshed_sale.final_amount}")
                 
-                # 交易成功，显示成功消息
-                messages.success(request, '销售单创建成功')
+                # Transaction successful, display success message
+                messages.success(request, 'Sales order created successfully')
                 return redirect('sale_detail', sale_id=sale.id)
                 
             except Exception as e:
-                # 出现任何异常，回滚事务
-                print(f"创建销售单时发生错误: {type(e).__name__} - {e}")
-                messages.error(request, f'创建销售单时发生错误: {str(e)}')
-                # 由于使用了事务，所有数据库操作都会自动回滚
+                # Any exception, rollback transaction
+                print(f"Error creating sales order: {type(e).__name__} - {e}")
+                messages.error(request, f'Error creating sales order: {str(e)}')
+                # Since transactions are used, all database operations will automatically roll back
                 return redirect('sale_create')
         else:
-            # 表单验证失败
+            # Form validation failed
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'{field}: {error}')
     else:
         form = SaleForm()
     
-    # 获取会员等级列表，用于添加会员模态框
+    # Get member level list, for adding member modal
     from inventory.models import MemberLevel
     member_levels = MemberLevel.objects.all()
     
@@ -492,7 +492,7 @@ def sale_create(request):
 
 @login_required
 def sale_item_create(request, sale_id):
-    """添加销售单商品视图"""
+    """Add sales order item view"""
     sale = get_object_or_404(Sale, id=sale_id)
     if request.method == 'POST':
         form = SaleItemForm(request.POST)
@@ -500,7 +500,7 @@ def sale_item_create(request, sale_id):
             sale_item = form.save(commit=False)
             sale_item.sale = sale
             
-            # 确保price字段也被设置
+            # Ensure price field is also set
             if hasattr(sale_item, 'actual_price') and not hasattr(sale_item, 'price'):
                 sale_item.price = sale_item.actual_price
             elif hasattr(sale_item, 'price') and not hasattr(sale_item, 'actual_price'):
@@ -519,22 +519,22 @@ def sale_item_create(request, sale_id):
                     transaction_type='OUT',
                     quantity=sale_item.quantity,
                     operator=request.user,
-                    notes=f'销售单号：{sale.id}'
+                    notes=f'Sales Order ID: {sale.id}'
                 )
                 
-                messages.success(request, '商品添加成功')
+                messages.success(request, 'Product added successfully')
                 
-                # 记录操作日志
+                # Record operation log
                 OperationLog.objects.create(
                     operator=request.user,
                     operation_type='SALE',
-                    details=f'销售商品 {sale_item.product.name} 数量 {sale_item.quantity}',
+                    details=f'Sold product {sale_item.product.name} quantity {sale_item.quantity}',
                     related_object_id=sale.id,
                     related_content_type=ContentType.objects.get_for_model(Sale)
                 )
                 return redirect('sale_item_create', sale_id=sale.id)
             else:
-                messages.error(request, '库存不足')
+                messages.error(request, 'Insufficient stock')
     else:
         form = SaleItemForm()
     
@@ -547,7 +547,7 @@ def sale_item_create(request, sale_id):
 
 @login_required
 def sale_complete(request, sale_id):
-    """完成销售视图"""
+    """Complete sales view"""
     sale = get_object_or_404(Sale, id=sale_id)
     if request.method == 'POST':
         form = SaleForm(request.POST, instance=sale)
@@ -555,32 +555,32 @@ def sale_complete(request, sale_id):
             sale = form.save(commit=False)
             sale.operator = request.user
             
-            # 更新总金额（防止异常情况）
+            # Update total amount (prevent exceptional cases)
             sale.update_total_amount()
             
-            # 处理会员折扣
+            # Handle member discount
             member_id = request.POST.get('member')
             if member_id:
                 try:
                     member = Member.objects.get(id=member_id)
                     sale.member = member
                     
-                    # 应用会员折扣率
-                    discount_rate = Decimal('1.0')  # 默认无折扣
+                    # Apply member discount rate
+                    discount_rate = Decimal('1.0')  # Default no discount
                     if member.level and member.level.discount is not None:
                         try:
                             discount_rate = Decimal(str(member.level.discount))
                         except (ValueError, InvalidOperation, TypeError):
-                            # 如果折扣率无效，使用默认值
+                            # If discount rate is invalid, use default value
                             discount_rate = Decimal('1.0')
                     
                     sale.discount_amount = sale.total_amount * (1 - discount_rate)
                     sale.final_amount = sale.total_amount - sale.discount_amount
                     
-                    # 计算获得积分 (实付金额的整数部分)
+                    # Calculate points earned (integer part of final amount)
                     sale.points_earned = int(sale.final_amount)
                     
-                    # 更新会员积分和消费记录
+                    # Update member points and consumption records
                     member.points += sale.points_earned
                     member.purchase_count += 1
                     member.total_spend += sale.final_amount
@@ -588,22 +588,22 @@ def sale_complete(request, sale_id):
                 except Member.DoesNotExist:
                     pass
             
-            # 设置支付方式
+            # Set payment method
             payment_method = request.POST.get('payment_method')
             if payment_method:
                 sale.payment_method = payment_method
                 
-                # 如果使用余额支付，处理会员余额
+                # If using balance payment, handle member balance
                 if payment_method == 'balance' and sale.member:
                     if sale.member.balance >= sale.final_amount:
                         sale.member.balance -= sale.final_amount
                         sale.member.save()
                         sale.balance_paid = sale.final_amount
                     else:
-                        messages.error(request, '会员余额不足')
+                        messages.error(request, 'Insufficient member balance')
                         return redirect('sale_complete', sale_id=sale.id)
                 
-                # 如果是混合支付，处理余额部分
+                # If mixed payment, handle balance portion
                 elif payment_method == 'mixed' and sale.member:
                     balance_amount = request.POST.get('balance_amount', 0)
                     try:
@@ -617,21 +617,21 @@ def sale_complete(request, sale_id):
                             sale.member.save()
                             sale.balance_paid = balance_amount
                         else:
-                            messages.error(request, '会员余额不足')
+                            messages.error(request, 'Insufficient member balance')
                             return redirect('sale_complete', sale_id=sale.id)
             
             sale.save()
             
-            # 记录操作日志
+            # Record operation log
             OperationLog.objects.create(
                 operator=request.user,
                 operation_type='SALE',
-                details=f'完成销售单 #{sale.id}，总金额: {sale.final_amount}，支付方式: {sale.get_payment_method_display()}',
+                details=f'Completed sales order #{sale.id}, total amount: {sale.final_amount}, payment method: {sale.get_payment_method_display()}',
                 related_object_id=sale.id,
                 related_content_type=ContentType.objects.get_for_model(Sale)
             )
             
-            messages.success(request, '销售单已完成')
+            messages.success(request, 'Sales order completed')
             return redirect('sale_detail', sale_id=sale.id)
     else:
         form = SaleForm(instance=sale)
@@ -644,128 +644,128 @@ def sale_complete(request, sale_id):
 
 @login_required
 def sale_cancel(request, sale_id):
-    """取消销售单视图"""
+    """Cancel sales order view"""
     sale = get_object_or_404(Sale, id=sale_id)
     
-    # 检查状态，只有未完成的销售单可以取消
+    # Check status, only unfinished sales orders can be cancelled
     if sale.status == 'COMPLETED':
-        messages.error(request, '已完成的销售单不能取消')
+        messages.error(request, 'Completed sales orders cannot be cancelled')
         return redirect('sale_detail', sale_id=sale.id)
     
     if request.method == 'POST':
         reason = request.POST.get('reason', '')
         
-        # 恢复库存
+        # Restore inventory
         for item in sale.items.all():
             inventory = Inventory.objects.get(product=item.product)
             inventory.quantity += item.quantity
             inventory.save()
             
-            # 创建入库交易记录
+            # Create stock-in transaction record
             InventoryTransaction.objects.create(
                 product=item.product,
                 transaction_type='IN',
                 quantity=item.quantity,
                 operator=request.user,
-                notes=f'取消销售单 #{sale.id} 恢复库存'
+                notes=f'Cancelled sales order #{sale.id} restored inventory'
             )
         
-        # 更改销售单状态
+        # Change sales order status
         sale.status = 'CANCELLED'
-        sale.notes = f"{sale.notes or ''}\n取消原因: {reason}".strip()
+        sale.notes = f"{sale.notes or ''}\nCancellation reason: {reason}".strip()
         sale.save()
         
-        # 记录操作日志
+        # Record operation log
         OperationLog.objects.create(
             operator=request.user,
             operation_type='SALE',
-            details=f'取消销售单 #{sale.id}，原因: {reason}',
+            details=f'Cancelled sales order #{sale.id}, reason: {reason}',
             related_object_id=sale.id,
             related_content_type=ContentType.objects.get_for_model(Sale)
         )
         
-        messages.success(request, '销售单已取消')
+        messages.success(request, 'Sales order cancelled')
         return redirect('sale_list')
     
     return render(request, 'inventory/sale_cancel.html', {'sale': sale})
 
 @login_required
 def sale_delete_item(request, sale_id, item_id):
-    """删除销售单商品视图"""
+    """Delete sales order item view"""
     sale = get_object_or_404(Sale, id=sale_id)
     item = get_object_or_404(SaleItem, id=item_id, sale=sale)
     
-    # 检查销售单状态
+    # Check sales order status
     if sale.status == 'COMPLETED':
-        messages.error(request, '已完成的销售单不能修改')
+        messages.error(request, 'Completed sales orders cannot be modified')
         return redirect('sale_detail', sale_id=sale.id)
     
-    # 恢复库存
+    # Restore inventory
     inventory = Inventory.objects.get(product=item.product)
     inventory.quantity += item.quantity
     inventory.save()
     
-    # 创建入库交易记录
+    # Create stock-in transaction record
     InventoryTransaction.objects.create(
         product=item.product,
         transaction_type='IN',
         quantity=item.quantity,
         operator=request.user,
-        notes=f'从销售单 #{sale.id} 中删除商品，恢复库存'
+        notes=f'Deleted item from sales order #{sale.id}, restored inventory'
     )
     
-    # 记录操作日志
+    # Record operation log
     OperationLog.objects.create(
         operator=request.user,
         operation_type='SALE',
-        details=f'从销售单 #{sale.id} 中删除商品 {item.product.name}',
+        details=f'Deleted product {item.product.name} from sales order #{sale.id}',
         related_object_id=sale.id,
         related_content_type=ContentType.objects.get_for_model(Sale)
     )
     
-    # 删除商品并更新销售单总额
+    # Delete item and update sales order total
     item.delete()
     sale.update_total_amount()
     
-    messages.success(request, '商品已从销售单中删除')
+    messages.success(request, 'Product deleted from sales order')
     return redirect('sale_item_create', sale_id=sale.id)
 
 @login_required
 def member_purchases(request):
-    """会员购买历史报表"""
-    # 获取查询参数
+    """Member purchase history report"""
+    # Get query parameters
     member_id = request.GET.get('member_id')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
     
-    # 初始查询集
+    # Initial queryset
     sales = Sale.objects.filter(member__isnull=False)
     member = None
     
-    # 应用筛选
+    # Apply filters
     if member_id:
         try:
             member = Member.objects.get(pk=member_id)
             sales = sales.filter(member=member)
         except (Member.DoesNotExist, ValueError):
-            messages.error(request, '无效的会员ID')
+            messages.error(request, 'Invalid member ID')
     
-    # 日期筛选
+    # Date filter
     if start_date:
         try:
             start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
             sales = sales.filter(created_at__date__gte=start_date_obj)
         except ValueError:
-            messages.error(request, '开始日期格式无效')
+            messages.error(request, 'Invalid start date format')
     
     if end_date:
         try:
             end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
             sales = sales.filter(created_at__date__lte=end_date_obj)
         except ValueError:
-            messages.error(request, '结束日期格式无效')
+            messages.error(request, 'Invalid end date format')
     
-    # 按会员分组统计
+    # Group by member for statistics
     if not member_id:
         member_stats = sales.values(
             'member__id', 'member__name', 'member__phone'
@@ -783,7 +783,7 @@ def member_purchases(request):
         }
         return render(request, 'inventory/member_purchases.html', context)
     
-    # 会员详细信息
+    # Member details
     sales = sales.order_by('-created_at')
     
     context = {
@@ -798,11 +798,11 @@ def member_purchases(request):
 
 @login_required
 def birthday_members_report(request):
-    """生日会员报表"""
-    # 获取查询参数
+    """Birthday members report"""
+    # Get query parameters
     month = request.GET.get('month')
     
-    # 默认显示当月
+    # Default to current month
     if not month:
         month = timezone.now().month
     else:
@@ -813,34 +813,34 @@ def birthday_members_report(request):
         except ValueError:
             month = timezone.now().month
     
-    # 获取指定月份的生日会员
+    # Get birthday members for the specified month
     members = Member.objects.filter(
-        birthday__isnull=False,  # 确保生日字段不为空
+        birthday__isnull=False,  # Ensure birthday field is not null
         birthday__month=month,
         is_active=True
     ).order_by('birthday__day')
     
-    # 计算各项统计数据
+    # Calculate various statistics
     total_members = members.count()
     
-    # 即将到来的生日会员(7天内)
+    # Upcoming birthday members (within 7 days)
     today = timezone.now().date()
     upcoming_birthdays = []
     
     for member in members:
         if member.birthday:
-            # 计算今年的生日日期
+            # Calculate this year's birthday date
             current_year = today.year
             birthday_this_year = date(current_year, member.birthday.month, member.birthday.day)
             
-            # 如果今年的生日已经过了，计算明年的生日
+            # If this year's birthday has passed, calculate next year's birthday
             if birthday_this_year < today:
                 birthday_this_year = date(current_year + 1, member.birthday.month, member.birthday.day)
             
-            # 计算距离生日还有多少天
+            # Calculate days until birthday
             days_until_birthday = (birthday_this_year - today).days
             
-            # 如果在7天内
+            # If within 7 days
             if 0 <= days_until_birthday <= 7:
                 upcoming_birthdays.append({
                     'member': member,
@@ -848,7 +848,7 @@ def birthday_members_report(request):
                     'birthday_date': birthday_this_year
                 })
     
-    # 按距离生日天数排序
+    # Sort by days until birthday
     upcoming_birthdays.sort(key=lambda x: x['days_until_birthday'])
     
     context = {
@@ -856,9 +856,9 @@ def birthday_members_report(request):
         'total_members': total_members,
         'month': month,
         'month_name': {
-            1: '一月', 2: '二月', 3: '三月', 4: '四月',
-            5: '五月', 6: '六月', 7: '七月', 8: '八月',
-            9: '九月', 10: '十月', 11: '十一月', 12: '十二月'
+            1: 'January', 2: 'February', 3: 'March', 4: 'April',
+            5: 'May', 6: 'June', 7: 'July', 8: 'August',
+            9: 'September', 10: 'October', 11: 'November', 12: 'December'
         }[month],
         'upcoming_birthdays': upcoming_birthdays
     }

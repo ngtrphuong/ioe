@@ -1,6 +1,6 @@
 {% extends 'inventory/base.html' %}
 
-{% block title %}商品管理 - {{ block.super }}{% endblock %}
+{% block title %}Product Management - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
@@ -9,15 +9,15 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                     <div>
-                        <h2 class="card-title mb-0">商品列表</h2>
-                        <p class="text-muted mb-md-0">管理所有商品信息</p>
+                        <h2 class="card-title mb-0">Product List</h2>
+                        <p class="text-muted mb-md-0">Manage all products</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         <a href="{% url 'barcode_product_create' %}" class="btn btn-success">
-                            <i class="bi bi-upc-scan me-1"></i> 扫码添加商品
+                            <i class="bi bi-upc-scan me-1"></i> Add by Barcode
                         </a>
                         <a href="{% url 'product_create' %}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> 手动添加商品
+                            <i class="bi bi-plus-circle me-1"></i> Add Product Manually
                         </a>
                     </div>
                 </div>
@@ -36,11 +36,11 @@
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                                 <input type="text" class="form-control" id="searchInput" name="search" 
-                                       placeholder="搜索商品名称或条码..." value="{{ search_query }}">
+                                       placeholder="Search product name or barcode..." value="{{ search_query }}">
                                 <input type="hidden" name="sort" value="{{ sort_by }}">
                                 <input type="hidden" name="category" value="{{ selected_category }}">
                                 <input type="hidden" name="status" value="{{ selected_status }}">
-                                <button type="submit" class="btn btn-primary">搜索</button>
+                                <button type="submit" class="btn btn-primary">Search</button>
                             </div>
                         </form>
                     </div>
@@ -49,22 +49,22 @@
                             <div class="btn-group me-2">
                                 <a href="{% url 'product_list' %}?sort=updated{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
                                    class="btn btn-outline-secondary {% if sort_by == 'updated' %}active{% endif %}">
-                                   <i class="bi bi-clock-history"></i> 最近更新
+                                   <i class="bi bi-clock-history"></i> Recently Updated
                                 </a>
                                 <a href="{% url 'product_list' %}?sort=name{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
                                    class="btn btn-outline-secondary {% if sort_by == 'name' %}active{% endif %}">
-                                   <i class="bi bi-sort-alpha-down"></i> 名称
+                                   <i class="bi bi-sort-alpha-down"></i> Name
                                 </a>
                                 <a href="{% url 'product_list' %}?sort=created{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" 
                                    class="btn btn-outline-secondary {% if sort_by == 'created' %}active{% endif %}">
-                                   <i class="bi bi-calendar-plus"></i> 创建时间
+                                   <i class="bi bi-calendar-plus"></i> Created At
                                 </a>
                             </div>
                             <div class="form-group ms-2" style="min-width: 150px;">
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
-                                    <select id="categoryDropdown" class="form-select" aria-label="分类筛选">
-                                        <option value="" {% if not selected_category %}selected{% endif %}>全部分类</option>
+                                    <select id="categoryDropdown" class="form-select" aria-label="Category Filter">
+                                        <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
                                         {% for category in categories %}
                                         <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
                                         {% endfor %}
@@ -79,13 +79,13 @@
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>商品名称</th>
-                                <th>类别</th>
-                                <th>颜色</th>
-                                <th>尺码</th>
-                                <th>单价</th>
-                                <th class="d-none d-md-table-cell">描述</th>
-                                <th>操作</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Price</th>
+                                <th class="d-none d-md-table-cell">Description</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -126,15 +126,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="fw-bold">¥{{ product.price }}</span>
+                                    <span class="fw-bold">${{ product.price }}</span>
                                 </td>
                                 <td class="d-none d-md-table-cell">{{ product.description|truncatewords:10 }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="{% url 'product_edit' product.id %}" class="btn btn-sm btn-outline-primary" title="编辑">
+                                        <a href="{% url 'product_edit' product.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger" title="删除">
+                                        <a href="#" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -145,8 +145,8 @@
                                 <td colspan="7" class="text-center py-5">
                                     <div class="d-flex flex-column align-items-center">
                                         <i class="bi bi-inbox text-muted" style="font-size: 2.5rem;"></i>
-                                        <p class="mt-3 mb-1">暂无商品数据</p>
-                                        <small class="text-muted">点击"添加商品"按钮创建商品</small>
+                                        <p class="mt-3 mb-1">No products available</p>
+                                        <small class="text-muted">Click "Add Product" to create a new product</small>
                                     </div>
                                 </td>
                             </tr>
@@ -158,17 +158,17 @@
                 <!-- 添加分页控件 -->
                 {% if page_obj.has_other_pages %}
                 <div class="d-flex justify-content-center mt-4">
-                    <nav aria-label="商品列表分页">
+                    <nav aria-label="Product list pagination">
                         <ul class="pagination">
                             {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="上一页">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
                             {% else %}
                             <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="上一页">
+                                <a class="page-link" href="#" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -188,13 +188,13 @@
                             
                             {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="下一页">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
                             {% else %}
                             <li class="page-item disabled">
-                                <a class="page-link" href="#" aria-label="下一页">
+                                <a class="page-link" href="#" aria-label="Next">
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
@@ -211,9 +211,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 删除前端搜索过滤逻辑，由后端处理搜索和筛选
+        // Remove frontend search filter logic, backend handles search and filtering
         
-        // 添加分页导航
+        // Add pagination navigation
         document.querySelectorAll('.page-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 if (this.getAttribute('href') === '#') {
@@ -222,34 +222,34 @@
             });
         });
         
-        // 分类下拉列表变化处理
+        // Handle category dropdown changes
         const categoryDropdown = document.getElementById('categoryDropdown');
         if (categoryDropdown) {
             categoryDropdown.addEventListener('change', function() {
-                // 构建URL
+                // Build URL
                 let url = '{% url 'product_list' %}?';
                 
-                // 添加分类参数 (如果有选择分类)
+                // Add category parameter (if category is selected)
                 if (this.value) {
                     url += 'category=' + this.value;
                 }
                 
-                // 添加排序参数 (如果存在)
+                // Add sort parameter (if exists)
                 {% if sort_by %}
                 url += (url.endsWith('?') ? '' : '&') + 'sort={{ sort_by }}';
                 {% endif %}
                 
-                // 添加搜索参数 (如果存在)
+                // Add search parameter (if exists)
                 {% if search_query %}
                 url += (url.endsWith('?') ? '' : '&') + 'search={{ search_query }}';
                 {% endif %}
                 
-                // 添加状态参数 (如果存在)
+                // Add status parameter (if exists)
                 {% if selected_status %}
                 url += (url.endsWith('?') ? '' : '&') + 'status={{ selected_status }}';
                 {% endif %}
                 
-                // 导航到构建的URL
+                // Navigate to the constructed URL
                 window.location.href = url;
             });
         }

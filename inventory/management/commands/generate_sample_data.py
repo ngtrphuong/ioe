@@ -198,7 +198,7 @@ class Command(BaseCommand):
             )
             
             if created:
-                # 创建库存
+                # Create inventory
                 inventory, _ = Inventory.objects.get_or_create(
                     product=product,
                     defaults={

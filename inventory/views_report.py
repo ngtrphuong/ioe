@@ -105,7 +105,7 @@ def top_products_report(request):
         # Get default data for last 30 days
         start_date = timezone.now().date() - timedelta(days=30)
         end_date = timezone.now().date()
-        limit = 10  # 默认显示10个
+        limit = 10  # Default show top 10
         
         # Get top products data
         top_products = ReportService.get_top_selling_products(
@@ -226,7 +226,7 @@ def member_analysis_report(request):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             
-            # 处理导出Excel请求
+            # Process export Excel request
             if 'export_excel' in request.POST:
                 member_data = ReportService.get_member_analysis(
                     start_date=start_date,
@@ -279,7 +279,7 @@ def recharge_report(request):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             
-            # 获取会员充值数据
+            # Get member recharge data
             recharge_data = ReportService.get_recharge_report(
                 start_date=start_date,
                 end_date=end_date
@@ -294,11 +294,11 @@ def recharge_report(request):
     else:
         form = DateRangeForm()
         
-        # 默认显示最近30天的数据
+        # Default to show last 30 days
         start_date = timezone.now().date() - timedelta(days=30)
         end_date = timezone.now().date()
         
-        # 获取会员充值数据
+        # Get member recharge data
         recharge_data = ReportService.get_recharge_report(
             start_date=start_date,
             end_date=end_date
@@ -324,7 +324,7 @@ def operation_log_report(request):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             
-            # 获取操作日志数据
+            # Get operation log data
             log_data = ReportService.get_operation_logs(
                 start_date=start_date,
                 end_date=end_date
@@ -339,11 +339,11 @@ def operation_log_report(request):
     else:
         form = DateRangeForm()
         
-        # 默认显示最近7天的日志
+        # Default to show last 7 days of logs
         start_date = timezone.now().date() - timedelta(days=7)
         end_date = timezone.now().date()
         
-        # 获取操作日志数据
+        # Get operation log data
         log_data = ReportService.get_operation_logs(
             start_date=start_date,
             end_date=end_date

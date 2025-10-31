@@ -59,10 +59,10 @@ class InventoryService:
         """
         # Validate inputs
         if not isinstance(operator, User):
-            raise InventoryValidationError("操作员必须是有效的用户")
+            raise InventoryValidationError("Operator must be a valid user")
         
         if transaction_type not in ('IN', 'OUT', 'ADJUST'):
-            raise InventoryValidationError("交易类型无效")
+            raise InventoryValidationError("Invalid transaction type")
         
         # Get or create inventory
         inventory, created = Inventory.objects.get_or_create(
@@ -73,7 +73,7 @@ class InventoryService:
         # For outgoing transactions, check stock
         if transaction_type == 'OUT' and inventory.quantity < quantity:
             raise InsufficientStockError(
-                f"库存不足。需要: {quantity}, 当前库存: {inventory.quantity}",
+                f"Insufficient stock. Needed: {quantity}, Current Stock: {inventory.quantity}",
                 extra={'product': product.name, 'current_stock': inventory.quantity, 'needed': quantity}
             )
         
@@ -101,7 +101,7 @@ class InventoryService:
         log_action(
             user=operator,
             operation_type='INVENTORY',
-            details=f"{transaction_type} 交易: {product.name}, 数量: {quantity}, 备注: {notes}",
+            details=f"{transaction_type} Transaction: {product.name}, Quantity: {quantity}, Notes: {notes}",
             related_object=transaction
         )
         
@@ -126,7 +126,7 @@ class InventoryService:
             OperationLog.objects.create(
                 operator=User.objects.filter(is_superuser=True).first(),
                 operation_type='INVENTORY',
-                details=f"库存预警: {inventory.product.name} 库存数量 ({inventory.quantity}) 低于预警水平 ({inventory.warning_level})",
+                details=f"Stock warning: {inventory.product.name} stock ({inventory.quantity}) is below the warning level ({inventory.warning_level})",
                 related_object_id=inventory.id,
                 related_content_type=ContentType.objects.get_for_model(inventory.__class__)
             )
@@ -135,7 +135,7 @@ class InventoryService:
             if hasattr(settings, 'EMAIL_HOST') and settings.EMAIL_HOST:
                 try:
                     managers = User.objects.filter(
-                        Q(is_superuser=True) | Q(groups__name='店长') | Q(groups__name='库存管理员')
+                        Q(is_superuser=True) | Q(groups__name='Store Manager') | Q(groups__name='Inventory Manager')
                     ).distinct()
                     
                     recipient_list = [
@@ -145,14 +145,14 @@ class InventoryService:
                     
                     if recipient_list:
                         send_mail(
-                            subject=f'库存预警: {inventory.product.name}',
+                            subject=f'Stock Warning: {inventory.product.name}',
                             message=f'''
-                            商品: {inventory.product.name}
-                            当前库存: {inventory.quantity}
-                            预警水平: {inventory.warning_level}
-                            条码: {inventory.product.barcode}
+                            Product: {inventory.product.name}
+                            Current Stock: {inventory.quantity}
+                            Warning Level: {inventory.warning_level}
+                            Barcode: {inventory.product.barcode}
                             
-                            请及时补充库存。
+                            Please replenish stock promptly.
                             ''',
                             from_email=settings.DEFAULT_FROM_EMAIL,
                             recipient_list=recipient_list,
@@ -162,7 +162,7 @@ class InventoryService:
                     # Just log the error but don't break the process
                     import logging
                     logger = logging.getLogger(__name__)
-                    logger.error(f"发送库存预警邮件时出错: {str(e)}", exc_info=True)
+                    logger.error(f"Error sending stock warning email: {str(e)}", exc_info=True)
     
     @staticmethod
     @log_exception

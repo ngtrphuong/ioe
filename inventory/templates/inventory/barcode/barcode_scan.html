@@ -1,7 +1,7 @@
 {% extends "inventory/base.html" %}
 {% load static %}
 
-{% block title %}条码扫描{% endblock %}
+{% block title %}Barcode Scanner{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -56,20 +56,20 @@
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">条码扫描</h5>
+            <h5 class="mb-0">Barcode Scanner</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="card mb-3">
                         <div class="card-header bg-light">
-                            <h6 class="mb-0">扫描器</h6>
+                            <h6 class="mb-0">Scanner</h6>
                         </div>
                         <div class="card-body">
                             <div id="scanner-container">
                                 <div id="scanner-overlay">
                                     <i class="fas fa-camera fa-3x mb-2"></i>
-                                    <p>点击开始扫描</p>
+                                    <p>Click to start scanning</p>
                                 </div>
                             </div>
                             
@@ -77,21 +77,21 @@
                                 <div class="col-12">
                                     <div class="d-flex justify-content-between">
                                         <button id="start-scanner" class="btn btn-primary">
-                                            <i class="fas fa-qrcode"></i> 开始扫描
+                                            <i class="fas fa-qrcode"></i> Start Scanning
                                         </button>
                                         <button id="stop-scanner" class="btn btn-secondary" disabled>
-                                            <i class="fas fa-stop"></i> 停止扫描
+                                            <i class="fas fa-stop"></i> Stop Scanning
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-group mt-3">
-                                <label for="barcode-input">手动输入条码</label>
+                                <label for="barcode-input">Manual Barcode Input</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="barcode-input" placeholder="输入条码...">
+                                    <input type="text" class="form-control" id="barcode-input" placeholder="Enter barcode...">
                                     <button class="btn btn-outline-primary" type="button" id="lookup-barcode">
-                                        <i class="fas fa-search"></i> 查询
+                                        <i class="fas fa-search"></i> Query
                                     </button>
                                 </div>
                             </div>
@@ -102,70 +102,70 @@
                 <div class="col-md-6">
                     <div class="card mb-3">
                         <div class="card-header bg-light">
-                            <h6 class="mb-0">扫描结果</h6>
+                            <h6 class="mb-0">Scan Results</h6>
                         </div>
                         <div class="card-body">
                             <div id="scan-results-container">
                                 <div class="scan-waiting text-center py-5">
                                     <i class="fas fa-barcode fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">等待扫描条码...</p>
+                                    <p class="text-muted">Waiting for barcode scan...</p>
                                 </div>
                                 
-                                <!-- 扫描结果将会显示在这里 -->
+                                <!-- Scan results will be displayed here -->
                                 <div id="product-result" class="scan-result product-info d-none">
-                                    <h5 class="mb-3">商品信息</h5>
+                                    <h5 class="mb-3">Product Information</h5>
                                     <div class="row">
-                                        <div class="col-4 fw-bold">商品名称:</div>
+                                        <div class="col-4 fw-bold">Product Name:</div>
                                         <div class="col-8" id="product-name"></div>
                                         
-                                        <div class="col-4 fw-bold">零售价格:</div>
+                                        <div class="col-4 fw-bold">Retail Price:</div>
                                         <div class="col-8" id="product-price"></div>
                                         
-                                        <div class="col-4 fw-bold">当前库存:</div>
+                                        <div class="col-4 fw-bold">Current Stock:</div>
                                         <div class="col-8" id="product-stock"></div>
                                         
-                                        <div class="col-4 fw-bold">条码:</div>
+                                        <div class="col-4 fw-bold">Barcode:</div>
                                         <div class="col-8" id="product-barcode"></div>
                                     </div>
                                     
                                     <div class="d-flex justify-content-end mt-3">
                                         <a href="#" id="product-detail-link" class="btn btn-sm btn-info me-2">
-                                            <i class="fas fa-eye"></i> 查看详情
+                                            <i class="fas fa-eye"></i> View Details
                                         </a>
                                         <a href="#" id="product-edit-link" class="btn btn-sm btn-primary">
-                                            <i class="fas fa-edit"></i> 编辑
+                                            <i class="fas fa-edit"></i> Edit
                                         </a>
                                     </div>
                                 </div>
                                 
                                 <div id="batch-result" class="scan-result batch-info d-none">
-                                    <h5 class="mb-3">批次信息</h5>
+                                    <h5 class="mb-3">Batch Information</h5>
                                     <div class="row">
-                                        <div class="col-4 fw-bold">商品名称:</div>
+                                        <div class="col-4 fw-bold">Product Name:</div>
                                         <div class="col-8" id="batch-product-name"></div>
                                         
-                                        <div class="col-4 fw-bold">批次编号:</div>
+                                        <div class="col-4 fw-bold">Batch Number:</div>
                                         <div class="col-8" id="batch-number"></div>
                                         
-                                        <div class="col-4 fw-bold">生产日期:</div>
+                                        <div class="col-4 fw-bold">Manufacturing Date:</div>
                                         <div class="col-8" id="batch-mfg-date"></div>
                                         
-                                        <div class="col-4 fw-bold">有效期至:</div>
+                                        <div class="col-4 fw-bold">Expiry Date:</div>
                                         <div class="col-8" id="batch-exp-date"></div>
                                         
-                                        <div class="col-4 fw-bold">剩余数量:</div>
+                                        <div class="col-4 fw-bold">Remaining Quantity:</div>
                                         <div class="col-8" id="batch-quantity"></div>
                                     </div>
                                     
                                     <div class="d-flex justify-content-end mt-3">
                                         <a href="#" id="batch-detail-link" class="btn btn-sm btn-info">
-                                            <i class="fas fa-eye"></i> 查看批次详情
+                                            <i class="fas fa-eye"></i> View Batch Details
                                         </a>
                                     </div>
                                 </div>
                                 
                                 <div id="error-result" class="scan-result bg-danger text-white d-none">
-                                    <h5 class="mb-3">错误</h5>
+                                    <h5 class="mb-3">Error</h5>
                                     <p id="error-message"></p>
                                 </div>
                             </div>
@@ -186,17 +186,17 @@
         let selectedDeviceId;
         let scannerActive = false;
         
-        // 开始扫描
+        // Start scanning
         $('#start-scanner').click(function() {
             startScanner();
         });
         
-        // 停止扫描
+        // Stop scanning
         $('#stop-scanner').click(function() {
             stopScanner();
         });
         
-        // 手动查询
+        // Manual query
         $('#lookup-barcode').click(function() {
             let barcode = $('#barcode-input').val().trim();
             if (barcode) {
@@ -204,7 +204,7 @@
             }
         });
         
-        // 按Enter键查询
+        // Query on Enter key press
         $('#barcode-input').keypress(function(e) {
             if (e.which == 13) {
                 let barcode = $(this).val().trim();
@@ -221,7 +221,7 @@
                 .then((videoInputDevices) => {
                     selectedDeviceId = videoInputDevices[0].deviceId;
                     
-                    // 开始解码
+                    // Start decoding
                     codeReader.decodeFromVideoDevice(selectedDeviceId, 'scanner-container', (result, err) => {
                         if (result) {
                             console.log(result);
@@ -238,7 +238,7 @@
                 })
                 .catch((err) => {
                     console.error(err);
-                    showError('无法访问摄像头。请确保您已授予摄像头访问权限。');
+                    showError('Unable to access camera. Please ensure you have granted camera access permissions.');
                 });
         }
         
@@ -251,10 +251,10 @@
         }
         
         function processBarcode(barcode) {
-            // 清除之前的结果
+            // Clear previous results
             hideAllResults();
             
-            // AJAX请求获取条码信息
+            // AJAX request to get barcode information
             $.ajax({
                 url: '/api/scan-barcode/',
                 method: 'POST',
@@ -272,7 +272,7 @@
                     }
                 },
                 error: function(xhr) {
-                    let errorMsg = '条码扫描失败';
+                    let errorMsg = 'Barcode scan failed';
                     if (xhr.responseJSON && xhr.responseJSON.error) {
                         errorMsg = xhr.responseJSON.error;
                     }
@@ -296,8 +296,8 @@
         function displayBatchInfo(batch) {
             $('#batch-product-name').text(batch.product.name);
             $('#batch-number').text(batch.batch_number);
-            $('#batch-mfg-date').text(batch.manufacturing_date || '未指定');
-            $('#batch-exp-date').text(batch.expiry_date || '未指定');
+            $('#batch-mfg-date').text(batch.manufacturing_date || 'Not specified');
+            $('#batch-exp-date').text(batch.expiry_date || 'Not specified');
             $('#batch-quantity').text(batch.remaining_quantity);
             
             $('#batch-detail-link').attr('href', '/products/batches/' + batch.id + '/');

@@ -1,5 +1,5 @@
 """
-报表生成和导出相关视图
+Views for report generation and export
 """
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -27,8 +27,8 @@ from inventory.forms.report_forms import ReportFilterForm, SalesReportForm
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def sales_report(request):
-    """销售报表视图"""
-    # 默认显示最近30天的销售数据
+    """Sales report view"""
+    # Default to last 30 days of sales data
     end_date = timezone.now().date()
     start_date = end_date - datetime.timedelta(days=30)
     
@@ -40,16 +40,16 @@ def sales_report(request):
         store_id = form.cleaned_data.get('store')
         category_id = form.cleaned_data.get('category')
         
-        # 获取销售数据
+        # Fetch sales data
         sales_data = report_service.get_sales_data(start_date, end_date, store_id, category_id)
         
-        # 准备销售趋势数据
+        # Prepare sales trend data
         sales_trend = report_service.get_sales_trend(start_date, end_date, store_id)
         
-        # 准备按商品分类的销售数据
+        # Prepare category-wise sales data
         category_sales = report_service.get_category_sales(start_date, end_date, store_id)
         
-        # 如果请求导出
+        # If export is requested
         if 'export' in request.GET:
             export_format = request.GET.get('export_format', 'excel')
             
@@ -58,7 +58,7 @@ def sales_report(request):
             elif export_format == 'csv':
                 return report_service.export_sales_report_csv(sales_data, start_date, end_date)
         
-        # 渲染正常报表页面
+        # Render normal report page
         return render(request, 'inventory/reports/sales_report.html', {
             'form': form,
             'sales_data': sales_data,
@@ -70,7 +70,7 @@ def sales_report(request):
             'end_date': end_date,
         })
     
-    # 首次访问或表单无效时
+    # First visit or invalid form
     return render(request, 'inventory/reports/sales_report.html', {
         'form': form,
         'start_date': start_date,
@@ -81,7 +81,7 @@ def sales_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def inventory_report(request):
-    """库存报表视图"""
+    """Inventory report view"""
     form = ReportFilterForm(request.GET or None)
     
     filters = {}
@@ -94,16 +94,16 @@ def inventory_report(request):
         if store_id:
             filters['store_id'] = store_id
     
-    # 获取库存数据
+    # Fetch inventory data
     inventory_data = report_service.get_inventory_data(filters)
     
-    # 获取库存警告数据
+    # Fetch inventory warning data
     warning_data = report_service.get_inventory_warnings()
     
-    # 获取库存变动趋势
+    # Fetch inventory change trend
     inventory_trend = report_service.get_inventory_trend()
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -112,7 +112,7 @@ def inventory_report(request):
         elif export_format == 'csv':
             return report_service.export_inventory_report_csv(inventory_data)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/inventory_report.html', {
         'form': form,
         'inventory_data': inventory_data,
@@ -125,7 +125,7 @@ def inventory_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def member_report(request):
-    """会员报表视图"""
+    """Member report view"""
     form = ReportFilterForm(request.GET or None)
     
     start_date = timezone.now().date() - datetime.timedelta(days=30)
@@ -135,16 +135,16 @@ def member_report(request):
         start_date = form.cleaned_data.get('start_date') or start_date
         end_date = form.cleaned_data.get('end_date') or end_date
     
-    # 获取会员数据
+    # Fetch member data
     member_data = report_service.get_member_data(start_date, end_date)
     
-    # 获取会员消费趋势
+    # Fetch member consumption trend
     member_trend = report_service.get_member_trend(start_date, end_date)
     
-    # 获取会员等级分布
+    # Fetch member level distribution
     level_distribution = report_service.get_member_level_distribution()
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -153,7 +153,7 @@ def member_report(request):
         elif export_format == 'csv':
             return report_service.export_member_report_csv(member_data, start_date, end_date)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/member_report.html', {
         'form': form,
         'member_data': member_data,
@@ -169,7 +169,7 @@ def member_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def product_performance_report(request):
-    """商品绩效报表视图"""
+    """Product performance report view"""
     form = ReportFilterForm(request.GET or None)
     
     start_date = timezone.now().date() - datetime.timedelta(days=30)
@@ -188,16 +188,16 @@ def product_performance_report(request):
         if store_id:
             filters['store_id'] = store_id
     
-    # 获取商品销售绩效数据
+    # Fetch product sales performance data
     performance_data = report_service.get_product_performance(start_date, end_date, filters)
     
-    # 获取热销商品数据
+    # Fetch hot products data
     hot_products = report_service.get_hot_products(start_date, end_date, filters)
     
-    # 获取滞销商品数据
+    # Fetch slow-moving products data
     slow_moving = report_service.get_slow_moving_products(filters)
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -206,7 +206,7 @@ def product_performance_report(request):
         elif export_format == 'csv':
             return report_service.export_product_performance_csv(performance_data, start_date, end_date)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/product_performance.html', {
         'form': form,
         'performance_data': performance_data,
@@ -220,8 +220,8 @@ def product_performance_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def daily_summary_report(request):
-    """每日汇总报表视图"""
-    # 默认显示最近7天
+    """Daily summary report view"""
+    # Default to last 7 days
     end_date = timezone.now().date()
     start_date = end_date - datetime.timedelta(days=6)
     
@@ -234,10 +234,10 @@ def daily_summary_report(request):
     else:
         store_id = None
     
-    # 获取日报数据
+    # Fetch daily report data
     daily_data = report_service.get_daily_summary(start_date, end_date, store_id)
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -246,7 +246,7 @@ def daily_summary_report(request):
         elif export_format == 'csv':
             return report_service.export_daily_summary_csv(daily_data, start_date, end_date)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/daily_summary.html', {
         'form': form,
         'daily_data': daily_data,
@@ -261,29 +261,29 @@ def daily_summary_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def custom_report(request):
-    """自定义报表视图"""
-    # 获取所有可用字段
+    """Custom report view"""
+    # Get all available fields
     available_fields = report_service.get_available_report_fields()
     
     if request.method == 'POST':
-        # 处理自定义报表生成请求
+        # Handle custom report generation request
         report_type = request.POST.get('report_type')
         selected_fields = request.POST.getlist('selected_fields')
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
         filters = {}
         
-        # 处理过滤条件
+        # Handle filter conditions
         for key, value in request.POST.items():
             if key.startswith('filter_') and value:
                 filter_field = key.replace('filter_', '')
                 filters[filter_field] = value
         
         if not selected_fields:
-            messages.error(request, "请至少选择一个字段")
+            messages.error(request, "Please select at least one field")
             return redirect('custom_report')
         
-        # 生成报表数据
+        # Generate report data
         try:
             report_data = report_service.generate_custom_report(
                 report_type, 
@@ -293,7 +293,7 @@ def custom_report(request):
                 filters
             )
             
-            # 如果请求导出
+            # If export is requested
             if 'export' in request.POST:
                 export_format = request.POST.get('export_format', 'excel')
                 
@@ -310,7 +310,7 @@ def custom_report(request):
                         report_type
                     )
             
-            # 渲染报表结果页面
+            # Render report result page
             return render(request, 'inventory/reports/custom_report_result.html', {
                 'report_data': report_data,
                 'selected_fields': selected_fields,
@@ -321,10 +321,10 @@ def custom_report(request):
             })
             
         except Exception as e:
-            messages.error(request, f"生成报表时发生错误: {str(e)}")
+            messages.error(request, f"An error occurred while generating the report: {str(e)}")
             return redirect('custom_report')
     
-    # GET请求显示报表配置页面
+    # GET request displays report configuration page
     return render(request, 'inventory/reports/custom_report.html', {
         'available_fields': available_fields,
     })
@@ -333,7 +333,7 @@ def custom_report(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def profit_analysis(request):
-    """利润分析报表视图"""
+    """Profit analysis report view"""
     form = ReportFilterForm(request.GET or None)
     
     start_date = timezone.now().date() - datetime.timedelta(days=30)
@@ -352,16 +352,16 @@ def profit_analysis(request):
         if store_id:
             filters['store_id'] = store_id
     
-    # 获取利润分析数据
+    # Fetch profit analysis data
     profit_data = report_service.get_profit_analysis(start_date, end_date, filters)
     
-    # 获取利润趋势数据
+    # Fetch profit trend data
     profit_trend = report_service.get_profit_trend(start_date, end_date, filters)
     
-    # 获取按分类的利润分布
+    # Fetch profit distribution by category
     category_profit = report_service.get_category_profit(start_date, end_date, filters)
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -370,7 +370,7 @@ def profit_analysis(request):
         elif export_format == 'csv':
             return report_service.export_profit_analysis_csv(profit_data, start_date, end_date)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/profit_analysis.html', {
         'form': form,
         'profit_data': profit_data,
@@ -388,7 +388,7 @@ def profit_analysis(request):
 @login_required
 @permission_required('inventory.view_reports', raise_exception=True)
 def inventory_batch_report(request):
-    """库存批次报表视图"""
+    """Inventory batch report view"""
     form = ReportFilterForm(request.GET or None)
     
     filters = {}
@@ -401,7 +401,7 @@ def inventory_batch_report(request):
         if store_id:
             filters['store_id'] = store_id
         
-        # 添加过期筛选
+        # Add expiry filter
         expiry_filter = request.GET.get('expiry_filter')
         if expiry_filter == 'expired':
             filters['expiry_date__lt'] = timezone.now().date()
@@ -409,10 +409,10 @@ def inventory_batch_report(request):
             filters['expiry_date__gte'] = timezone.now().date()
             filters['expiry_date__lte'] = timezone.now().date() + datetime.timedelta(days=30)
     
-    # 获取批次数据
+    # Fetch batch data
     batch_data = report_service.get_batch_report(filters)
     
-    # 如果请求导出
+    # If export is requested
     if 'export' in request.GET:
         export_format = request.GET.get('export_format', 'excel')
         
@@ -421,7 +421,7 @@ def inventory_batch_report(request):
         elif export_format == 'csv':
             return report_service.export_batch_report_csv(batch_data)
     
-    # 渲染正常报表页面
+    # Render normal report page
     return render(request, 'inventory/reports/inventory_batch_report.html', {
         'form': form,
         'batch_data': batch_data,

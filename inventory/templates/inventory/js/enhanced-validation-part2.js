@@ -1,57 +1,57 @@
 /**
- * 显示库存调整模态框
- * @param {Array} ids - 选中项目的ID
+ * Show inventory adjustment modal
+ * @param {Array} ids - IDs of selected items
  */
 function showAdjustStockModal(ids) {
-    // 创建模态框HTML
+    // Create modal HTML
     const modalHtml = `
     <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="adjustStockModalLabel">调整库存</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+                    <h5 class="modal-title" id="adjustStockModalLabel">Adjust Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="adjustStockForm" class="needs-validation" novalidate>
                         <div class="mb-3">
-                            <label for="stockAdjustmentType" class="form-label">调整类型</label>
+                            <label for="stockAdjustmentType" class="form-label">Adjustment Type</label>
                             <select class="form-select" id="stockAdjustmentType" required>
-                                <option value="">请选择调整类型</option>
-                                <option value="add">增加库存</option>
-                                <option value="subtract">减少库存</option>
-                                <option value="set">设置库存</option>
+                                <option value="">Please select adjustment type</option>
+                                <option value="add">Increase Stock</option>
+                                <option value="subtract">Decrease Stock</option>
+                                <option value="set">Set Stock</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentValue" class="form-label">调整数量</label>
+                            <label for="stockAdjustmentValue" class="form-label">Adjustment Quantity</label>
                             <input type="number" class="form-control" id="stockAdjustmentValue" min="0" step="1" required>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentNotes" class="form-label">调整原因</label>
+                            <label for="stockAdjustmentNotes" class="form-label">Adjustment Reason</label>
                             <textarea class="form-control" id="stockAdjustmentNotes" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">确认调整</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">Confirm Adjustment</button>
                 </div>
             </div>
         </div>
     </div>
     `;
     
-    // 添加模态框到页面
+    // Add modal to page
     if (!document.getElementById('adjustStockModal')) {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
     
-    // 获取模态框元素
+    // Get modal element
     const modal = document.getElementById('adjustStockModal');
     const bsModal = new bootstrap.Modal(modal);
     
-    // 确认按钮点击事件
+    // Confirm button click event
     document.getElementById('confirmAdjustStock').addEventListener('click', function() {
         const form = document.getElementById('adjustStockForm');
         if (form.checkValidity()) {
@@ -59,7 +59,7 @@ function showAdjustStockModal(ids) {
             const value = document.getElementById('stockAdjustmentValue').value;
             const notes = document.getElementById('stockAdjustmentNotes').value;
             
-            // 提交调整请求
+            // Submit adjustment request
             submitStockAdjustment(ids, type, value, notes);
             bsModal.hide();
         } else {
@@ -67,25 +67,25 @@ function showAdjustStockModal(ids) {
         }
     });
     
-    // 显示模态框
+    // Show modal
     bsModal.show();
 }
 
 /**
- * 提交库存调整请求
- * @param {Array} ids - 选中项目的ID
- * @param {string} type - 调整类型
- * @param {number} value - 调整值
- * @param {string} notes - 调整原因
+ * Submit inventory adjustment request
+ * @param {Array} ids - IDs of selected items
+ * @param {string} type - Adjustment type
+ * @param {number} value - Adjustment value
+ * @param {string} notes - Adjustment reason
  */
 function submitStockAdjustment(ids, type, value, notes) {
-    // 创建一个表单来提交调整请求
+    // Create a form to submit adjustment request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'batch-adjust-stock/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -93,7 +93,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加调整参数
+    // Add adjustment parameters
     const typeInput = document.createElement('input');
     typeInput.type = 'hidden';
     typeInput.name = 'adjustment_type';
@@ -112,7 +112,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     notesInput.value = notes;
     form.appendChild(notesInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -121,15 +121,15 @@ function submitStockAdjustment(ids, type, value, notes) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }
 
 /**
- * 显示提示信息
- * @param {string} message - 提示信息
- * @param {string} type - 提示类型
+ * Show alert message
+ * @param {string} message - Alert message
+ * @param {string} type - Alert type
  */
 function showAlert(message, type = 'info') {
     Swal.fire({
@@ -144,29 +144,29 @@ function showAlert(message, type = 'info') {
 }
 
 /**
- * 增强密码策略和二次确认机制
+ * Enhance password policy and secondary confirmation mechanism
  */
 function enhanceSecurityFeatures() {
-    // 增强密码输入字段
+    // Enhance password input fields
     enhancePasswordFields();
     
-    // 添加敏感操作二次确认
+    // Add secondary confirmation for sensitive operations
     addConfirmationForSensitiveActions();
 }
 
 /**
- * 增强密码输入字段
+ * Enhance password input fields
  */
 function enhancePasswordFields() {
-    // 获取所有密码输入字段
+        // Get all password input fields
     const passwordFields = document.querySelectorAll('input[type="password"]');
     
     passwordFields.forEach(field => {
-        // 创建密码强度指示器容器
+            // Create password strength indicator container
         const strengthContainer = document.createElement('div');
         strengthContainer.className = 'password-strength-meter mt-2 d-none';
         
-        // 创建密码强度进度条
+            // Create password strength progress bar
         const strengthBar = document.createElement('div');
         strengthBar.className = 'progress';
         strengthBar.style.height = '5px';
@@ -181,42 +181,42 @@ function enhancePasswordFields() {
         
         strengthBar.appendChild(strengthIndicator);
         
-        // 创建密码强度文本
+            // Create password strength text
         const strengthText = document.createElement('small');
         strengthText.className = 'text-muted';
         
-        // 添加到容器
+            // Add to container
         strengthContainer.appendChild(strengthBar);
         strengthContainer.appendChild(strengthText);
         
-        // 添加到密码字段后面
+            // Add after password field
         field.parentNode.insertBefore(strengthContainer, field.nextSibling);
         
-        // 添加密码可见性切换按钮
+            // Add password visibility toggle button
         const toggleButton = document.createElement('button');
         toggleButton.type = 'button';
         toggleButton.className = 'btn btn-outline-secondary password-toggle';
         toggleButton.innerHTML = '<i class="bi bi-eye"></i>';
-        toggleButton.setAttribute('aria-label', '显示密码');
+        toggleButton.setAttribute('aria-label', 'Show password');
         
-        // 将密码字段包装在输入组中
+            // Wrap password field in input group
         const inputGroup = document.createElement('div');
         inputGroup.className = 'input-group';
         
-        // 重新排列元素
+            // Rearrange elements
         field.parentNode.insertBefore(inputGroup, field);
         inputGroup.appendChild(field);
         inputGroup.appendChild(toggleButton);
         
-        // 添加密码可见性切换功能
+            // Add password visibility toggle functionality
         toggleButton.addEventListener('click', function() {
             const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
             field.setAttribute('type', type);
             this.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
-            this.setAttribute('aria-label', type === 'password' ? '显示密码' : '隐藏密码');
+            this.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
         });
         
-        // 添加密码强度检查
+            // Add password strength check
         field.addEventListener('input', function() {
             if (this.value) {
                 strengthContainer.classList.remove('d-none');
@@ -227,7 +227,7 @@ function enhancePasswordFields() {
             }
         });
         
-        // 添加密码规则提示
+            // Add password rule hint
         if (!field.getAttribute('aria-describedby')) {
             const passwordHelpId = `password-help-${Math.random().toString(36).substr(2, 9)}`;
             field.setAttribute('aria-describedby', passwordHelpId);
@@ -235,7 +235,7 @@ function enhancePasswordFields() {
             const passwordHelp = document.createElement('div');
             passwordHelp.id = passwordHelpId;
             passwordHelp.className = 'form-text';
-            passwordHelp.innerHTML = '密码必须至少包含8个字符，包括大小写字母、数字和特殊字符';
+            passwordHelp.innerHTML = 'Password must be at least 8 characters long, including uppercase and lowercase letters, numbers, and special characters';
             
             field.parentNode.parentNode.appendChild(passwordHelp);
         }
@@ -243,24 +243,24 @@ function enhancePasswordFields() {
 }
 
 /**
- * 检查密码强度
- * @param {string} password - 密码
- * @returns {number} - 密码强度评分（0-100）
+ * Check password strength
+ * @param {string} password - Password
+ * @returns {number} - Password strength score (0-100)
  */
 function checkPasswordStrength(password) {
     let score = 0;
     
-    // 基础长度分数
+    // Base length score
     if (password.length >= 8) score += 25;
     if (password.length >= 12) score += 15;
     
-    // 字符多样性分数
+    // Character diversity score
     if (/[a-z]/.test(password)) score += 10;
     if (/[A-Z]/.test(password)) score += 10;
     if (/\d/.test(password)) score += 10;
     if (/[^a-zA-Z0-9]/.test(password)) score += 15;
     
-    // 复杂性分数
+    // Complexity score
     if (/[a-z].*[A-Z]|[A-Z].*[a-z]/.test(password)) score += 5;
     if (/\d.*[a-zA-Z]|[a-zA-Z].*\d/.test(password)) score += 5;
     if (/[^a-zA-Z0-9].*[a-zA-Z0-9]|[a-zA-Z0-9].*[^a-zA-Z0-9]/.test(password)) score += 5;
@@ -269,41 +269,41 @@ function checkPasswordStrength(password) {
 }
 
 /**
- * 更新密码强度指示器
- * @param {HTMLElement} indicator - 强度指示器元素
- * @param {HTMLElement} text - 强度文本元素
- * @param {number} strength - 密码强度评分
+ * Update password strength indicator
+ * @param {HTMLElement} indicator - Strength indicator element
+ * @param {HTMLElement} text - Strength text element
+ * @param {number} strength - Password strength score
  */
 function updatePasswordStrengthIndicator(indicator, text, strength) {
-    // 更新进度条
+    // Update progress bar
     indicator.style.width = `${strength}%`;
     indicator.setAttribute('aria-valuenow', strength);
     
-    // 更新颜色和文本
+    // Update color and text
     if (strength < 30) {
         indicator.className = 'progress-bar bg-danger';
-        text.textContent = '非常弱';
+        text.textContent = 'Very Weak';
         text.className = 'text-danger';
     } else if (strength < 60) {
         indicator.className = 'progress-bar bg-warning';
-        text.textContent = '较弱';
+        text.textContent = 'Weak';
         text.className = 'text-warning';
     } else if (strength < 80) {
         indicator.className = 'progress-bar bg-info';
-        text.textContent = '一般';
+        text.textContent = 'Fair';
         text.className = 'text-info';
     } else {
         indicator.className = 'progress-bar bg-success';
-        text.textContent = '强';
+        text.textContent = 'Strong';
         text.className = 'text-success';
     }
 }
 
 /**
- * 添加敏感操作二次确认
+ * Add secondary confirmation for sensitive operations
  */
 function addConfirmationForSensitiveActions() {
-    // 敏感操作按钮选择器
+    // Sensitive operation button selectors
     const sensitiveActionSelectors = [
         'a[href*="delete"]',
         'button[formaction*="delete"]',
@@ -313,47 +313,47 @@ function addConfirmationForSensitiveActions() {
         '.sensitive-action'
     ];
     
-    // 获取所有敏感操作按钮
+    // Get all sensitive operation buttons
     const sensitiveButtons = document.querySelectorAll(sensitiveActionSelectors.join(', '));
     
     sensitiveButtons.forEach(button => {
-        // 跳过已经处理过的按钮
+        // Skip already processed buttons
         if (button.getAttribute('data-confirmation-added')) return;
         
-        // 标记按钮已处理
+        // Mark button as processed
         button.setAttribute('data-confirmation-added', 'true');
         
-        // 获取操作类型
-        let actionType = '执行此操作';
-        if (button.textContent.includes('删除')) {
-            actionType = '删除';
-        } else if (button.textContent.includes('重置')) {
-            actionType = '重置';
+        // Get operation type
+        let actionType = 'Execute this operation';
+        if (button.textContent.includes('Delete') || button.textContent.includes('删除')) {
+            actionType = 'Delete';
+        } else if (button.textContent.includes('Reset') || button.textContent.includes('重置')) {
+            actionType = 'Reset';
         }
         
-        // 添加点击事件
+        // Add click event
         button.addEventListener('click', function(e) {
-            // 如果按钮在表单内部，阻止表单提交
+            // If button is inside a form, prevent form submission
             if (this.type === 'submit') {
                 e.preventDefault();
             } else if (this.tagName === 'A') {
                 e.preventDefault();
             }
             
-            // 显示确认对话框
+            // Show confirmation dialog
             Swal.fire({
-                title: `确认${actionType}`,
-                text: `您确定要${actionType}吗？此操作可能无法撤销。`,
+                title: `Confirm ${actionType}`,
+                text: `Are you sure you want to ${actionType.toLowerCase()}? This operation may not be reversible.`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: `确认${actionType}`,
-                cancelButtonText: '取消',
+                confirmButtonText: `Confirm ${actionType}`,
+                cancelButtonText: 'Cancel',
                 focusCancel: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // 如果确认，继续原来的操作
+                    // If confirmed, proceed with original operation
                     if (this.type === 'submit') {
                         this.form.submit();
                     } else if (this.tagName === 'A') {

@@ -165,7 +165,7 @@ class ReportService:
             else:
                 turnover_rate = 0
                 turnover_days = float('inf')
-                
+            
             product_turnover.append({
                 'product_id': inv.product.id,
                 'product_name': inv.product.name,
@@ -257,25 +257,25 @@ class ReportService:
     @staticmethod
     def get_member_analysis(start_date=None, end_date=None):
         """
-        获取会员分析数据
+        Get member analysis data
         
         Args:
-            start_date: 开始日期
-            end_date: 结束日期
+            start_date: Start date
+            end_date: End date
             
         Returns:
-            dict: 会员分析数据
+            dict: Member analysis data
         """
         if not start_date:
             start_date = timezone.now().date() - timedelta(days=30)
         if not end_date:
             end_date = timezone.now().date()
             
-        # 调整日期范围，包含整天
+        # Adjust date range to include the whole day
         start_datetime = datetime.combine(start_date, datetime.min.time())
         end_datetime = datetime.combine(end_date, datetime.max.time())
         
-        # 获取会员等级分布
+        # Get member level distribution
         level_distribution = (
             Member.objects
             .values('level__name')
@@ -283,7 +283,7 @@ class ReportService:
             .order_by('level__points_threshold')
         )
         
-        # 会员消费排行
+        # Member spending ranking (top members by amount spent in the period)
         top_members = (
             Member.objects
             .filter(sale__created_at__range=(start_datetime, end_datetime))
@@ -295,14 +295,14 @@ class ReportService:
             .order_by('-period_spend')[:10]
         )
         
-        # 获取新增会员数据
+        # New members in period
         new_members = (
             Member.objects
             .filter(created_at__range=(start_datetime, end_datetime))
             .count()
         )
         
-        # 获取活跃会员数据（在指定时间段内有消费的会员）
+        # Active members (those who made a purchase in the period)
         active_members = (
             Member.objects
             .filter(sale__created_at__range=(start_datetime, end_datetime))
@@ -310,10 +310,10 @@ class ReportService:
             .count()
         )
         
-        # 会员总数
+        # Total members
         total_members = Member.objects.count()
         
-        # 会员消费统计
+        # Member spending statistics
         member_sales = (
             Sale.objects
             .filter(created_at__range=(start_datetime, end_datetime))
@@ -324,7 +324,7 @@ class ReportService:
             )
         )
         
-        # 非会员消费统计
+        # Non-member spending statistics
         non_member_sales = (
             Sale.objects
             .filter(created_at__range=(start_datetime, end_datetime))
@@ -335,13 +335,13 @@ class ReportService:
             )
         )
         
-        # 会员平均客单价
+        # Member average order
         member_avg_order = member_sales['total_amount'] / member_sales['total_count'] if member_sales['total_count'] else 0
         
-        # 非会员平均客单价
+        # Non-member average order
         non_member_avg_order = non_member_sales['total_amount'] / non_member_sales['total_count'] if non_member_sales['total_count'] else 0
         
-        # 计算会员活跃率
+        # Member activity rate
         activity_rate = (active_members / total_members * 100) if total_members > 0 else 0
         
         return {
@@ -374,7 +374,7 @@ class ReportService:
         if not end_date:
             end_date = timezone.now()
             
-        # 总体统计
+        # Overall summary
         summary = {
             'total_recharge_amount': RechargeRecord.objects.filter(
                 created_at__range=(start_date, end_date)
@@ -397,7 +397,7 @@ class ReportService:
             ).values('member').distinct().count()
         }
         
-        # 按日期统计充值
+        # Daily recharge statistics
         daily_recharge = RechargeRecord.objects.filter(
             created_at__range=(start_date, end_date)
         ).annotate(
@@ -409,7 +409,7 @@ class ReportService:
             member_count=Count('member', distinct=True)
         ).order_by('day')
         
-        # 按支付方式统计
+        # Payment method statistics
         payment_stats = RechargeRecord.objects.filter(
             created_at__range=(start_date, end_date)
         ).values('payment_method').annotate(
@@ -418,7 +418,7 @@ class ReportService:
             actual_amount=Sum('actual_amount')
         ).order_by('-count')
         
-        # 会员充值排行
+        # Top members by recharge amount
         top_members = Member.objects.filter(
             recharge_records__created_at__range=(start_date, end_date)
         ).annotate(
@@ -452,22 +452,22 @@ class ReportService:
         if not end_date:
             end_date = timezone.now()
         
-        # 结束日期+1天以包含当天的记录
+        # End date +1 day to include logs on the end date
         end_date_inclusive = end_date + timedelta(days=1)
         
-        # 获取日志记录
+        # Get log records
         logs = OperationLog.objects.filter(
             timestamp__range=(start_date, end_date_inclusive)
         ).select_related('operator', 'related_content_type').order_by('-timestamp')
         
-        # 按操作类型统计
+        # Statistics by operation type
         operation_type_stats = OperationLog.objects.filter(
             timestamp__range=(start_date, end_date_inclusive)
         ).values('operation_type').annotate(
             count=Count('id')
         ).order_by('-count')
         
-        # 按操作员统计
+        # Statistics by operator
         operator_stats = OperationLog.objects.filter(
             timestamp__range=(start_date, end_date_inclusive)
         ).values('operator__username').annotate(

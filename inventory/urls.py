@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
 
-# 导入视图
+# Import views
 from . import views
 from . import views_barcode
 from . import views_category
@@ -28,14 +28,14 @@ from . import views_inventory_check
 from . import views_system
 from . import views_report
 
-# 导入重构后的视图模块
+# Import refactored view modules
 from .views import member as member_views
 from .views import barcode as barcode_views
 from .views import core as core_views
 from .views import sales as sales_views
 from .views import product as product_views
 from .views import inventory as inventory_views
-from .views import system as system_views  # 导入重构后的系统视图模块
+from .views import system as system_views  # Import refactored system views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,7 +48,7 @@ urlpatterns = [
     path('products/<int:pk>/', product_views.product_detail, name='product_detail'),
     path('products/<int:pk>/delete/', product_views.product_delete, name='product_delete'),
     
-    # 使用新的条码视图
+    # Use new barcode views
     path('products/barcode/', views_barcode.barcode_product_create, name='barcode_product_create'),
     path('api/barcode/lookup/', barcode_views.barcode_lookup, name='barcode_lookup'),
     path('api/barcode/scan/', barcode_views.barcode_scan, name='barcode_scan'),
@@ -66,7 +66,7 @@ urlpatterns = [
     path('accounts/login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='accounts/login/'), name='logout'),
     
-    # 会员管理URL - 使用新的会员视图模块
+    # Member management URLs - use new member views
     path('members/', member_views.member_list, name='member_list'),
     path('members/create/', member_views.member_create, name='member_create'),
     path('members/<int:pk>/edit/', member_views.member_update, name='member_edit'),
@@ -82,19 +82,19 @@ urlpatterns = [
     path('members/purchases/', sales_views.member_purchases, name='member_purchases'),
     path('api/member/search/<str:phone>/', member_views.member_search_by_phone, name='member_search_by_phone'),
     
-    # 会员等级管理URL - 使用新的会员视图模块
+    # Member Level management URLs - use new member views
     path('member-levels/', member_views.member_level_list, name='member_level_list'),
     path('member-levels/create/', member_views.member_level_create, name='member_level_create'),
     path('member-levels/<int:pk>/edit/', member_views.member_level_update, name='member_level_edit'),
     path('member-levels/<int:pk>/delete/', member_views.member_level_delete, name='member_level_delete'),
     
-    # 分类管理URL
+    # Category management URLs
     path('categories/', views_category.category_list, name='category_list'),
     path('categories/create/', views_category.category_create, name='category_create'),
     path('categories/<int:category_id>/edit/', views_category.category_edit, name='category_edit'),
     path('categories/<int:category_id>/delete/', views_category.category_delete, name='category_delete'),
     
-    # 库存盘点URL
+    # Inventory check URLs
     path('inventory-checks/', views_inventory_check.inventory_check_list, name='inventory_check_list'),
     path('inventory-checks/create/', views_inventory_check.inventory_check_create, name='inventory_check_create'),
     path('inventory-checks/<int:check_id>/', views_inventory_check.inventory_check_detail, name='inventory_check_detail'),
@@ -104,7 +104,7 @@ urlpatterns = [
     path('inventory-checks/<int:check_id>/cancel/', views_inventory_check.inventory_check_cancel, name='inventory_check_cancel'),
     path('inventory-checks/<int:check_id>/items/<int:item_id>/', views_inventory_check.inventory_check_item_update, name='inventory_check_item_update'),
     
-    # 报表URL
+    # Report URLs
     path('reports/', core_views.reports_index, name='reports_index'),
     path('reports/index/', views_report.report_index, name='report_index'),
     path('reports/sales-trend/', views_report.sales_trend_report, name='sales_trend_report'),
@@ -116,13 +116,13 @@ urlpatterns = [
     path('reports/recharge/', views_report.recharge_report, name='recharge_report'),
     path('reports/operation-logs/', views_report.operation_log_report, name='operation_log_report'),
     
-    # 销售明细路径
+    # Sale detail URLs
     path('sales/<int:sale_id>/', sales_views.sale_detail, name='sale_detail'),
     path('sales/<int:sale_id>/complete/', sales_views.sale_complete, name='sale_complete'),
     path('sales/<int:sale_id>/cancel/', sales_views.sale_cancel, name='sale_cancel'),
     path('sales/<int:sale_id>/items/<int:item_id>/delete/', sales_views.sale_delete_item, name='sale_item_delete'),
 
-    # 系统管理 - 新增系统日志相关URL
+    # System management - System log related URLs
     path('system/logs/', system_views.log_list, name='log_list'),
     path('system/logs/clear/', system_views.clear_logs, name='clear_logs'),
     path('system/logs/view/<str:file_name>/', system_views.view_log_file, name='view_log_file'),
@@ -131,7 +131,7 @@ urlpatterns = [
     path('system/settings/', system_views.system_settings, name='system_settings'),
     path('system/maintenance/', system_views.system_maintenance, name='system_maintenance'),
     
-    # 备份相关 - 使用重构后的系统视图
+    # Backup related - use refactored system views
     path('system/backup/', system_views.backup_list, name='backup_list'),
     path('system/backup/create/', system_views.create_backup, name='create_backup'),
     path('system/backup/restore/<str:backup_name>/', system_views.restore_backup, name='restore_backup'),
@@ -139,7 +139,7 @@ urlpatterns = [
     path('system/backup/download/<str:backup_name>/', system_views.download_backup, name='download_backup'),
     path('system/manual-backup/', system_views.manual_backup, name='manual_backup'),
     
-    # 用户管理相关URL
+    # User management related URLs
     path('system/users/', system_views.user_list, name='user_list'),
     path('system/users/create/', system_views.user_create, name='user_create'),
     path('system/users/<int:pk>/', system_views.user_detail, name='user_detail'),

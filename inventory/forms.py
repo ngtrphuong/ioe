@@ -1,7 +1,7 @@
-# 这是一个过渡文件，用于确保向后兼容性
-# 表单现在已经重构到inventory/forms/目录下的各个文件中
+# This is a transitional file for backward compatibility.
+# Forms are now refactored into separate files under inventory/forms/.
 
-# 从重构后的表单结构中导入所有表单
+# Import all forms from the refactored structure
 from inventory.forms.product_forms import (
     ProductForm, CategoryForm
 )
@@ -30,6 +30,6 @@ from inventory.forms_batch import (
     BatchProductImportForm, BatchInventoryUpdateForm, ProductBatchDeleteForm
 )
 
-# 警告：这个文件将在重构完成后删除
-# 请直接从inventory.forms导入表单，例如:
+# WARNING: This file will be deleted after refactoring is complete.
+# Please import forms directly from inventory.forms, e.g.:
 # from inventory.forms import ProductForm

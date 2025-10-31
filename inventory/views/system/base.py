@@ -1,5 +1,5 @@
 """
-系统设置和信息相关视图
+System settings and information related views
 """
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,7 @@ import logging
 from inventory.permissions.decorators import permission_required
 from inventory.utils.logging import log_view_access
 
-# 获取logger
+# Get logger
 logger = logging.getLogger(__name__)
 
 @login_required
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @permission_required('is_superuser')
 def system_settings(request):
     """
-    系统设置视图
+    System settings view
     """
     context = {
         'settings': {
@@ -42,9 +42,9 @@ def system_settings(request):
 @permission_required('is_superuser')
 def system_info(request):
     """
-    系统信息视图，显示系统运行状态和环境信息
+    System information view showing system status and environment
     """
-    # 获取系统信息
+    # Get system information
     system_info = {
         'os': platform.system(),
         'os_version': platform.version(),
@@ -57,14 +57,14 @@ def system_info(request):
         'disk_free': round(psutil.disk_usage('/').free / (1024 * 1024 * 1024), 2),  # GB
         'hostname': platform.node(),
         'server_time': timezone.now(),
-        'uptime': round((time.time() - psutil.boot_time()) / 3600, 2),  # 小时
+        'uptime': round((time.time() - psutil.boot_time()) / 3600, 2),  # hours
     }
     
-    # 获取数据库统计信息
+    # Get database statistics
     from django.db import connection
     db_stats = {}
     
-    # 各个主要表的记录数量
+    # Record count for each main table
     with connection.cursor() as cursor:
         cursor.execute("SELECT COUNT(*) FROM inventory_product")
         db_stats['product_count'] = cursor.fetchone()[0]
@@ -81,7 +81,7 @@ def system_info(request):
         cursor.execute("SELECT COUNT(*) FROM inventory_member")
         db_stats['member_count'] = cursor.fetchone()[0]
     
-    # 目录和文件大小
+    # Directory and file size
     media_size = 0
     if os.path.exists(settings.MEDIA_ROOT):
         for dirpath, dirnames, filenames in os.walk(settings.MEDIA_ROOT):
@@ -89,20 +89,20 @@ def system_info(request):
                 fp = os.path.join(dirpath, f)
                 media_size += os.path.getsize(fp)
     
-    # 转换为MB
+    # Convert to MB
     media_size_mb = round(media_size / (1024 * 1024), 2)
     
-    # 系统日志统计
+    # System log statistics
     log_file = os.path.join(settings.BASE_DIR, 'logs', 'inventory.log')
     log_size_mb = 0
     log_entries = 0
     if os.path.exists(log_file):
         log_size_mb = round(os.path.getsize(log_file) / (1024 * 1024), 2)
-        # 统计日志条目数（简单近似）
+        # Simple approximation for log entry count
         with open(log_file, 'r') as f:
             log_entries = sum(1 for _ in f)
     
-    # 组合所有信息
+    # Combine all info
     context = {
         'system_info': system_info,
         'db_stats': db_stats,
@@ -118,15 +118,15 @@ def system_info(request):
 @permission_required('is_superuser')
 def store_settings(request):
     """
-    商店设置视图
+    Store settings view
     """
     from inventory.models import Store
     
-    # 获取当前的商店设置
+    # Get current store settings
     store = Store.objects.first()
     
     if request.method == 'POST':
-        # 更新商店设置
+        # Update store settings
         store_name = request.POST.get('store_name')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
@@ -149,7 +149,7 @@ def store_settings(request):
             store.logo = logo
         
         store.save()
-        messages.success(request, '商店设置已更新')
+        messages.success(request, 'Store settings updated')
         return redirect('store_settings')
     
     return render(request, 'inventory/system/store_settings.html', {'store': store})
@@ -159,7 +159,7 @@ def store_settings(request):
 @permission_required('is_superuser')
 def store_list(request):
     """
-    商店列表视图
+    Store list view
     """
     from inventory.models import Store
     
@@ -171,13 +171,13 @@ def store_list(request):
 @permission_required('is_superuser')
 def delete_store(request, store_id):
     """
-    删除商店视图
+    Store delete view
     """
     from inventory.models import Store
     
     store = Store.objects.get(pk=store_id)
     store.delete()
-    messages.success(request, f'商店"{store.name}"已删除')
+    messages.success(request, f'Store "{store.name}" has been deleted')
     return redirect('store_list')
 
 @login_required
@@ -185,38 +185,38 @@ def delete_store(request, store_id):
 @permission_required('is_superuser')
 def system_maintenance(request):
     """
-    系统维护视图，提供系统清理和优化功能
+    System maintenance view providing cleanup and optimization
     """
-    # 执行维护操作
+    # Execute maintenance operations
     if request.method == 'POST':
         operation = request.POST.get('operation')
         
         if operation == 'clear_sessions':
+            # Clean up expired sessions
             from django.contrib.sessions.models import Session
-            # 清理过期会话
             Session.objects.filter(expire_date__lt=timezone.now()).delete()
-            messages.success(request, '过期会话已清理')
+            messages.success(request, 'Expired sessions have been cleared')
             
         elif operation == 'clear_logs':
-            # 清理日志文件（保留最近的10000行）
+            # Clean up log file (keep last 10000 lines)
             log_file = os.path.join(settings.BASE_DIR, 'logs', 'inventory.log')
             if os.path.exists(log_file):
                 try:
-                    # 读取最后10000行
+                    # Read last 10000 lines
                     with open(log_file, 'r') as f:
                         lines = f.readlines()
                         last_lines = lines[-10000:] if len(lines) > 10000 else lines
                     
-                    # 重写日志文件
+                    # Rewrite log file
                     with open(log_file, 'w') as f:
                         f.writelines(last_lines)
                     
-                    messages.success(request, '日志文件已清理')
+                    messages.success(request, 'Log file cleared')
                 except Exception as e:
-                    messages.error(request, f'清理日志文件失败: {str(e)}')
+                    messages.error(request, f'Failed to clear logs: {str(e)}')
             
         elif operation == 'optimize_db':
-            # 执行数据库优化
+            # Optimize database
             try:
                 from django.db import connection
                 with connection.cursor() as cursor:
@@ -227,25 +227,25 @@ def system_maintenance(request):
                     elif 'mysql' in connection.vendor:
                         cursor.execute("OPTIMIZE TABLE")
                 
-                messages.success(request, '数据库已优化')
+                messages.success(request, 'Database optimized')
             except Exception as e:
-                messages.error(request, f'数据库优化失败: {str(e)}')
+                messages.error(request, f'Failed to optimize database: {str(e)}')
         
         return redirect('system_maintenance')
     
-    # 获取系统状态信息
+    # Get system status information
     disk_usage = psutil.disk_usage('/')
     disk_usage_percent = disk_usage.percent
     memory_usage = psutil.virtual_memory()
     memory_usage_percent = memory_usage.percent
     
-    # 日志文件大小
+    # Log file size
     log_file = os.path.join(settings.BASE_DIR, 'logs', 'inventory.log')
     log_size_mb = 0
     if os.path.exists(log_file):
         log_size_mb = round(os.path.getsize(log_file) / (1024 * 1024), 2)
     
-    # 会话数量
+    # Session count
     from django.contrib.sessions.models import Session
     active_sessions = Session.objects.filter(expire_date__gt=timezone.now()).count()
     expired_sessions = Session.objects.filter(expire_date__lt=timezone.now()).count()

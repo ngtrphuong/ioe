@@ -5,12 +5,12 @@
 
 {% block content %}
 <div class="container-fluid">
-    <!-- 面包屑导航 -->
+    <!-- Breadcrumb Navigation -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-white py-2">
-            <li class="breadcrumb-item"><a href="{% url 'index' %}">主页</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'member_list' %}">会员管理</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'member_level_list' %}">会员等级</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'member_list' %}">Member Management</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'member_level_list' %}">Member Levels</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
         </ol>
     </nav>
@@ -34,42 +34,42 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 {{ form.discount|as_crispy_field }}
-                                <small class="text-muted">折扣率范围: 0.00-1.00 (0表示无折扣，1表示不打折)</small>
+                                <small class="text-muted">Discount rate range: 0.00-1.00 (0 means no discount, 1 means full price)</small>
                             </div>
                             <div class="col-md-6">
                                 {{ form.points_threshold|as_crispy_field }}
-                                <small class="text-muted">会员积分达到此阈值时将自动升级到此等级</small>
+                                <small class="text-muted">When member points reach this threshold, they will automatically upgrade to this level</small>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 {{ form.color|as_crispy_field }}
-                                <small class="text-muted">可选值: primary, secondary, success, danger, warning, info, light, dark</small>
+                                <small class="text-muted">Available values: primary, secondary, success, danger, warning, info, light, dark</small>
                             </div>
                             <div class="col-md-6">
                                 {{ form.priority|as_crispy_field }}
-                                <small class="text-muted">数字越小优先级越高，用于排序显示</small>
+                                <small class="text-muted">Smaller numbers have higher priority, used for sorting display</small>
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 {{ form.is_default|as_crispy_field }}
-                                <small class="text-muted">设为默认等级后，新会员将默认使用此等级</small>
+                                <small class="text-muted">After setting as default level, new members will use this level by default</small>
                             </div>
                             <div class="col-md-6">
                                 {{ form.is_active|as_crispy_field }}
-                                <small class="text-muted">禁用后此等级将不可用于新会员</small>
+                                <small class="text-muted">After disabling, this level will not be available for new members</small>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between">
                             <a href="{% url 'member_level_list' %}" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> 取消
+                                <i class="bi bi-arrow-left me-1"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-1"></i> {{ submit_text|default:"保存" }}
+                                <i class="bi bi-save me-1"></i> {{ submit_text|default:"Save" }}
                             </button>
                         </div>
                     </form>

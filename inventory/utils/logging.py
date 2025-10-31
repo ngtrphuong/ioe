@@ -56,31 +56,31 @@ def log_action(user, operation_type, details, related_object=None):
 
 def log_operation(user, operation_type, details, related_object=None, request=None):
     """
-    记录系统操作日志的主要入口函数
+    Main entry point for recording system operation logs.
     
-    参数:
-        user (User): 执行操作的用户
-        operation_type (str): 操作类型（来自OperationLog.OPERATION_TYPES）
-        details (str): 操作详情
-        related_object (Model, optional): 与操作相关的对象
-        request (HttpRequest, optional): 当前请求对象，用于获取IP等信息
+    Args:
+        user (User): The user performing the operation
+        operation_type (str): Operation type (from OperationLog.OPERATION_TYPES)
+        details (str|dict): Operation details
+        related_object (Model, optional): Object related to this operation
+        request (HttpRequest, optional): Current request for IP and path info
         
-    返回:
-        OperationLog: 创建的日志记录对象
+    Returns:
+        OperationLog: The created log record object
     """
     from inventory.models import OperationLog
     
     try:
-        # 准备日志内容
+        # Prepare log details
         log_details = details
         
-        # 如果提供了请求对象，添加额外信息
+        # If request is provided, attach extra info
         if request:
             ip = get_client_ip(request)
             agent = request.META.get('HTTP_USER_AGENT', 'Unknown')
             path = request.path
             
-            # 将额外信息添加到详细信息中
+            # Append extra info into details
             if isinstance(details, dict):
                 details.update({
                     'ip': ip,
@@ -89,16 +89,16 @@ def log_operation(user, operation_type, details, related_object=None, request=No
                 })
                 log_details = json.dumps(details)
             else:
-                # 如果详细信息是字符串，附加额外信息
-                log_details = f"{details} [IP: {ip}, 路径: {path}]"
+                # If details is a string, append extra info
+                log_details = f"{details} [IP: {ip}, Path: {path}]"
         
-        # 使用事务保证日志记录的原子性
+        # Use transaction to ensure atomic logging
         with transaction.atomic():
             return log_action(user, operation_type, log_details, related_object)
     
     except Exception as e:
-        # 记录错误但不影响主程序流程
-        logger.error(f"记录操作日志时出错: {str(e)}", exc_info=True)
+        # Log error but do not affect main application flow
+        logger.error(f"Error while recording operation log: {str(e)}", exc_info=True)
         return None
 
 def log_view_access(operation_type):
@@ -141,7 +141,7 @@ def log_exception(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            # 修复：不再尝试在extra中传递args参数，以避免与LogRecord内部的args冲突
+            # Fix: Avoid passing raw args in 'extra' to prevent conflicts with LogRecord internal args
             logger.error(
                 f"Exception in {func.__name__}: {str(e)}",
                 exc_info=True,

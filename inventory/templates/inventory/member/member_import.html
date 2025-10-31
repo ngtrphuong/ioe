@@ -2,42 +2,42 @@
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block title %}导入会员数据{% endblock %}
+{% block title %}Import Member Data{% endblock %}
 
 {% block content %}
 <div class="container py-4">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">导入会员数据</h1>
+                <h1 class="h3 mb-0">Import Member Data</h1>
                 <a href="{% url 'member_list' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> 返回会员列表
+                    <i class="bi bi-arrow-left"></i> Back to Member List
                 </a>
             </div>
 
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">导入会员数据</h5>
+                    <h5 class="card-title mb-0">Import Member Data</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <!-- 左侧：CSV格式说明 -->
+                        <!-- Left: CSV Format Instructions -->
                         <div class="col-md-7 mb-4 mb-md-0">
-                            <h5>CSV文件格式要求</h5>
+                            <h5>CSV File Format Requirements</h5>
                             <div class="alert alert-info mb-3">
-                                <p class="mb-0">请按照以下格式准备您的CSV文件，确保数据正确无误。</p>
+                                <p class="mb-0">Please prepare your CSV file according to the format below to ensure data accuracy.</p>
                             </div>
                             
-                            <p>CSV文件需要包含以下列：</p>
+                            <p>CSV file must include the following columns:</p>
                             <ul>
-                                <li><strong>name</strong> (必填): 会员姓名</li>
-                                <li><strong>phone</strong> (必填): 手机号码，必须为11位数字</li>
-                                <li><strong>email</strong>: 电子邮箱</li>
-                                <li><strong>member_id</strong>: 会员编号，如果不提供将自动生成</li>
-                                <li><strong>level</strong>: 会员等级名称，如果不提供或找不到对应等级，将使用默认等级</li>
-                                <li><strong>points</strong>: 会员积分，必须为整数</li>
-                                <li><strong>birthday</strong>: 生日，格式为YYYY-MM-DD</li>
-                                <li><strong>address</strong>: 会员地址</li>
+                                <li><strong>name</strong> (required): Member Name</li>
+                                <li><strong>phone</strong> (required): Phone number, must be 11 digits</li>
+                                <li><strong>email</strong>: Email address</li>
+                                <li><strong>member_id</strong>: Member ID, will be auto-generated if not provided</li>
+                                <li><strong>level</strong>: Member level name, will use default level if not provided or not found</li>
+                                <li><strong>points</strong>: Member points, must be an integer</li>
+                                <li><strong>birthday</strong>: Birthday, format: YYYY-MM-DD</li>
+                                <li><strong>address</strong>: Member address</li>
                             </ul>
 
                             <div class="bg-light p-3 mb-3 border">
@@ -46,25 +46,25 @@
 
                             <div class="d-grid gap-2 d-md-flex mb-3">
                                 <a href="data:text/csv;charset=utf-8,{{ sample_csv|urlencode }}" download="members_import_template.csv" class="btn btn-outline-primary">
-                                    <i class="bi bi-download"></i> 下载模板
+                                    <i class="bi bi-download"></i> Download Template
                                 </a>
                             </div>
 
                             <div class="alert alert-warning">
-                                <h6 class="alert-heading">注意事项</h6>
+                                <h6 class="alert-heading">Important Notes</h6>
                                 <ul class="mb-0">
-                                    <li>CSV文件必须使用UTF-8编码</li>
-                                    <li>手机号必须唯一，如果导入的手机号已存在，将跳过该记录</li>
-                                    <li>文件大小不能超过2MB</li>
-                                    <li>单次导入不超过1000条记录</li>
+                                    <li>CSV file must use UTF-8 encoding</li>
+                                    <li>Phone numbers must be unique; records with existing phone numbers will be skipped</li>
+                                    <li>File size must not exceed 2MB</li>
+                                    <li>Maximum 1000 records per import</li>
                                 </ul>
                             </div>
                         </div>
                         
-                        <!-- 右侧：上传表单 -->
+                        <!-- Right: Upload Form -->
                         <div class="col-md-5">
                             <div class="border rounded p-4 bg-light">
-                                <h5 class="mb-3">上传CSV文件</h5>
+                                <h5 class="mb-3">Upload CSV File</h5>
                                 <form method="post" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     {% crispy form %}

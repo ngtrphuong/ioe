@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='member',
             name='gender',
-            field=models.CharField(choices=[('M', '男'), ('F', '女'), ('O', '其他')], default='O', max_length=1, verbose_name='性别'),
+            field=models.CharField(choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], default='O', max_length=1, verbose_name='Gender'),
         ),
         migrations.AddField(
             model_name='member',
             name='notes',
-            field=models.TextField(blank=True, verbose_name='备注'),
+            field=models.TextField(blank=True, verbose_name='Notes'),
         ),
     ]

@@ -48,26 +48,26 @@ def get_period_boundaries(date, period='day'):
 
 def get_month_range(year, month):
     """
-    获取指定年月的日期范围（开始日期和结束日期）
+    Get the date range for a given year and month.
     
-    参数:
-        year: 年份，如2023
-        month: 月份，如1表示一月
+    Args:
+        year: Year, e.g., 2023
+        month: Month number, 1-12
         
-    返回:
-        tuple: (start_date, end_date) 月份的开始日期和结束日期
+    Returns:
+        tuple: (start_date, end_date) first and last date of the month
     """
-    # 确保输入合法
+    # Validate inputs
     year = int(year)
     month = int(month)
     
     if month < 1 or month > 12:
-        raise ValueError("月份必须在1-12之间")
+        raise ValueError("Month must be between 1 and 12")
     
-    # 月份第一天
+    # First day of month
     start_date = date(year, month, 1)
     
-    # 月份最后一天（计算下个月第一天然后减去一天）
+    # Last day of month (compute next month's first day then subtract one day)
     if month == 12:
         end_date = date(year + 1, 1, 1) - timedelta(days=1)
     else:
@@ -78,33 +78,33 @@ def get_month_range(year, month):
 
 def get_quarter_range(year, quarter):
     """
-    获取指定年份和季度的日期范围
+    Get the date range for a given year and quarter.
     
-    参数:
-        year: 年份，如2023
-        quarter: 季度，1-4表示第一至第四季度
+    Args:
+        year: Year, e.g., 2023
+        quarter: Quarter number 1-4
         
-    返回:
-        tuple: (start_date, end_date) 季度的开始日期和结束日期
+    Returns:
+        tuple: (start_date, end_date) first and last date of the quarter
     """
-    # 确保输入合法
+    # Validate inputs
     year = int(year)
     quarter = int(quarter)
     
     if quarter < 1 or quarter > 4:
-        raise ValueError("季度必须在1-4之间")
+        raise ValueError("Quarter must be between 1 and 4")
     
-    # 确定季度对应的月份
+    # Determine month range for the quarter
     start_month = (quarter - 1) * 3 + 1  # 1, 4, 7, 10
     if quarter < 4:
         end_month = quarter * 3  # 3, 6, 9
     else:
         end_month = 12
     
-    # 季度开始日期
+    # Quarter start date
     start_date = date(year, start_month, 1)
     
-    # 季度结束日期（下个季度第一天减去一天）
+    # Quarter end date (first day of next quarter minus one day)
     if end_month == 12:
         end_date = date(year + 1, 1, 1) - timedelta(days=1)
     else:
@@ -115,21 +115,21 @@ def get_quarter_range(year, quarter):
 
 def get_year_range(year):
     """
-    获取指定年份的日期范围
+    Get the date range for a given year.
     
-    参数:
-        year: 年份，如2023
+    Args:
+        year: Year, e.g., 2023
         
-    返回:
-        tuple: (start_date, end_date) 年份的开始日期和结束日期
+    Returns:
+        tuple: (start_date, end_date) first and last date of the year
     """
-    # 确保输入合法
+    # Validate input
     year = int(year)
     
-    # 年份开始日期（1月1日）
+    # Start date (Jan 1)
     start_date = date(year, 1, 1)
     
-    # 年份结束日期（12月31日）
+    # End date (Dec 31)
     end_date = date(year, 12, 31)
     
     return (start_date, end_date)
@@ -137,13 +137,13 @@ def get_year_range(year):
 
 def get_date_format(period):
     """
-    根据时间周期返回相应的日期格式
+    Return date format string based on period.
     
-    参数:
-        period: 时间周期，'day', 'week', 'month', 'quarter' 或 'year'
+    Args:
+        period: One of 'day', 'week', 'month', 'quarter', 'year'
         
-    返回:
-        str: 日期格式字符串
+    Returns:
+        str: Date format string
     """
     formats = {
         'day': '%Y-%m-%d',
@@ -157,35 +157,35 @@ def get_date_format(period):
 
 def get_date_range(start_date=None, end_date=None, period=None, days=None):
     """
-    根据传入的参数获取日期范围，支持多种方式：
-    1. 直接指定开始和结束日期
-    2. 指定日期周期（如'today', 'yesterday', 'last_week', 'last_month'等）
-    3. 指定天数（往前推N天）
+    Compute a date range using multiple modes:
+    1) Provide start and end dates directly
+    2) Provide a named period ('today', 'yesterday', 'last_week', 'last_month', ...)
+    3) Provide a number of days to look back
     
-    参数:
-        start_date: 开始日期，datetime.date对象或者字符串（格式：YYYY-MM-DD）
-        end_date: 结束日期，datetime.date对象或者字符串（格式：YYYY-MM-DD）
-        period: 日期周期，可选值：'today', 'yesterday', 'this_week', 'last_week', 
-                'this_month', 'last_month', 'this_quarter', 'last_quarter', 
-                'this_year', 'last_year'
-        days: 天数，往前推的天数
-        
-    返回:
-        tuple: (start_date, end_date) 日期范围的开始和结束日期，都是datetime.date对象
+    Args:
+        start_date: datetime.date or 'YYYY-MM-DD'
+        end_date: datetime.date or 'YYYY-MM-DD'
+        period: 'today' | 'yesterday' | 'this_week' | 'last_week' |
+                'this_month' | 'last_month' | 'this_quarter' | 'last_quarter' |
+                'this_year' | 'last_year'
+        days: Number of days to look back
+    
+    Returns:
+        tuple: (start_date, end_date) as datetime.date objects
     """
     today = date.today()
     
-    # 处理字符串格式的日期
+    # Handle string date inputs
     if isinstance(start_date, str):
         start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
     if isinstance(end_date, str):
         end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
     
-    # 如果直接指定了开始和结束日期，直接返回
+    # If both start and end dates are provided, return immediately
     if start_date and end_date:
         return start_date, end_date
     
-    # 根据周期计算日期范围
+    # Calculate date range based on period
     if period:
         if period == 'today':
             return today, today
@@ -193,20 +193,20 @@ def get_date_range(start_date=None, end_date=None, period=None, days=None):
             yesterday = today - timedelta(days=1)
             return yesterday, yesterday
         elif period == 'this_week':
-            # 本周的周一
+            # Monday of the current week
             monday = today - timedelta(days=today.weekday())
             return monday, today
         elif period == 'last_week':
-            # 上周的周一和周日
+            # Monday and Sunday of last week
             monday = today - timedelta(days=today.weekday() + 7)
             sunday = monday + timedelta(days=6)
             return monday, sunday
         elif period == 'this_month':
-            # 本月的第一天
+            # First day of this month
             first_day = date(today.year, today.month, 1)
             return first_day, today
         elif period == 'last_month':
-            # 上个月的第一天和最后一天
+            # First and last day of last month
             if today.month == 1:
                 first_day = date(today.year - 1, 12, 1)
                 last_day = date(today.year, 1, 1) - timedelta(days=1)
@@ -215,37 +215,37 @@ def get_date_range(start_date=None, end_date=None, period=None, days=None):
                 last_day = date(today.year, today.month, 1) - timedelta(days=1)
             return first_day, last_day
         elif period == 'this_quarter':
-            # 本季度的第一天
+            # First day of this quarter
             quarter = (today.month - 1) // 3 + 1
             first_day = date(today.year, (quarter - 1) * 3 + 1, 1)
             return first_day, today
         elif period == 'last_quarter':
-            # 上季度的第一天和最后一天
+            # First and last day of last quarter
             quarter = (today.month - 1) // 3 + 1
             if quarter == 1:
-                # 上一年第四季度
+                # Q4 of the previous year
                 first_day = date(today.year - 1, 10, 1)
                 last_day = date(today.year, 1, 1) - timedelta(days=1)
             else:
-                # 今年的上一季度
+                # Previous quarter of the current year
                 first_day = date(today.year, (quarter - 2) * 3 + 1, 1)
                 last_day = date(today.year, (quarter - 1) * 3 + 1, 1) - timedelta(days=1)
             return first_day, last_day
         elif period == 'this_year':
-            # 今年的第一天
+            # First day of this year
             first_day = date(today.year, 1, 1)
             return first_day, today
         elif period == 'last_year':
-            # 去年的第一天和最后一天
+            # First and last day of last year
             first_day = date(today.year - 1, 1, 1)
             last_day = date(today.year, 1, 1) - timedelta(days=1)
             return first_day, last_day
     
-    # 根据往前推的天数计算
+    # Compute by number of days to look back
     if days:
         days = int(days)
         start_date = today - timedelta(days=days)
         return start_date, today
     
-    # 默认返回今天
+    # Default to today
     return today, today 

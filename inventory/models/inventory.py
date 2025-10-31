@@ -6,39 +6,39 @@ from .product import Product
 
 
 class Inventory(models.Model):
-    product = models.OneToOneField(Product, on_delete=models.PROTECT, verbose_name='商品')
-    quantity = models.IntegerField(default=0, verbose_name='库存数量')
-    warning_level = models.IntegerField(default=10, verbose_name='预警数量')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+    product = models.OneToOneField(Product, on_delete=models.PROTECT, verbose_name='Product')
+    quantity = models.IntegerField(default=0, verbose_name='Stock Quantity')
+    warning_level = models.IntegerField(default=10, verbose_name='Warning Level')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
     
     def clean(self):
         if self.quantity < 0:
-            raise ValidationError('库存数量不能为负数')
+            raise ValidationError('Stock quantity cannot be negative')
         if self.warning_level < 0:
-            raise ValidationError('预警数量不能为负数')
+            raise ValidationError('Warning level cannot be negative')
     
     @property
     def is_low_stock(self):
         return self.quantity <= self.warning_level
     
     class Meta:
-        verbose_name = '库存'
-        verbose_name_plural = '库存'
+        verbose_name = 'Inventory'
+        verbose_name_plural = 'Inventories'
         permissions = (
-            ("can_view_item", "可以查看物料"),
-            ("can_add_item", "可以添加物料"),
-            ("can_change_item", "可以修改物料"),
-            ("can_delete_item", "可以删除物料"),
-            ("can_export_item", "可以导出物料"),
-            ("can_import_item", "可以导入物料"),
-            ("can_allocate_item", "可以分配物料"),
-            ("can_checkin_item", "可以入库物料"),
-            ("can_checkout_item", "可以出库物料"),
-            ("can_adjust_item", "可以调整物料库存"),
-            ("can_return_item", "可以归还物料"),
-            ("can_move_item", "可以移动物料"),
-            ("can_manage_backup", "可以管理备份"),
+            ("can_view_item", "Can view items"),
+            ("can_add_item", "Can add items"),
+            ("can_change_item", "Can change items"),
+            ("can_delete_item", "Can delete items"),
+            ("can_export_item", "Can export items"),
+            ("can_import_item", "Can import items"),
+            ("can_allocate_item", "Can allocate items"),
+            ("can_checkin_item", "Can check in items"),
+            ("can_checkout_item", "Can check out items"),
+            ("can_adjust_item", "Can adjust item inventory"),
+            ("can_return_item", "Can return items"),
+            ("can_move_item", "Can move items"),
+            ("can_manage_backup", "Can manage backups"),
         )
     
     def __str__(self):
@@ -47,29 +47,29 @@ class Inventory(models.Model):
 
 class InventoryTransaction(models.Model):
     TRANSACTION_TYPES = [
-        ('IN', '入库'),
-        ('OUT', '出库'),
-        ('ADJUST', '调整'),
+        ('IN', 'Stock In'),
+        ('OUT', 'Stock Out'),
+        ('ADJUST', 'Adjustment'),
     ]
 
-    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name='商品')
-    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES, verbose_name='交易类型')
-    quantity = models.IntegerField(verbose_name='数量')
-    operator = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='操作员')
-    notes = models.TextField(blank=True, verbose_name='备注')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    product = models.ForeignKey(Product, on_delete=models.PROTECT, verbose_name='Product')
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES, verbose_name='Transaction Type')
+    quantity = models.IntegerField(verbose_name='Quantity')
+    operator = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Operator')
+    notes = models.TextField(blank=True, verbose_name='Notes')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
     
     class Meta:
-        verbose_name = '库存交易记录'
-        verbose_name_plural = '库存交易记录'
+        verbose_name = 'Inventory Transaction'
+        verbose_name_plural = 'Inventory Transactions'
     
     def __str__(self):
         return f'{self.product.name} - {self.get_transaction_type_display()} - {self.quantity}'
 
 
-# 添加库存工具函数
+# Inventory utility functions
 def check_inventory(product, quantity):
-    """检查库存是否足够"""
+    """Check if inventory is sufficient"""
     try:
         inventory = Inventory.objects.get(product=product)
         return inventory.quantity >= quantity
@@ -78,29 +78,29 @@ def check_inventory(product, quantity):
 
 
 def update_inventory(product, quantity, transaction_type, operator, notes=''):
-    """更新库存并记录交易"""
+    """Update inventory and record transaction"""
     try:
-        # 获取或创建库存记录
+        # Get or create inventory record
         inventory, created = Inventory.objects.get_or_create(
             product=product,
             defaults={'quantity': 0}
         )
         
-        # 更新库存数量
+        # Update inventory quantity
         old_quantity = inventory.quantity
         inventory.quantity += quantity
         
-        # 确保库存不为负数
+        # Ensure inventory is not negative
         if inventory.quantity < 0:
-            raise ValidationError(f"库存不足: {product.name}, 当前库存: {old_quantity}, 请求数量: {abs(quantity)}")
+            raise ValidationError(f"Insufficient inventory: {product.name}, current stock: {old_quantity}, requested quantity: {abs(quantity)}")
         
         inventory.save()
         
-        # 记录库存交易
+        # Record inventory transaction
         transaction = InventoryTransaction.objects.create(
             product=product,
             transaction_type=transaction_type,
-            quantity=abs(quantity),  # 存储绝对值
+            quantity=abs(quantity),  # Store absolute value
             operator=operator,
             notes=notes
         )
@@ -111,24 +111,24 @@ def update_inventory(product, quantity, transaction_type, operator, notes=''):
 
 
 class StockAlert(models.Model):
-    """库存预警模型"""
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='商品')
+    """Stock Alert Model"""
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Product')
     alert_type = models.CharField(
         max_length=20, 
         choices=[
-            ('low_stock', '低库存'),
-            ('expiring', '即将过期'),
-            ('overstock', '库存过量')
+            ('low_stock', 'Low Stock'),
+            ('expiring', 'Expiring Soon'),
+            ('overstock', 'Overstock')
         ],
-        verbose_name='预警类型'
+        verbose_name='Alert Type'
     )
-    is_active = models.BooleanField(default=True, verbose_name='是否激活')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name='解决时间')
+    is_active = models.BooleanField(default=True, verbose_name='Is Active')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name='Resolved At')
     
     class Meta:
-        verbose_name = '库存预警'
-        verbose_name_plural = '库存预警'
+        verbose_name = 'Stock Alert'
+        verbose_name_plural = 'Stock Alerts'
         
     def __str__(self):
         return f'{self.product.name} - {self.get_alert_type_display()}' 

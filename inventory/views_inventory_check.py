@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
 
-# 使用重构后的模型导入
+# Use refactored model imports
 from inventory.models import (
     InventoryCheck, InventoryCheckItem, Product, 
     Inventory, OperationLog
@@ -25,7 +25,7 @@ from inventory.permissions.decorators import permission_required
 @log_view_access('INVENTORY_CHECK')
 @permission_required('perform_inventory_check')
 def inventory_check_list(request):
-    """库存盘点列表视图"""
+    """Inventory check list view"""
     inventory_checks = InventoryCheck.objects.all().order_by('-created_at')
     
     # Search and filter
@@ -68,17 +68,17 @@ def inventory_check_create(request):
                     category=category
                 )
                 
-                messages.success(request, f'库存盘点 {inventory_check.name} 创建成功')
+                messages.success(request, f'Inventory check {inventory_check.name} created successfully')
                 return redirect('inventory_check_detail', check_id=inventory_check.id)
             except Exception as e:
-                messages.error(request, f'创建库存盘点时出错: {str(e)}')
+                messages.error(request, f'Error creating inventory check: {str(e)}')
     else:
         form = InventoryCheckForm()
     
     return render(request, 'inventory/inventory_check_form.html', {
         'form': form,
-        'form_title': '创建库存盘点',
-        'submit_text': '创建',
+        'form_title': 'Create Inventory Check',
+        'submit_text': 'Create',
     })
 
 @login_required
@@ -120,10 +120,10 @@ def inventory_check_item_update(request, check_id, item_id):
                     notes=form.cleaned_data['notes']
                 )
                 
-                messages.success(request, f'商品 {check_item.product.name} 盘点记录已更新')
+                messages.success(request, f'Item {check_item.product.name} inventory check record updated')
                 return redirect('inventory_check_detail', check_id=check_id)
             except Exception as e:
-                messages.error(request, f'更新盘点记录时出错: {str(e)}')
+                messages.error(request, f'Error updating inventory check record: {str(e)}')
     else:
         form = InventoryCheckItemForm(instance=check_item)
     
@@ -131,8 +131,8 @@ def inventory_check_item_update(request, check_id, item_id):
         'form': form,
         'inventory_check': inventory_check,
         'check_item': check_item,
-        'form_title': f'盘点商品: {check_item.product.name}',
-        'submit_text': '保存',
+        'form_title': f'Check Item: {check_item.product.name}',
+        'submit_text': 'Save',
     })
 
 @login_required
@@ -148,9 +148,9 @@ def inventory_check_start(request, check_id):
             user=request.user
         )
         
-        messages.success(request, f'库存盘点 {inventory_check.name} 已开始')
+        messages.success(request, f'Inventory check {inventory_check.name} started')
     except Exception as e:
-        messages.error(request, f'开始库存盘点时出错: {str(e)}')
+        messages.error(request, f'Error starting inventory check: {str(e)}')
     
     return redirect('inventory_check_detail', check_id=check_id)
 
@@ -167,9 +167,9 @@ def inventory_check_complete(request, check_id):
             user=request.user
         )
         
-        messages.success(request, f'库存盘点 {inventory_check.name} 已完成')
+        messages.success(request, f'Inventory check {inventory_check.name} completed')
     except Exception as e:
-        messages.error(request, f'完成库存盘点时出错: {str(e)}')
+        messages.error(request, f'Error completing inventory check: {str(e)}')
     
     return redirect('inventory_check_detail', check_id=check_id)
 
@@ -194,12 +194,12 @@ def inventory_check_approve(request, check_id):
                 
                 messages.success(
                     request,
-                    f'库存盘点 {inventory_check.name} 已审核' + 
-                    (" 并调整库存" if adjust_inventory else "")
+                    f'Inventory check {inventory_check.name} approved' + 
+                    (" and inventory adjusted" if adjust_inventory else "")
                 )
                 return redirect('inventory_check_detail', check_id=check_id)
             except Exception as e:
-                messages.error(request, f'审核库存盘点时出错: {str(e)}')
+                messages.error(request, f'Error approving inventory check: {str(e)}')
     else:
         form = InventoryCheckApproveForm()
     
@@ -210,8 +210,8 @@ def inventory_check_approve(request, check_id):
         'form': form,
         'inventory_check': inventory_check,
         'items_with_discrepancy': items_with_discrepancy,
-        'form_title': f'审核库存盘点: {inventory_check.name}',
-        'submit_text': '审核',
+        'form_title': f'Approve Inventory Check: {inventory_check.name}',
+        'submit_text': 'Approve',
     })
 
 @login_required
@@ -227,8 +227,8 @@ def inventory_check_cancel(request, check_id):
             user=request.user
         )
         
-        messages.success(request, f'库存盘点 {inventory_check.name} 已取消')
+        messages.success(request, f'Inventory check {inventory_check.name} cancelled')
     except Exception as e:
-        messages.error(request, f'取消库存盘点时出错: {str(e)}')
+        messages.error(request, f'Error cancelling inventory check: {str(e)}')
     
     return redirect('inventory_check_detail', check_id=check_id) 

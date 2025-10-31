@@ -81,7 +81,7 @@ class InventoryCheckService:
             log_action(
                 user=user,
                 operation_type='INVENTORY_CHECK',
-                details=f"创建库存盘点: {name}",
+                details=f"Created inventory check: {name}",
                 related_object=inventory_check
             )
             
@@ -101,7 +101,7 @@ class InventoryCheckService:
             InventoryCheck: The updated inventory check
         """
         if inventory_check.status != 'draft':
-            raise InventoryValidationError("只有草稿状态的盘点单可以开始盘点")
+            raise InventoryValidationError("Only inventory checks in draft state can be started")
         
         inventory_check.status = 'in_progress'
         inventory_check.save(update_fields=['status'])
@@ -110,7 +110,7 @@ class InventoryCheckService:
         log_action(
             user=user,
             operation_type='INVENTORY_CHECK',
-            details=f"开始库存盘点: {inventory_check.name}",
+            details=f"Started inventory check: {inventory_check.name}",
             related_object=inventory_check
         )
         
@@ -133,10 +133,10 @@ class InventoryCheckService:
             InventoryCheckItem: The updated inventory check item
         """
         if inventory_check_item.inventory_check.status != 'in_progress':
-            raise InventoryValidationError("只有进行中的盘点单可以记录盘点结果")
+            raise InventoryValidationError("Only inventory checks in progress can record check items")
         
         if actual_quantity < 0:
-            raise InventoryValidationError("实际数量不能为负数")
+            raise InventoryValidationError("Actual quantity cannot be negative")
         
         inventory_check_item.actual_quantity = actual_quantity
         inventory_check_item.notes = notes
@@ -148,7 +148,7 @@ class InventoryCheckService:
         log_action(
             user=user,
             operation_type='INVENTORY_CHECK',
-            details=f"记录盘点项: {inventory_check_item.product.name}, 实际数量: {actual_quantity}",
+            details=f"Recorded inventory check item: {inventory_check_item.product.name}, Actual quantity: {actual_quantity}",
             related_object=inventory_check_item
         )
         
@@ -169,14 +169,14 @@ class InventoryCheckService:
             InventoryCheck: The updated inventory check
         """
         if inventory_check.status != 'in_progress' and inventory_check.status != 'approved':
-            raise InventoryValidationError("只有进行中或已审核的盘点单可以标记为完成")
+            raise InventoryValidationError("Only inventory checks in progress or approved can be marked as complete")
         
-        # 如果是从进行中状态转换为完成，需要检查所有项目是否已盘点
+        # If converting from in_progress to completed, check if all items are checked
         if inventory_check.status == 'in_progress':
             # Check if all items have been checked
             unchecked_items = inventory_check.items.filter(actual_quantity__isnull=True).count()
             if unchecked_items > 0:
-                raise InventoryValidationError(f"还有 {unchecked_items} 个商品未盘点完成")
+                raise InventoryValidationError(f"There are still {unchecked_items} products not yet checked")
         
         inventory_check.status = 'completed'
         inventory_check.completed_at = timezone.now()
@@ -186,7 +186,7 @@ class InventoryCheckService:
         log_action(
             user=user,
             operation_type='INVENTORY_CHECK',
-            details=f"完成库存盘点: {inventory_check.name}",
+            details=f"Completed inventory check: {inventory_check.name}",
             related_object=inventory_check
         )
         
@@ -208,7 +208,7 @@ class InventoryCheckService:
             InventoryCheck: The updated inventory check
         """
         if inventory_check.status != 'completed':
-            raise InventoryValidationError("只有已完成的盘点单可以审核")
+            raise InventoryValidationError("Only completed inventory checks can be approved")
         
         from inventory.services.inventory_service import InventoryService
         
@@ -218,14 +218,13 @@ class InventoryCheckService:
                 if item.difference != 0:  # Only adjust if there's a difference
                     try:
                         inventory = Inventory.objects.get(product=item.product)
-                        
                         # Use the inventory service to update the stock
                         InventoryService.update_stock(
                             product=item.product,
                             quantity=item.actual_quantity,  # Set to actual quantity
                             transaction_type='ADJUST',
                             operator=user,
-                            notes=f"库存盘点调整: {inventory_check.name}"
+                            notes=f"Inventory check adjustment: {inventory_check.name}"
                         )
                     except Inventory.DoesNotExist:
                         # This shouldn't happen, but just in case
@@ -240,7 +239,7 @@ class InventoryCheckService:
         log_action(
             user=user,
             operation_type='INVENTORY_CHECK',
-            details=f"审核库存盘点: {inventory_check.name}" + (", 并调整库存" if adjust_inventory else ""),
+            details=f"Approved inventory check: {inventory_check.name}" + (", and adjusted inventory" if adjust_inventory else ""),
             related_object=inventory_check
         )
         
@@ -260,7 +259,7 @@ class InventoryCheckService:
             InventoryCheck: The updated inventory check
         """
         if inventory_check.status in ('approved', 'cancelled'):
-            raise InventoryValidationError("已审核或已取消的盘点单不能取消")
+            raise InventoryValidationError("Approved or cancelled inventory checks cannot be cancelled")
         
         inventory_check.status = 'cancelled'
         inventory_check.save(update_fields=['status'])
@@ -269,7 +268,7 @@ class InventoryCheckService:
         log_action(
             user=user,
             operation_type='INVENTORY_CHECK',
-            details=f"取消库存盘点: {inventory_check.name}",
+            details=f"Cancelled inventory check: {inventory_check.name}",
             related_object=inventory_check
         )
         

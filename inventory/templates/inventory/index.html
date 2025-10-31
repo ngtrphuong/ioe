@@ -1,19 +1,19 @@
 {% extends 'inventory/base.html' %}
 {% load static %}
 
-{% block title %}首页 - {{ block.super }}{% endblock %}
+{% block title %}Home - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <!-- 统计卡片 -->
+    <!-- Statistics Cards -->
     <div class="row mb-4">
         <div class="col-xl-3 col-md-6">
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">今日销售额</h6>
-                            <h3 class="mb-0">¥{{ today_sales_amount|floatformat:2 }}</h3>
+                            <h6 class="mb-0">Today's Sales</h6>
+                            <h3 class="mb-0">${{ today_sales_amount|floatformat:2 }}</h3>
                         </div>
                         <div class="fs-1 opacity-50">
                             <i class="fas fa-shopping-cart"></i>
@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">今日订单数: {{ today_sales }}</a>
+                    <a class="small text-white stretched-link" href="#">Today's Orders: {{ today_sales }}</a>
                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">商品总数</h6>
+                            <h6 class="mb-0">Total Products</h6>
                             <h3 class="mb-0">{{ total_products }}</h3>
                         </div>
                         <div class="fs-1 opacity-50">
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">库存不足: {{ low_stock_products }}</a>
+                    <a class="small text-white stretched-link" href="#">Low Stock: {{ low_stock_products }}</a>
                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">会员总数</h6>
+                            <h6 class="mb-0">Total Members</h6>
                             <h3 class="mb-0">{{ total_members }}</h3>
                         </div>
                         <div class="fs-1 opacity-50">
@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">本月新增: {{ new_members_month }}</a>
+                    <a class="small text-white stretched-link" href="#">New This Month: {{ new_members_month }}</a>
                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-0">销售总数</h6>
+                            <h6 class="mb-0">Total Sales</h6>
                             <h3 class="mb-0">{{ total_sales }}</h3>
                         </div>
                         <div class="fs-1 opacity-50">
@@ -78,7 +78,7 @@
                     </div>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <a class="small text-white stretched-link" href="#">昨日销售: {{ yesterday_sales }}</a>
+                    <a class="small text-white stretched-link" href="#">Yesterday's Sales: {{ yesterday_sales }}</a>
                     <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                 </div>
             </div>
@@ -86,12 +86,12 @@
     </div>
 
     <div class="row">
-        <!-- 左侧区域 -->
+        <!-- Left Area -->
         <div class="col-lg-8">
-            <!-- 销售趋势图 -->
+            <!-- Sales Trend Chart -->
             <div class="card mb-4">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">最近7天销售趋势</h5>
+                    <h5 class="card-title mb-0">Last 7 Days Sales Trend</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="salesChart" height="200"></canvas>
@@ -99,14 +99,14 @@
             </div>
         </div>
         
-        <!-- 右侧区域 -->
+        <!-- Right Area -->
         <div class="col-lg-4">
-            <!-- 当月生日会员 -->
+            <!-- This Month's Birthday Members -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">{{ current_month }}月 生日会员</h5>
-                        <a href="{% url 'birthday_members_report' %}" class="btn btn-light btn-sm">查看全部</a>
+                        <h5 class="card-title mb-0">{{ current_month }} Birthday Members</h5>
+                        <a href="{% url 'birthday_members_report' %}" class="btn btn-light btn-sm">View All</a>
                     </div>
                 </div>
                 <div class="card-body card-scrollable p-0">
@@ -127,7 +127,7 @@
                                 <div class="badge bg-primary">{{ member.birthday|date:"m-d" }}</div>
                                 <div>
                                     <a href="{% url 'member_detail' member.id %}" class="btn btn-sm btn-outline-primary mt-1">
-                                        <i class="fas fa-user me-1"></i> 详情
+                                        <i class="fas fa-user me-1"></i> Details
                                     </a>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info m-3">
-                        <i class="fas fa-info-circle me-2"></i> 本月没有会员生日
+                        <i class="fas fa-info-circle me-2"></i> No member birthdays this month
                     </div>
                     {% endif %}
                 </div>
@@ -144,13 +144,13 @@
         </div>
     </div>
     
-    <!-- 底部三个卡片区域 -->
+    <!-- Bottom Three Cards Area -->
     <div class="row">
-        <!-- 热销商品 -->
+        <!-- Top Selling Products -->
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">热销商品</h5>
+                    <h5 class="card-title mb-0">Top Selling Products</h5>
                 </div>
                 <div class="card-body card-scrollable">
                     {% if top_products %}
@@ -161,43 +161,43 @@
                                 <h6 class="mb-0">{{ product.product__name }}</h6>
                                 <span class="badge bg-primary rounded-pill">{{ product.total_qty }}</span>
                             </div>
-                            <small class="text-muted">销售额: ¥{{ product.total_amount|floatformat:2 }}</small>
+                            <small class="text-muted">Sales: ${{ product.total_amount|floatformat:2 }}</small>
                         </div>
                         {% endfor %}
                     </div>
                     {% else %}
-                    <p class="text-muted">暂无销售数据</p>
+                    <p class="text-muted">No sales data available</p>
                     {% endif %}
                 </div>
             </div>
         </div>
         
-        <!-- 库存预警 -->
+        <!-- Stock Alert -->
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header bg-danger text-white">
-                    <h5 class="card-title mb-0">库存预警</h5>
+                    <h5 class="card-title mb-0">Stock Alert</h5>
                 </div>
                 <div class="card-body card-scrollable">
                     {% if low_stock_products > 0 %}
                     <div class="alert alert-warning mb-3">
-                        <strong>注意：</strong> 有 {{ low_stock_products }} 个商品库存不足，其中 {{ out_of_stock_products }} 个商品已无库存！
+                        <strong>Warning:</strong> {{ low_stock_products }} products have low stock, {{ out_of_stock_products }} are out of stock!
                     </div>
-                    <a href="#" class="btn btn-danger btn-sm">查看库存不足商品</a>
+                    <a href="#" class="btn btn-danger btn-sm">View Low Stock Products</a>
                     {% else %}
                     <div class="alert alert-success mb-0">
-                        <i class="fas fa-check-circle me-2"></i> 所有商品库存充足
+                        <i class="fas fa-check-circle me-2"></i> All products have sufficient stock
                     </div>
                     {% endif %}
                 </div>
             </div>
         </div>
         
-        <!-- 最近操作日志 -->
+        <!-- Recent Operations -->
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">最近操作</h5>
+                    <h5 class="card-title mb-0">Recent Operations</h5>
                 </div>
                 <div class="card-body card-scrollable p-0">
                     {% if recent_logs %}
@@ -222,7 +222,7 @@
                     </div>
                     {% else %}
                     <div class="alert alert-info m-3">
-                        <i class="fas fa-info-circle me-2"></i> 暂无操作记录
+                        <i class="fas fa-info-circle me-2"></i> No operation records
                     </div>
                     {% endif %}
                 </div>
@@ -242,14 +242,14 @@
         font-size: 14px;
     }
     
-    /* 添加固定高度和滚动样式 */
+    /* Add fixed height and scroll styles */
     .card-scrollable {
         height: 250px;
         overflow-y: auto;
         scrollbar-width: thin;
     }
     
-    /* 美化滚动条 */
+    /* Style scrollbar */
     .card-scrollable::-webkit-scrollbar {
         width: 5px;
     }
@@ -267,7 +267,7 @@
         background: #555;
     }
     
-    /* 确保卡片有统一的高度 */
+    /* Ensure cards have uniform height */
     .col-md-4 .card {
         height: 100%;
     }
@@ -280,7 +280,7 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // 销售趋势图
+    // Sales trend chart
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('salesChart').getContext('2d');
         const salesChart = new Chart(ctx, {
@@ -288,7 +288,7 @@
             data: {
                 labels: [{% for day in sales_trend %}'{{ day.date }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
                 datasets: [{
-                    label: '销售额',
+                    label: 'Sales Amount',
                     data: [{% for day in sales_trend %}{{ day.amount }}{% if not forloop.last %}, {% endif %}{% endfor %}],
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
@@ -311,7 +311,7 @@
                     tooltip: {
                         callbacks: {
                             label: function(context) {
-                                return '销售额: ¥' + context.parsed.y;
+                                return 'Sales: $' + context.parsed.y;
                             }
                         }
                     }

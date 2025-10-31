@@ -1,5 +1,5 @@
 """
-系统配置相关视图
+System configuration related views
 """
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
@@ -26,15 +26,15 @@ logger = logging.getLogger(__name__)
 @login_required
 @system_admin_required
 def system_settings(request):
-    """系统设置视图"""
-    # 获取或创建系统配置
+    """System settings view"""
+    # Get or create system configuration
     config, created = SystemConfig.objects.get_or_create(pk=1)
     
     if request.method == 'POST':
         form = SystemConfigForm(request.POST, instance=config)
         if form.is_valid():
             form.save()
-            messages.success(request, "系统设置已更新")
+            messages.success(request, "System settings updated")
             return redirect('system_settings')
     else:
         form = SystemConfigForm(instance=config)
@@ -48,14 +48,14 @@ def system_settings(request):
 @login_required
 @system_admin_required
 def store_settings(request, pk=None):
-    """门店设置视图"""
+    """Store settings view"""
     if pk:
         store = get_object_or_404(Store, pk=pk)
         if request.method == 'POST':
             form = StoreForm(request.POST, instance=store)
             if form.is_valid():
                 form.save()
-                messages.success(request, f"门店 {store.name} 信息已更新")
+                messages.success(request, f"Store {store.name} info updated")
                 return redirect('store_list')
         else:
             form = StoreForm(instance=store)
@@ -63,28 +63,28 @@ def store_settings(request, pk=None):
         return render(request, 'inventory/system/store_form.html', {
             'form': form,
             'store': store,
-            'title': f'编辑门店: {store.name}'
+            'title': f'Edit Store: {store.name}'
         })
     else:
         if request.method == 'POST':
             form = StoreForm(request.POST)
             if form.is_valid():
                 store = form.save()
-                messages.success(request, f"门店 {store.name} 创建成功")
+                messages.success(request, f"Store {store.name} created successfully")
                 return redirect('store_list')
         else:
             form = StoreForm()
         
         return render(request, 'inventory/system/store_form.html', {
             'form': form,
-            'title': '新增门店'
+            'title': 'Add Store'
         })
 
 
 @login_required
 @system_admin_required
 def store_list(request):
-    """门店列表视图"""
+    """Store list view"""
     stores = Store.objects.all().order_by('name')
     return render(request, 'inventory/system/store_list.html', {
         'stores': stores
@@ -94,13 +94,13 @@ def store_list(request):
 @login_required
 @system_admin_required
 def delete_store(request, pk):
-    """删除门店视图"""
+    """Delete store view"""
     store = get_object_or_404(Store, pk=pk)
     
     if request.method == 'POST':
         store_name = store.name
         store.delete()
-        messages.success(request, f"门店 {store_name} 已删除")
+        messages.success(request, f"Store {store_name} deleted")
         return redirect('store_list')
     
     return render(request, 'inventory/system/store_confirm_delete.html', {
@@ -111,8 +111,8 @@ def delete_store(request, pk):
 @login_required
 @system_admin_required
 def system_info(request):
-    """系统信息视图"""
-    # 收集系统信息
+    """System info view"""
+    # Collect system info
     system_info = {
         'django_version': settings.DJANGO_VERSION,
         'debug_mode': settings.DEBUG,
@@ -123,7 +123,7 @@ def system_info(request):
         'language_code': settings.LANGUAGE_CODE,
     }
     
-    # 用户统计
+    # User statistics
     user_stats = {
         'total_users': User.objects.count(),
         'active_users': User.objects.filter(is_active=True).count(),
@@ -131,10 +131,10 @@ def system_info(request):
         'admin_users': User.objects.filter(is_superuser=True).count(),
     }
     
-    # 门店统计
+    # Store statistics
     store_stats = {
         'total_stores': Store.objects.count(),
-        'active_stores': Store.objects.filter(is_active=True).count(),  # 恢复is_active过滤
+        'active_stores': Store.objects.filter(is_active=True).count(),  # Restore filtering by is_active
     }
     
     return render(request, 'inventory/system/info.html', {
@@ -147,37 +147,37 @@ def system_info(request):
 @login_required
 @system_admin_required
 def system_maintenance(request):
-    """系统维护视图"""
+    """System maintenance view"""
     if request.method == 'POST':
         action = request.POST.get('action')
         
         if action == 'clear_cache':
-            # 实现清除缓存的功能
+            # Implement cache clearing functionality
             from django.core.cache import cache
             cache.clear()
-            messages.success(request, "系统缓存已清除")
+            messages.success(request, "System cache cleared")
             
         elif action == 'rebuild_index':
-            # 实现重建搜索索引的功能
-            # 这里需要根据实际使用的搜索引擎来实现
-            messages.success(request, "搜索索引已重建")
+            # Implement rebuild search index functionality
+            # Needs to be implemented according to the search engine in use
+            messages.success(request, "Search index rebuilt")
             
         elif action == 'backup_database':
-            # 实现数据库备份功能
-            # 这里可以调用自定义的备份脚本
+            # Implement database backup functionality
+            # Custom backup scripts can be called here
             import subprocess
             import os
             import datetime
             
-            # 创建备份目录
+            # Create backup directory
             backup_dir = os.path.join(settings.BASE_DIR, 'db_backups')
             os.makedirs(backup_dir, exist_ok=True)
             
-            # 生成备份文件名
+            # Generate backup filename
             timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             backup_file = os.path.join(backup_dir, f'backup_{timestamp}.json')
             
-            # 执行数据库备份
+            # Perform database backup
             cmd = [
                 'python', 
                 os.path.join(settings.BASE_DIR, 'manage.py'), 
@@ -190,13 +190,13 @@ def system_maintenance(request):
             
             try:
                 subprocess.run(cmd, check=True, capture_output=True)
-                messages.success(request, f"数据库已备份到: {backup_file}")
+                messages.success(request, f"Database backup completed: {backup_file}")
             except subprocess.CalledProcessError as e:
-                messages.error(request, f"备份失败: {e.stderr.decode()}")
+                messages.error(request, f"Backup failed: {e.stderr.decode()}")
         
         return redirect('system_maintenance')
     
-    # 获取备份列表
+    # Get list of backups
     backup_dir = os.path.join(settings.BASE_DIR, 'db_backups')
     backups = []
     
@@ -211,7 +211,7 @@ def system_maintenance(request):
                     'date': datetime.datetime.fromtimestamp(file_stats.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
                 })
     
-    # 按日期排序，最新的在前面
+    # Sort by date, newest first
     backups.sort(key=lambda x: x['date'], reverse=True)
     
     return render(request, 'inventory/system/maintenance.html', {
@@ -222,7 +222,7 @@ def system_maintenance(request):
 @login_required
 @system_admin_required
 def restore_database(request, filename):
-    """恢复数据库视图"""
+    """Restore database view"""
     import os
     import subprocess
     from django.conf import settings
@@ -231,11 +231,11 @@ def restore_database(request, filename):
     backup_file = os.path.join(backup_dir, filename)
     
     if not os.path.exists(backup_file):
-        messages.error(request, f"备份文件不存在: {filename}")
+        messages.error(request, f"Backup file does not exist: {filename}")
         return redirect('system_maintenance')
     
     if request.method == 'POST':
-        # 执行数据库恢复
+        # Perform database restore
         cmd = [
             'python', 
             os.path.join(settings.BASE_DIR, 'manage.py'), 
@@ -245,9 +245,9 @@ def restore_database(request, filename):
         
         try:
             subprocess.run(cmd, check=True, capture_output=True)
-            messages.success(request, f"数据库已从备份恢复: {filename}")
+            messages.success(request, f"Database has been restored from backup: {filename}")
         except subprocess.CalledProcessError as e:
-            messages.error(request, f"恢复失败: {e.stderr.decode()}")
+            messages.error(request, f"Restore failed: {e.stderr.decode()}")
         
         return redirect('system_maintenance')
     
@@ -259,7 +259,7 @@ def restore_database(request, filename):
 @login_required
 @system_admin_required
 def delete_backup(request, filename):
-    """删除备份文件视图"""
+    """Delete backup file view"""
     import os
     from django.conf import settings
     
@@ -267,15 +267,15 @@ def delete_backup(request, filename):
     backup_file = os.path.join(backup_dir, filename)
     
     if not os.path.exists(backup_file):
-        messages.error(request, f"备份文件不存在: {filename}")
+        messages.error(request, f"Backup file does not exist: {filename}")
         return redirect('system_maintenance')
     
     if request.method == 'POST':
         try:
             os.remove(backup_file)
-            messages.success(request, f"备份文件已删除: {filename}")
+            messages.success(request, f"Backup file deleted: {filename}")
         except Exception as e:
-            messages.error(request, f"删除失败: {str(e)}")
+            messages.error(request, f"Deletion failed: {str(e)}")
         
         return redirect('system_maintenance')
     
@@ -287,14 +287,14 @@ def delete_backup(request, filename):
 @login_required
 @permission_required('inventory.view_systemsettings', raise_exception=True)
 def system_settings(request):
-    """系统设置视图"""
+    """System settings view"""
     settings = SystemSettings.get_settings()
     
     if request.method == 'POST':
         form = SystemSettingsForm(request.POST, instance=settings)
         if form.is_valid():
             form.save()
-            messages.success(request, "系统设置已更新")
+            messages.success(request, "System settings updated")
             return redirect('system_settings')
     else:
         form = SystemSettingsForm(instance=settings)
@@ -316,14 +316,14 @@ def system_settings(request):
 @login_required
 @permission_required('inventory.change_systemsettings', raise_exception=True)
 def backup_schedule(request):
-    """备份设置视图"""
+    """Backup schedule view"""
     schedule = BackupSchedule.get_schedule()
     
     if request.method == 'POST':
         form = BackupScheduleForm(request.POST, instance=schedule)
         if form.is_valid():
             form.save()
-            messages.success(request, "备份计划已更新")
+            messages.success(request, "Backup schedule updated")
             return redirect('system_settings')
     else:
         form = BackupScheduleForm(instance=schedule)
@@ -334,17 +334,17 @@ def backup_schedule(request):
 @login_required
 @permission_required('admin.view_logentry', raise_exception=True)
 def log_list(request):
-    """系统日志列表视图"""
-    # 获取筛选参数
+    """System log list view"""
+    # Get filtering parameters
     action_filter = request.GET.get('action', '')
     start_date = request.GET.get('start_date', '')
     end_date = request.GET.get('end_date', '')
     page_size = request.GET.get('page_size', 50)
     
-    # 查询日志
+    # Query logs
     logs = LogEntry.objects.all().order_by('-action_time')
     
-    # 应用筛选
+    # Apply filtering
     if action_filter:
         logs = logs.filter(action_flag=action_filter)
     
@@ -362,13 +362,13 @@ def log_list(request):
         except ValueError:
             pass
     
-    # 统计信息
+    # Statistics
     total_logs = logs.count()
     add_logs = logs.filter(action_flag=1).count()
     change_logs = logs.filter(action_flag=2).count()
     delete_logs = logs.filter(action_flag=3).count()
     
-    # 获取日志文件列表
+    # Get log file list
     log_files = []
     log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'logs')
     
@@ -387,7 +387,7 @@ def log_list(request):
                 })
     
     context = {
-        'logs': logs[:int(page_size)],  # 简单分页，仅用于演示
+        'logs': logs[:int(page_size)],  # Simple paging for demonstration only
         'total_logs': total_logs,
         'add_logs': add_logs,
         'change_logs': change_logs,
@@ -405,8 +405,8 @@ def log_list(request):
 @login_required
 @permission_required('admin.delete_logentry', raise_exception=True)
 def clear_logs(request):
-    """清除系统日志视图"""
-    # 默认日期为30天前
+    """Clear system logs view"""
+    # Default date is 30 days ago
     default_date = (timezone.now() - timedelta(days=30)).strftime('%Y-%m-%d')
     
     if request.method == 'POST':
@@ -416,24 +416,24 @@ def clear_logs(request):
         
         if confirm and date_before:
             try:
-                # 解析日期
+                # Parse date
                 date_obj = datetime.strptime(date_before, '%Y-%m-%d').replace(tzinfo=timezone.get_current_timezone())
                 
-                # 创建过滤条件
+                # Create filter kwargs
                 filter_kwargs = {'action_time__lt': date_obj}
                 
-                # 删除日志
+                # Delete logs
                 deleted_count = LogEntry.objects.filter(**filter_kwargs).delete()[0]
                 
-                # 记录操作到日志
-                logger.info(f"用户 {request.user.username} 清除了系统日志：类型 {log_type}，日期 {date_before} 之前，共 {deleted_count} 条记录")
+                # Record operation to log
+                logger.info(f"User {request.user.username} cleared system logs: type {log_type}, before date {date_before}, total {deleted_count} records")
                 
-                messages.success(request, f"成功清除 {deleted_count} 条日志记录")
+                messages.success(request, f"Successfully cleared {deleted_count} log records")
                 return redirect('log_list')
             except ValueError:
-                messages.error(request, "日期格式无效")
+                messages.error(request, "Invalid date format")
         else:
-            messages.error(request, "请确认清除操作")
+            messages.error(request, "Please confirm the clear operation")
     
     context = {
         'default_date': default_date

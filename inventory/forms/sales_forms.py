@@ -6,26 +6,26 @@ from inventory.models.inventory import check_inventory
 
 
 class SaleForm(forms.ModelForm):
-    # 添加会员搜索字段，用于快速查找会员
+    # Add member search field for quick lookup
     member_search = forms.CharField(
         max_length=100,
-        label='会员搜索',
+        label='Member Search',
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '输入手机号或会员名称',
-            'aria-label': '会员搜索',
-            'autocomplete': 'off',  # 防止自动填充
-            'style': 'height: 48px; font-size: 16px;',  # 增大触摸区域和字体
-            'inputmode': 'search',  # 在移动设备上显示搜索键盘
-            'data-bs-toggle': 'tooltip',  # 启用Bootstrap工具提示
-            'title': '可以输入手机号或会员名称进行搜索'
+            'placeholder': 'Enter phone number or member name',
+            'aria-label': 'Member Search',
+            'autocomplete': 'off',  # prevent autocomplete
+            'style': 'height: 48px; font-size: 16px;',
+            'inputmode': 'search',  # show search keyboard on mobile
+            'data-bs-toggle': 'tooltip',
+            'title': 'You can enter phone number or member name to search.'
         })
     )
     
-    # 添加获取表单警告的方法
+    # Add method to get form warnings
     def get_warnings(self):
-        """获取表单验证过程中的警告信息（不阻止提交但需要提示用户的信息）"""
+        """Get warning information during form validation (information that doesn't prevent submission but needs to alert the user)"""
         return getattr(self, '_warnings', {})
     
     class Meta:
@@ -35,17 +35,17 @@ class SaleForm(forms.ModelForm):
             'remark': forms.Textarea(attrs={
                 'rows': 3,
                 'class': 'form-control',
-                'placeholder': '销售备注（可选）',
-                'aria-label': '备注'
+                'placeholder': 'Sales remark (optional)',
+                'aria-label': 'Remark'
             }),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 添加响应式布局的辅助类
+        # Add helper classes for responsive layout
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': field.widget.attrs.get('class', '') + ' mb-2',  # 添加下边距
+                'class': field.widget.attrs.get('class', '') + ' mb-2',  # Add bottom margin
             })
 
 
@@ -53,29 +53,29 @@ class SaleItemForm(forms.ModelForm):
     actual_price = forms.DecimalField(
         max_digits=10,
         decimal_places=2,
-        label='实际售价',
+        label='Actual Selling Price',
         required=False,
         widget=forms.NumberInput(attrs={
             'class': 'price-input form-control',
-            'placeholder': '实际售价',
-            'inputmode': 'decimal',  # 在移动设备上显示数字键盘，带小数点
-            'aria-label': '实际售价',
-            'autocomplete': 'off'  # 防止自动填充
+            'placeholder': 'Actual Selling Price',
+            'inputmode': 'decimal',  # show numeric keyboard on mobile with decimal point
+            'aria-label': 'Actual Selling Price',
+            'autocomplete': 'off'  # prevent autocomplete
         })
     )
     
-    # 添加条码扫描字段，用于快速添加商品
+    # Add barcode scan field for quick product addition
     barcode = forms.CharField(
         max_length=100,
-        label='扫描条码',
+        label='Scan Barcode',
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': '扫描商品条码',
-            'aria-label': '扫描条码',
-            'autocomplete': 'off',  # 防止自动填充
-            'autofocus': True,  # 自动获取焦点
-            'style': 'height: 48px; font-size: 16px;'  # 增大触摸区域和字体
+            'placeholder': 'Scan product barcode',
+            'aria-label': 'Scan Barcode',
+            'autocomplete': 'off',  # prevent autocomplete
+            'autofocus': True,  # auto-focus
+            'style': 'height: 48px; font-size: 16px;'  # increase touch area and font size
         })
     )
     
@@ -85,57 +85,57 @@ class SaleItemForm(forms.ModelForm):
         widgets = {
             'product': forms.Select(attrs={
                 'class': 'form-control form-select product-select',
-                'aria-label': '商品',
-                'style': 'height: 48px; font-size: 16px;'  # 增大触摸区域和字体
+                'aria-label': 'Product',
+                'style': 'height: 48px; font-size: 16px;'  # increase touch area and font size
             }),
             'quantity': forms.NumberInput(attrs={
                 'class': 'quantity-input form-control',
                 'min': '1',
                 'value': '1',
                 'step': '1',
-                'placeholder': '数量',
-                'inputmode': 'numeric',  # 在移动设备上显示数字键盘
-                'aria-label': '数量',
-                'autocomplete': 'off',  # 防止自动填充
-                'style': 'height: 48px; font-size: 16px;'  # 增大触摸区域和字体
+                'placeholder': 'Quantity',
+                'inputmode': 'numeric',  # show numeric keyboard on mobile
+                'aria-label': 'Quantity',
+                'autocomplete': 'off',  # prevent autocomplete
+                'style': 'height: 48px; font-size: 16px;'  # increase touch area and font size
             }),
             'price': forms.NumberInput(attrs={
                 'class': 'price-input form-control',
                 'step': '0.01',
-                'placeholder': '标准售价',
-                'inputmode': 'decimal',  # 在移动设备上显示数字键盘，带小数点
-                'aria-label': '标准售价',
-                'readonly': 'readonly',  # 标准价格不可编辑
-                'style': 'height: 48px; font-size: 16px;'  # 增大触摸区域和字体
+                'placeholder': 'Standard Price',
+                'inputmode': 'decimal',  # show numeric keyboard on mobile with decimal point
+                'aria-label': 'Standard Price',
+                'readonly': 'readonly',  # standard price cannot be edited
+                'style': 'height: 48px; font-size: 16px;'  # increase touch area and font size
             }),
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # 使用select_related优化查询
+        # Use select_related for better query performance
         self.fields['product'].queryset = Product.objects.all().select_related('category')
         
-        # 添加响应式布局的辅助类
+        # Add helper classes for responsive layout
         for field in self.fields.values():
             field.widget.attrs.update({
-                'class': field.widget.attrs.get('class', '') + ' mb-2',  # 添加下边距
+                'class': field.widget.attrs.get('class', '') + ' mb-2',  # Add bottom margin
             })
             
-        # 标记警告信息列表
+        # Mark warning information list
         self._warnings = {}
         
-        # 如果实例已存在，设置默认的实际价格
+        # If instance already exists, set default actual price
         if self.instance and self.instance.pk:
             self.initial['actual_price'] = self.instance.actual_price
             
-            # 对于已有的销售项，不允许更改商品
+            # For existing sale items, product cannot be changed
             self.fields['product'].widget.attrs['readonly'] = 'readonly'
             self.fields['product'].widget.attrs['disabled'] = 'disabled'
     
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity')
         if quantity <= 0:
-            raise ValidationError('销售数量必须大于0')
+            raise ValidationError('Sale quantity must be greater than 0')
         return quantity
     
     def clean(self):
@@ -144,25 +144,25 @@ class SaleItemForm(forms.ModelForm):
         quantity = cleaned_data.get('quantity')
         
         if product and quantity:
-            # 检查库存
-            if not self.instance.pk:  # 只有新添加的销售项才检查库存
+            # Check inventory
+            if not self.instance.pk:  # Only new sale items check inventory
                 if not check_inventory(product, quantity):
-                    self._warnings['inventory'] = f'警告：商品 "{product.name}" 库存不足，当前销售数量可能导致库存不足。'
+                    self._warnings['inventory'] = f'Warning: Product "{product.name}" has insufficient inventory; this sale quantity may result in negative inventory.'
                 
-            # 如果未设置实际价格，使用标准价格
+            # Use default price if actual_price is not set
             if cleaned_data.get('actual_price') is None:
                 cleaned_data['actual_price'] = product.price
                 
-            # 如果实际价格小于标准价格的一半，标记警告
+            # If actual_price < 50% of standard price, add warning
             if cleaned_data.get('actual_price') < product.price * 0.5:
-                self._warnings['low_price'] = f'警告：商品 "{product.name}" 的实际售价低于标准价格的50%，请确认是否正确。'
+                self._warnings['low_price'] = f'Warning: Actual selling price for "{product.name}" is less than 50% of standard price. Please confirm.'
                 
-            # 如果实际价格大于标准价格的两倍，标记警告
+            # If actual_price > 200% of standard price, add warning
             if cleaned_data.get('actual_price') > product.price * 2:
-                self._warnings['high_price'] = f'警告：商品 "{product.name}" 的实际售价高于标准价格的200%，请确认是否正确。'
+                self._warnings['high_price'] = f'Warning: Actual selling price for "{product.name}" exceeds 200% of standard price. Please confirm.'
             
         return cleaned_data
     
     def get_warnings(self):
-        """获取表单验证过程中的警告信息（不阻止提交但需要提示用户的信息）"""
+        """Get warning information during form validation (information that doesn't prevent submission but needs to alert the user)"""
         return self._warnings 

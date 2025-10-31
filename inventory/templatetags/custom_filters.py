@@ -4,7 +4,7 @@ register = template.Library()
 
 @register.filter
 def multiply(value, arg):
-    """将数值乘以参数"""
+    """Multiply a numeric value by the given argument"""
     try:
         return float(value) * float(arg)
     except (ValueError, TypeError):

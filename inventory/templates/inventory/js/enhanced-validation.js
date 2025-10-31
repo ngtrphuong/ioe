@@ -1,36 +1,36 @@
 /**
- * 增强型表单验证和用户体验脚本
- * 用于优化移动端适配、表单验证、批量操作和安全机制
+ * Enhanced form validation and user experience script
+ * Used for optimizing mobile responsiveness, form validation, batch operations, and security mechanisms
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 增强表单验证
+    // Enhance form validation
     enhanceFormValidation();
     
-    // 优化移动端表格和表单布局
+    // Optimize mobile table and form layout
     enhanceMobileResponsiveness();
     
-    // 添加批量操作功能
+    // Add batch operations functionality
     setupBatchOperations();
     
-    // 增强密码策略和二次确认机制
+    // Enhance password policy and secondary confirmation mechanism
     enhanceSecurityFeatures();
 });
 
 /**
- * 增强表单验证功能
+ * Enhance form validation functionality
  */
 function enhanceFormValidation() {
-    // 获取所有需要验证的表单
+    // Get all forms that need validation
     const forms = document.querySelectorAll('form');
     
     forms.forEach(form => {
-        // 为所有表单添加验证类
+        // Add validation class to all forms
         form.classList.add('needs-validation');
         
-        // 为必填字段添加视觉提示
+        // Add visual indicators for required fields
         form.querySelectorAll('[required]').forEach(field => {
-            // 获取字段的标签
+            // Get field label
             const label = form.querySelector(`label[for="${field.id}"]`);
             if (label && !label.querySelector('.required-indicator')) {
                 const indicator = document.createElement('span');
@@ -39,7 +39,7 @@ function enhanceFormValidation() {
                 label.appendChild(indicator);
             }
             
-            // 添加实时验证反馈
+            // Add real-time validation feedback
             field.addEventListener('input', function() {
                 validateField(this);
             });
@@ -49,30 +49,30 @@ function enhanceFormValidation() {
             });
         });
         
-        // 表单提交前验证
+        // Validate before form submission
         form.addEventListener('submit', function(event) {
             let isValid = true;
             
-            // 验证所有必填字段
+            // Validate all required fields
             form.querySelectorAll('[required]').forEach(field => {
                 if (!validateField(field, true)) {
                     isValid = false;
                 }
             });
             
-            // 验证密码字段
+            // Validate password field
             const passwordField = form.querySelector('input[type="password"]');
             if (passwordField && passwordField.value && !validatePassword(passwordField.value)) {
                 isValid = false;
-                showValidationError(passwordField, '密码必须包含至少8个字符，包括大小写字母、数字和特殊字符');
+                showValidationError(passwordField, 'Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters');
             }
             
-            // 如果验证失败，阻止表单提交
+            // If validation fails, prevent form submission
             if (!isValid) {
                 event.preventDefault();
                 event.stopPropagation();
                 
-                // 滚动到第一个错误字段
+                // Scroll to first invalid field
                 const firstInvalidField = form.querySelector('.is-invalid');
                 if (firstInvalidField) {
                     firstInvalidField.focus();
@@ -84,43 +84,43 @@ function enhanceFormValidation() {
 }
 
 /**
- * 验证单个字段
- * @param {HTMLElement} field - 要验证的表单字段
- * @param {boolean} showError - 是否显示错误信息
- * @returns {boolean} - 验证是否通过
+ * Validate a single field
+ * @param {HTMLElement} field - Form field to validate
+ * @param {boolean} showError - Whether to show error message
+ * @returns {boolean} - Whether validation passed
  */
 function validateField(field, showError = false) {
     let isValid = field.checkValidity();
     
-    // 特殊字段验证
+    // Special field validation
     if (field.type === 'email' && field.value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         isValid = emailRegex.test(field.value);
         if (!isValid && showError) {
-            showValidationError(field, '请输入有效的电子邮件地址');
+            showValidationError(field, 'Please enter a valid email address');
         }
     } else if (field.type === 'tel' && field.value) {
         const phoneRegex = /^1[3-9]\d{9}$/;
         isValid = phoneRegex.test(field.value);
         if (!isValid && showError) {
-            showValidationError(field, '请输入有效的手机号码');
+            showValidationError(field, 'Please enter a valid phone number');
         }
     } else if (field.name === 'barcode' && field.value) {
-        // 条码验证逻辑
+        // Barcode validation logic
         const barcodeRegex = /^[A-Za-z0-9\-]{4,}$/;
         isValid = barcodeRegex.test(field.value);
         if (!isValid && showError) {
-            showValidationError(field, '条码格式不正确，请检查');
+            showValidationError(field, 'Barcode format is incorrect, please check');
         }
     }
     
-    // 显示或隐藏验证反馈
+    // Show or hide validation feedback
     if (showError) {
         if (isValid) {
             field.classList.remove('is-invalid');
             field.classList.add('is-valid');
             
-            // 移除现有的错误消息
+            // Remove existing error message
             const errorElement = field.nextElementSibling;
             if (errorElement && errorElement.classList.contains('invalid-feedback')) {
                 errorElement.remove();
@@ -129,9 +129,9 @@ function validateField(field, showError = false) {
             field.classList.add('is-invalid');
             field.classList.remove('is-valid');
             
-            // 如果没有自定义错误消息，添加默认消息
+            // If no custom error message, add default message
             if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
-                showValidationError(field, '此字段是必填的');
+                showValidationError(field, 'This field is required');
             }
         }
     }
@@ -140,54 +140,54 @@ function validateField(field, showError = false) {
 }
 
 /**
- * 显示验证错误信息
- * @param {HTMLElement} field - 表单字段
- * @param {string} message - 错误信息
+ * Show validation error message
+ * @param {HTMLElement} field - Form field
+ * @param {string} message - Error message
  */
 function showValidationError(field, message) {
-    // 移除现有的错误消息
+    // Remove existing error message
     const existingError = field.nextElementSibling;
     if (existingError && existingError.classList.contains('invalid-feedback')) {
         existingError.remove();
     }
     
-    // 创建新的错误消息
+    // Create new error message
     const errorDiv = document.createElement('div');
     errorDiv.className = 'invalid-feedback';
     errorDiv.textContent = message;
     
-    // 插入错误消息
+    // Insert error message
     field.parentNode.insertBefore(errorDiv, field.nextSibling);
 }
 
 /**
- * 验证密码强度
- * @param {string} password - 密码
- * @returns {boolean} - 密码是否符合要求
+ * Validate password strength
+ * @param {string} password - Password
+ * @returns {boolean} - Whether password meets requirements
  */
 function validatePassword(password) {
-    // 密码必须至少8个字符，包含大小写字母、数字和特殊字符
+    // Password must be at least 8 characters, including uppercase and lowercase letters, numbers, and special characters
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
     return passwordRegex.test(password);
 }
 
 /**
- * 优化移动端表格和表单布局
+ * Optimize mobile table and form layout
  */
 function enhanceMobileResponsiveness() {
-    // 优化表格在移动设备上的显示
+    // Optimize table display on mobile devices
     const tables = document.querySelectorAll('.table-responsive table');
     tables.forEach(table => {
-        // 为表格添加水平滚动提示
+        // Add horizontal scroll hint for table
         const tableContainer = table.closest('.table-responsive');
         if (tableContainer && !tableContainer.querySelector('.swipe-hint')) {
             const hint = document.createElement('div');
             hint.className = 'swipe-hint d-md-none text-muted small mb-2';
-            hint.innerHTML = '<i class="bi bi-arrow-left-right me-1"></i>左右滑动查看更多';
+            hint.innerHTML = '<i class="bi bi-arrow-left-right me-1"></i>Swipe left/right to see more';
             tableContainer.insertBefore(hint, table);
         }
         
-        // 为表格行添加触摸反馈
+        // Add touch feedback for table rows
         table.querySelectorAll('tbody tr').forEach(row => {
             row.addEventListener('touchstart', function() {
                 this.classList.add('active-touch');
@@ -199,10 +199,10 @@ function enhanceMobileResponsiveness() {
         });
     });
     
-    // 优化表单在移动设备上的布局
+    // Optimize form layout on mobile devices
     const formGroups = document.querySelectorAll('.form-group, .mb-3');
     formGroups.forEach(group => {
-        // 确保标签和输入框在小屏幕上垂直堆叠
+        // Ensure labels and inputs stack vertically on small screens
         const label = group.querySelector('label');
         const input = group.querySelector('input, select, textarea');
         
@@ -212,11 +212,11 @@ function enhanceMobileResponsiveness() {
         }
     });
     
-    // 优化下拉选择框在移动端的显示
+    // Optimize dropdown select display on mobile
     document.querySelectorAll('select').forEach(select => {
         select.addEventListener('focus', function() {
             if (window.innerWidth < 768) {
-                // 在移动设备上，确保下拉框不会被截断
+                // On mobile devices, ensure dropdown is not truncated
                 this.style.maxHeight = '38px';
             }
         });
@@ -224,28 +224,28 @@ function enhanceMobileResponsiveness() {
 }
 
 /**
- * 设置批量操作功能
+ * Setup batch operations functionality
  */
 function setupBatchOperations() {
-    // 添加批量选择功能
+    // Add batch selection functionality
     setupBatchSelection();
     
-    // 添加批量操作按钮
+    // Add batch operation buttons
     setupBatchActionButtons();
 }
 
 /**
- * 设置批量选择功能
+ * Setup batch selection functionality
  */
 function setupBatchSelection() {
-    // 查找所有表格
+    // Find all tables
     const tables = document.querySelectorAll('.table');
     
     tables.forEach(table => {
-        // 检查表格是否已经有选择列
+        // Check if table already has selection column
         const hasCheckboxColumn = table.querySelector('thead th.select-column');
         if (!hasCheckboxColumn) {
-            // 添加表头选择列
+            // Add header selection column
             const headerRow = table.querySelector('thead tr');
             if (headerRow) {
                 const selectAllHeader = document.createElement('th');
@@ -255,12 +255,12 @@ function setupBatchSelection() {
                 const selectAllCheckbox = document.createElement('input');
                 selectAllCheckbox.type = 'checkbox';
                 selectAllCheckbox.className = 'form-check-input select-all';
-                selectAllCheckbox.setAttribute('aria-label', '选择所有行');
+                selectAllCheckbox.setAttribute('aria-label', 'Select all rows');
                 
                 selectAllHeader.appendChild(selectAllCheckbox);
                 headerRow.insertBefore(selectAllHeader, headerRow.firstChild);
                 
-                // 为每一行添加选择框
+                // Add checkbox for each row
                 const rows = table.querySelectorAll('tbody tr');
                 rows.forEach(row => {
                     const selectCell = document.createElement('td');
@@ -269,29 +269,29 @@ function setupBatchSelection() {
                     const rowCheckbox = document.createElement('input');
                     rowCheckbox.type = 'checkbox';
                     rowCheckbox.className = 'form-check-input select-row';
-                    rowCheckbox.setAttribute('aria-label', '选择此行');
+                    rowCheckbox.setAttribute('aria-label', 'Select this row');
                     
                     selectCell.appendChild(rowCheckbox);
                     row.insertBefore(selectCell, row.firstChild);
                 });
                 
-                // 添加全选/取消全选功能
+                // Add select all/deselect all functionality
                 selectAllCheckbox.addEventListener('change', function() {
                     const isChecked = this.checked;
                     table.querySelectorAll('.select-row').forEach(checkbox => {
                         checkbox.checked = isChecked;
                     });
                     
-                    // 更新批量操作按钮状态
+                    // Update batch operation button status
                     updateBatchActionButtons();
                 });
                 
-                // 添加行选择事件
+                // Add row selection event
                 table.querySelectorAll('.select-row').forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
                         updateBatchActionButtons();
                         
-                        // 更新全选框状态
+                        // Update select all checkbox status
                         const allCheckboxes = table.querySelectorAll('.select-row');
                         const checkedCheckboxes = table.querySelectorAll('.select-row:checked');
                         selectAllCheckbox.checked = allCheckboxes.length === checkedCheckboxes.length;
@@ -304,45 +304,45 @@ function setupBatchSelection() {
 }
 
 /**
- * 设置批量操作按钮
+ * Setup batch action buttons
  */
 function setupBatchActionButtons() {
-    // 查找可以添加批量操作按钮的容器
+    // Find containers where batch action buttons can be added
     const actionContainers = document.querySelectorAll('.card-body .d-flex.flex-wrap.gap-2');
     
     actionContainers.forEach(container => {
-        // 检查是否已经有批量操作按钮组
+        // Check if batch action button group already exists
         if (!container.querySelector('.batch-actions')) {
-            // 创建批量操作按钮组
+            // Create batch action button group
             const batchActionsDiv = document.createElement('div');
             batchActionsDiv.className = 'batch-actions dropdown d-none ms-2';
             
-            // 创建下拉菜单按钮
+            // Create dropdown menu button
             const dropdownButton = document.createElement('button');
             dropdownButton.className = 'btn btn-outline-primary dropdown-toggle';
             dropdownButton.type = 'button';
             dropdownButton.setAttribute('data-bs-toggle', 'dropdown');
             dropdownButton.setAttribute('aria-expanded', 'false');
-            dropdownButton.innerHTML = '<i class="bi bi-list-check me-1"></i> 批量操作 <span class="badge bg-primary ms-1 selected-count">0</span>';
+            dropdownButton.innerHTML = '<i class="bi bi-list-check me-1"></i> Batch Actions <span class="badge bg-primary ms-1 selected-count">0</span>';
             
-            // 创建下拉菜单
+            // Create dropdown menu
             const dropdownMenu = document.createElement('ul');
             dropdownMenu.className = 'dropdown-menu';
             
-            // 添加批量操作选项
+            // Add batch operation options
             const actions = [
-                { text: '批量导出', icon: 'bi-download', action: 'exportSelected' },
-                { text: '批量删除', icon: 'bi-trash', action: 'deleteSelected', class: 'text-danger' }
+                { text: 'Batch Export', icon: 'bi-download', action: 'exportSelected' },
+                { text: 'Batch Delete', icon: 'bi-trash', action: 'deleteSelected', class: 'text-danger' }
             ];
             
-            // 根据页面类型添加特定操作
+            // Add specific operations based on page type
             if (window.location.pathname.includes('/product/')) {
-                actions.splice(1, 0, { text: '批量调整价格', icon: 'bi-currency-yen', action: 'adjustPrice' });
+                actions.splice(1, 0, { text: 'Batch Adjust Price', icon: 'bi-currency-yen', action: 'adjustPrice' });
             } else if (window.location.pathname.includes('/inventory/')) {
-                actions.splice(1, 0, { text: '批量调整库存', icon: 'bi-box-seam', action: 'adjustStock' });
+                actions.splice(1, 0, { text: 'Batch Adjust Stock', icon: 'bi-box-seam', action: 'adjustStock' });
             }
             
-            // 创建菜单项
+            // Create menu items
             actions.forEach(action => {
                 const li = document.createElement('li');
                 const a = document.createElement('a');
@@ -354,28 +354,28 @@ function setupBatchActionButtons() {
                 li.appendChild(a);
                 dropdownMenu.appendChild(li);
                 
-                // 添加事件监听器
+                // Add event listener
                 a.addEventListener('click', function(e) {
                     e.preventDefault();
                     handleBatchAction(this.getAttribute('data-action'));
                 });
             });
             
-            // 组装下拉菜单
+            // Assemble dropdown menu
             batchActionsDiv.appendChild(dropdownButton);
             batchActionsDiv.appendChild(dropdownMenu);
             
-            // 添加到容器
+            // Add to container
             container.appendChild(batchActionsDiv);
         }
     });
     
-    // 初始化批量操作按钮状态
+    // Initialize batch action button status
     updateBatchActionButtons();
 }
 
 /**
- * 更新批量操作按钮状态
+ * Update batch action button status
  */
 function updateBatchActionButtons() {
     const selectedRows = document.querySelectorAll('.select-row:checked');
@@ -392,11 +392,11 @@ function updateBatchActionButtons() {
 }
 
 /**
- * 处理批量操作
- * @param {string} action - 操作类型
+ * Handle batch operations
+ * @param {string} action - Operation type
  */
 function handleBatchAction(action) {
-    // 获取选中的行
+    // Get selected rows
     const selectedRows = document.querySelectorAll('.select-row:checked');
     const selectedIds = Array.from(selectedRows).map(checkbox => {
         const row = checkbox.closest('tr');
@@ -404,7 +404,7 @@ function handleBatchAction(action) {
     }).filter(id => id);
     
     if (selectedIds.length === 0) {
-        showAlert('请先选择要操作的项目', 'warning');
+        showAlert('Please select items to operate on first', 'warning');
         return;
     }
     
@@ -422,22 +422,22 @@ function handleBatchAction(action) {
             showAdjustStockModal(selectedIds);
             break;
         default:
-            console.warn('未知的批量操作:', action);
+            console.warn('Unknown batch operation:', action);
     }
 }
 
 /**
- * 导出选中项目
- * @param {Array} ids - 选中项目的ID
+ * Export selected items
+ * @param {Array} ids - IDs of selected items
  */
 function exportSelectedItems(ids) {
-    // 创建一个表单来提交导出请求
+    // Create a form to submit export request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'export/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -445,7 +445,7 @@ function exportSelectedItems(ids) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -454,46 +454,46 @@ function exportSelectedItems(ids) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }
 
 /**
- * 确认删除选中项目
- * @param {Array} ids - 选中项目的ID
+ * Confirm delete selected items
+ * @param {Array} ids - IDs of selected items
  */
 function confirmDeleteSelected(ids) {
     Swal.fire({
-        title: '确认删除',
-        text: `您确定要删除选中的 ${ids.length} 项吗？此操作不可逆！`,
+        title: 'Confirm Delete',
+        text: `Are you sure you want to delete the selected ${ids.length} item(s)? This operation cannot be undone!`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: '确认删除',
-        cancelButtonText: '取消',
+        confirmButtonText: 'Confirm Delete',
+        cancelButtonText: 'Cancel',
         focusCancel: true
     }).then((result) => {
         if (result.isConfirmed) {
-            // 执行删除操作
+            // Execute delete operation
             deleteSelectedItems(ids);
         }
     });
 }
 
 /**
- * 删除选中项目
- * @param {Array} ids - 选中项目的ID
+ * Delete selected items
+ * @param {Array} ids - IDs of selected items
  */
 function deleteSelectedItems(ids) {
-    // 创建一个表单来提交删除请求
+    // Create a form to submit delete request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'batch-delete/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -501,7 +501,7 @@ function deleteSelectedItems(ids) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -510,72 +510,72 @@ function deleteSelectedItems(ids) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }
 
 /**
- * 显示调整价格模态框
- * @param {Array} ids - 选中项目的ID
+ * Show adjust price modal
+ * @param {Array} ids - IDs of selected items
  */
 function showAdjustPriceModal(ids) {
-    // 创建模态框HTML
+    // Create modal HTML
     const modalHtml = `
     <div class="modal fade" id="adjustPriceModal" tabindex="-1" aria-labelledby="adjustPriceModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="adjustPriceModalLabel">批量调整价格</h5>
+                    <h5 class="modal-title" id="adjustPriceModalLabel">Batch Adjust Price</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="adjustPriceForm">
                         <div class="mb-3">
-                            <label for="adjustmentType" class="form-label">调整方式</label>
+                            <label for="adjustmentType" class="form-label">Adjustment Method</label>
                             <select class="form-select" id="adjustmentType" required>
-                                <option value="percentage">按百分比调整</option>
-                                <option value="fixed">按固定金额调整</option>
-                                <option value="set">设置为指定金额</option>
+                                <option value="percentage">Adjust by Percentage</option>
+                                <option value="fixed">Adjust by Fixed Amount</option>
+                                <option value="set">Set to Specified Amount</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="adjustmentValue" class="form-label">调整值</label>
+                            <label for="adjustmentValue" class="form-label">Adjustment Value</label>
                             <div class="input-group">
                                 <input type="number" class="form-control" id="adjustmentValue" step="0.01" required>
                                 <span class="input-group-text adjustment-unit">%</span>
                             </div>
-                            <div class="form-text">正值表示增加，负值表示减少</div>
+                            <div class="form-text">Positive values increase, negative values decrease</div>
                         </div>
                         <div class="mb-3">
-                            <label for="adjustField" class="form-label">调整字段</label>
+                            <label for="adjustField" class="form-label">Adjustment Field</label>
                             <select class="form-select" id="adjustField" required>
-                                <option value="price">售价</option>
-                                <option value="cost">成本价</option>
-                                <option value="both">售价和成本价</option>
+                                <option value="price">Selling Price</option>
+                                <option value="cost">Cost Price</option>
+                                <option value="both">Selling Price and Cost Price</option>
                             </select>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="confirmAdjustPrice">确认调整</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmAdjustPrice">Confirm Adjustment</button>
                 </div>
             </div>
         </div>
     </div>
     `;
     
-    // 添加模态框到页面
+    // Add modal to page
     if (!document.getElementById('adjustPriceModal')) {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
     
-    // 获取模态框元素
+    // Get modal element
     const modal = document.getElementById('adjustPriceModal');
     const bsModal = new bootstrap.Modal(modal);
     
-    // 更新调整单位显示
+    // Update adjustment unit display
     const adjustmentType = document.getElementById('adjustmentType');
     const adjustmentUnit = document.querySelector('.adjustment-unit');
     
@@ -583,7 +583,7 @@ function showAdjustPriceModal(ids) {
         adjustmentUnit.textContent = this.value === 'percentage' ? '%' : '¥';
     });
     
-    // 确认按钮点击事件
+    // Confirm button click event
     document.getElementById('confirmAdjustPrice').addEventListener('click', function() {
         const form = document.getElementById('adjustPriceForm');
         if (form.checkValidity()) {
@@ -591,7 +591,7 @@ function showAdjustPriceModal(ids) {
             const value = document.getElementById('adjustmentValue').value;
             const field = document.getElementById('adjustField').value;
             
-            // 提交调整请求
+            // Submit adjustment request
             submitPriceAdjustment(ids, type, value, field);
             bsModal.hide();
         } else {
@@ -599,25 +599,25 @@ function showAdjustPriceModal(ids) {
         }
     });
     
-    // 显示模态框
+    // Show modal
     bsModal.show();
 }
 
 /**
- * 提交价格调整请求
- * @param {Array} ids - 选中项目的ID
- * @param {string} type - 调整类型
- * @param {number} value - 调整值
- * @param {string} field - 调整字段
+ * Submit price adjustment request
+ * @param {Array} ids - IDs of selected items
+ * @param {string} type - Adjustment type
+ * @param {number} value - Adjustment value
+ * @param {string} field - Adjustment field
  */
 function submitPriceAdjustment(ids, type, value, field) {
-    // 创建一个表单来提交调整请求
+    // Create a form to submit adjustment request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'batch-adjust-price/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -625,7 +625,7 @@ function submitPriceAdjustment(ids, type, value, field) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加调整参数
+    // Add adjustment parameters
     const typeInput = document.createElement('input');
     typeInput.type = 'hidden';
     typeInput.name = 'adjustment_type';
@@ -644,7 +644,7 @@ function submitPriceAdjustment(ids, type, value, field) {
     fieldInput.value = field;
     form.appendChild(fieldInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -653,64 +653,64 @@ function submitPriceAdjustment(ids, type, value, field) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }
 
 /**
- * 显示调整库存模态框
- * @param {Array} ids - 选中项目的ID
+ * Show adjust stock modal
+ * @param {Array} ids - IDs of selected items
  */
 function showAdjustStockModal(ids) {
-    // 创建模态框HTML
+    // Create modal HTML
     const modalHtml = `
     <div class="modal fade" id="adjustStockModal" tabindex="-1" aria-labelledby="adjustStockModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="adjustStockModalLabel">批量调整库存</h5>
+                    <h5 class="modal-title" id="adjustStockModalLabel">Batch Adjust Stock</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="adjustStockForm">
                         <div class="mb-3">
-                            <label for="stockAdjustmentType" class="form-label">调整方式</label>
+                            <label for="stockAdjustmentType" class="form-label">Adjustment Method</label>
                             <select class="form-select" id="stockAdjustmentType" required>
-                                <option value="add">增加库存</option>
-                                <option value="subtract">减少库存</option>
-                                <option value="set">设置为指定数量</option>
+                                <option value="add">Increase Stock</option>
+                                <option value="subtract">Decrease Stock</option>
+                                <option value="set">Set to Specified Quantity</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentValue" class="form-label">调整数量</label>
+                            <label for="stockAdjustmentValue" class="form-label">Adjustment Quantity</label>
                             <input type="number" class="form-control" id="stockAdjustmentValue" min="0" step="1" required>
                         </div>
                         <div class="mb-3">
-                            <label for="stockAdjustmentNotes" class="form-label">调整原因</label>
+                            <label for="stockAdjustmentNotes" class="form-label">Adjustment Reason</label>
                             <textarea class="form-control" id="stockAdjustmentNotes" rows="3" required></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">确认调整</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmAdjustStock">Confirm Adjustment</button>
                 </div>
             </div>
         </div>
     </div>
     `;
     
-    // 添加模态框到页面
+    // Add modal to page
     if (!document.getElementById('adjustStockModal')) {
         document.body.insertAdjacentHTML('beforeend', modalHtml);
     }
     
-    // 获取模态框元素
+    // Get modal element
     const modal = document.getElementById('adjustStockModal');
     const bsModal = new bootstrap.Modal(modal);
     
-    // 确认按钮点击事件
+    // Confirm button click event
     document.getElementById('confirmAdjustStock').addEventListener('click', function() {
         const form = document.getElementById('adjustStockForm');
         if (form.checkValidity()) {
@@ -718,7 +718,7 @@ function showAdjustStockModal(ids) {
             const value = document.getElementById('stockAdjustmentValue').value;
             const notes = document.getElementById('stockAdjustmentNotes').value;
             
-            // 提交调整请求
+            // Submit adjustment request
             submitStockAdjustment(ids, type, value, notes);
             bsModal.hide();
         } else {
@@ -726,25 +726,25 @@ function showAdjustStockModal(ids) {
         }
     });
     
-    // 显示模态框
+    // Show modal
     bsModal.show();
 }
 
 /**
- * 提交库存调整请求
- * @param {Array} ids - 选中项目的ID
- * @param {string} type - 调整类型
- * @param {number} value - 调整值
- * @param {string} notes - 调整原因
+ * Submit stock adjustment request
+ * @param {Array} ids - IDs of selected items
+ * @param {string} type - Adjustment type
+ * @param {number} value - Adjustment value
+ * @param {string} notes - Adjustment reason
  */
 function submitStockAdjustment(ids, type, value, notes) {
-    // 创建一个表单来提交调整请求
+    // Create a form to submit adjustment request
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = window.location.pathname + 'batch-adjust-stock/';
     form.style.display = 'none';
     
-    // 添加CSRF令牌
+    // Add CSRF token
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
@@ -752,7 +752,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     csrfInput.value = csrfToken;
     form.appendChild(csrfInput);
     
-    // 添加调整参数
+    // Add adjustment parameters
     const typeInput = document.createElement('input');
     typeInput.type = 'hidden';
     typeInput.name = 'adjustment_type';
@@ -771,7 +771,7 @@ function submitStockAdjustment(ids, type, value, notes) {
     notesInput.value = notes;
     form.appendChild(notesInput);
     
-    // 添加选中的ID
+    // Add selected IDs
     ids.forEach(id => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -780,7 +780,7 @@ function submitStockAdjustment(ids, type, value, notes) {
         form.appendChild(input);
     });
     
-    // 提交表单
+    // Submit form
     document.body.appendChild(form);
     form.submit();
 }

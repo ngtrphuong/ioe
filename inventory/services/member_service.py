@@ -1,5 +1,5 @@
 """
-会员服务模块 - 处理会员相关的业务逻辑
+Member service module - business logic for member management
 """
 import csv
 import io
@@ -13,36 +13,30 @@ from ..models import Member, MemberLevel, MemberTransaction
 
 def check_and_update_member_level(member):
     """
-    检查会员积分并根据积分更新会员等级
-    如果会员积分达到更高等级的门槛，自动升级会员等级
+    Check member points and update member level accordingly. Automatically upgrade member level if new threshold reached.
     """
-    # 获取会员当前等级
+    # Get member's current level
     current_level = member.level
     
-    # 获取所有可能的更高等级
+    # Get all potential higher levels
     higher_levels = MemberLevel.objects.filter(
         points_threshold__lte=member.points,
-        is_active=True
-    ).order_by('-points_threshold')
-    
+    )
+    highest_eligible_level = None
     if higher_levels.exists():
         highest_eligible_level = higher_levels.first()
-        
-        # 如果有更高的等级，并且不是当前等级，则升级
+        # If there is a higher level, and it's not the current level, then upgrade
         if highest_eligible_level != current_level:
-            old_level_name = current_level.name if current_level else "无等级"
-            
-            # 记录会员等级变更
+            old_level_name = current_level.name if current_level else "No level"
+            # Record member level change
             MemberTransaction.objects.create(
                 member=member,
-                transaction_type='LEVEL_CHANGE',
-                points_change=0,
-                balance_change=0,
-                description=f'会员等级升级: {old_level_name} → {highest_eligible_level.name}',
-                created_by=member.created_by  # 使用会员的创建者作为操作者
+                transaction_type='LEVEL_UPGRADE',
+                description=f'Level changed from {old_level_name} to {highest_eligible_level.name}',
+                points=member.points,
+                operator=member.created_by  # Use the creator of the member as the operator
             )
-            
-            # 更新会员等级
+            # Update member level
             member.level = highest_eligible_level
             member.save(update_fields=['level', 'updated_at'])
             
@@ -53,19 +47,19 @@ def check_and_update_member_level(member):
 
 def import_members_from_csv(csv_file, operator):
     """
-    从CSV文件导入会员数据
-    
+    Import member data from a CSV file.
+
     Parameters:
-    - csv_file: 上传的CSV文件
-    - operator: 执行导入操作的用户
-    
+    - csv_file: Uploaded CSV file
+    - operator: User performing the import
+
     Returns:
-    - dict: 包含导入结果的字典
+    - dict: Dictionary containing import results
     """
-    # 重置文件指针
+    # Reset file pointer
     csv_file.seek(0)
     
-    # 读取CSV文件
+    # Read CSV file
     csv_data = csv_file.read().decode('utf-8')
     csv_reader = csv.DictReader(io.StringIO(csv_data))
     
@@ -74,36 +68,36 @@ def import_members_from_csv(csv_file, operator):
     failed_count = 0
     failed_rows = []
     
-    # 获取默认会员等级
+    # Get default member level
     default_level = MemberLevel.objects.filter(is_default=True, is_active=True).first()
     if not default_level:
         default_level = MemberLevel.objects.filter(is_active=True).first()
     
-    # 开始导入
+    # Begin import
     for row_num, row in enumerate(csv_reader, start=2):  # start=2 because row 1 is header
         try:
             with transaction.atomic():
-                # 检查必填字段
+                # Check required fields
                 if not row.get('name') or not row.get('phone'):
-                    failed_rows.append((row_num, "姓名和手机号为必填字段"))
+                    failed_rows.append((row_num, "Name and phone number are required"))
                     failed_count += 1
                     continue
                 
-                # 检查手机号是否已存在
+                # Check if phone number already exists
                 if Member.objects.filter(phone=row.get('phone')).exists():
                     skipped_count += 1
                     continue
                 
-                # 处理会员等级
+                # Handle member level
                 level = default_level
                 if row.get('level'):
                     try:
                         level_obj = MemberLevel.objects.get(name=row.get('level'))
                         level = level_obj
                     except MemberLevel.DoesNotExist:
-                        pass  # 使用默认等级
+                        pass  # Use default level
                 
-                # 处理生日
+                # Handle birthday
                 birthday = None
                 if row.get('birthday'):
                     try:
@@ -111,7 +105,7 @@ def import_members_from_csv(csv_file, operator):
                     except ValueError:
                         pass
                 
-                # 处理积分
+                # Handle points
                 points = 0
                 if row.get('points'):
                     try:
@@ -119,7 +113,7 @@ def import_members_from_csv(csv_file, operator):
                     except ValueError:
                         points = 0
                 
-                # 创建会员
+                # Create member
                 member = Member.objects.create(
                     name=row.get('name'),
                     phone=row.get('phone'),
@@ -148,15 +142,15 @@ def import_members_from_csv(csv_file, operator):
 
 def get_member_statistics():
     """
-    获取会员统计信息
-    
+    Get member statistics.
+
     Returns:
-    - dict: 包含会员统计信息的字典
+    - dict: Dictionary containing member statistics
     """
     total_members = Member.objects.count()
     active_members = Member.objects.filter(is_active=True).count()
     
-    # 按等级统计会员数量
+    # Count members per level
     level_stats = []
     for level in MemberLevel.objects.filter(is_active=True):
         level_count = Member.objects.filter(level=level).count()
@@ -168,7 +162,7 @@ def get_member_statistics():
                 'percentage': round(level_count / total_members * 100 if total_members > 0 else 0, 2)
             })
     
-    # 本月新增会员
+    # Members added this month
     current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     new_members_this_month = Member.objects.filter(created_at__gte=current_month_start).count()
     

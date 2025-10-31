@@ -16,7 +16,7 @@
                         {% csrf_token %}
                         {{ form|crispy }}
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{% url 'inventory_check_list' %}" class="btn btn-outline-secondary">返回</a>
+                            <a href="{% url 'inventory_check_list' %}" class="btn btn-outline-secondary">Back</a>
                             <button type="submit" class="btn btn-primary">{{ submit_text }}</button>
                         </div>
                     </form>
@@ -25,10 +25,10 @@
                     <div class="small text-muted">
                         <p>
                             <i class="bi bi-info-circle"></i>
-                            库存盘点会将系统中所有商品及其当前库存记录下来，便于与实际库存进行比对。
+                            Inventory check records all products and current stock for comparison with actual inventory.
                         </p>
                         <p>
-                            如果只想盘点特定分类的商品，请选择相应的商品分类。
+                            If you want to check only a specific category, select the corresponding category.
                         </p>
                     </div>
                 </div>
