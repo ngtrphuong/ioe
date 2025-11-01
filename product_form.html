@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-hans">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>添加新商品</title>
+    <title>Add New Product</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -30,13 +30,13 @@
         body {
             background-color: var(--background-color);
             color: var(--text-color);
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Noto Sans', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
-        /* 导航栏样式优化 */
+        /* Navigation bar style optimization */
         .navbar {
             box-shadow: var(--box-shadow);
             background-color: var(--primary-color) !important;
@@ -64,7 +64,7 @@
             background-color: rgba(255, 255, 255, 0.1);
         }
         
-        /* 卡片样式优化 */
+        /* Card style optimization */
         .card {
             border: none;
             border-radius: var(--border-radius);
@@ -90,7 +90,7 @@
             padding: 1.25rem;
         }
         
-        /* 按钮样式优化 */
+        /* Button style optimization */
         .btn {
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
@@ -120,7 +120,7 @@
             box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
         }
         
-        /* 表单样式优化 */
+        /* Form style optimization */
         .form-control, .form-select {
             border-radius: 0.5rem;
             padding: 0.5rem 0.75rem;
@@ -138,7 +138,7 @@
             margin-bottom: 0.5rem;
         }
         
-        /* 表格样式优化 */
+        /* Table style optimization */
         .table-container {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -164,7 +164,7 @@
             vertical-align: middle;
         }
         
-        /* 警告框样式优化 */
+        /* Alert box style optimization */
         .alert {
             border-radius: var(--border-radius);
             border: none;
@@ -172,20 +172,20 @@
             margin-bottom: 1.5rem;
         }
         
-        /* 徽章样式优化 */
+        /* Badge style optimization */
         .badge {
             font-weight: 500;
             padding: 0.35em 0.65em;
             border-radius: 0.5rem;
         }
         
-        /* 主内容区域 */
+        /* Main content area */
         .main-content {
             flex: 1;
             padding: 1.5rem 0;
         }
         
-        /* 内容容器优化 */
+        /* Content container optimization */
         .container {
             padding-left: 1rem;
             padding-right: 1rem;
@@ -193,9 +193,9 @@
             width: 100%;
         }
         
-        /* 响应式调整 */
+        /* Responsive adjustments */
         @media (max-width: 768px) {
-            /* 基础元素调整 */
+            /* Basic element adjustments */
             body {
                 padding-top: 0;
                 font-size: var(--mobile-font-size);
@@ -212,18 +212,18 @@
                 padding: 1rem 0;
             }
             
-            /* 导航栏优化 */
+            /* Navigation bar optimization */
             .navbar-brand {
                 font-size: 1.2rem;
             }
             
-            /* 卡片优化 */
+            /* Card optimization */
             .card {
                 margin-bottom: 1rem;
                 border-radius: calc(var(--border-radius) * 0.75);
             }
             
-            /* 表格响应式优化 */
+            /* Table responsive optimization */
             .table-responsive {
                 border-radius: var(--border-radius);
                 overflow-x: auto;
@@ -232,7 +232,7 @@
                 margin-bottom: 0.5rem;
             }
             
-            /* 改善表格在移动设备上的显示 */
+            /* Improve table display on mobile devices */
             .table th, .table td {
                 white-space: nowrap;
                 padding: 0.5rem 0.75rem;
@@ -244,12 +244,12 @@
                 position: relative;
             }
             
-            /* 增强表格单元格触摸反馈 */
+            /* Enhance table cell touch feedback */
             .table td:active {
                 background-color: rgba(52, 152, 219, 0.1);
             }
             
-            /* 优化表格内容显示 */
+            /* Optimize table content display */
             .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
@@ -257,13 +257,13 @@
                 margin-bottom: 1rem;
             }
             
-            /* 改善表单在移动设备上的布局 */
+            /* Improve form layout on mobile devices */
             .input-group {
                 flex-wrap: nowrap;
                 width: 100%;
             }
             
-            /* 确保下拉菜单不会溢出屏幕 */
+            /* Ensure dropdown menus do not overflow the screen */
             .dropdown-menu {
                 position: absolute;
                 left: auto;
@@ -295,7 +295,7 @@
                 transition: background-color 0.15s ease-in-out;
             }
             
-            /* 优化按钮组在移动设备上的显示 */
+            /* Optimize button group display on mobile devices */
             .btn-group {
                 display: flex;
                 flex-wrap: wrap;
@@ -304,7 +304,7 @@
                 justify-content: center;
             }
             
-            /* 确保表单元素在小屏幕上正确显示 */
+            /* Ensure form elements display correctly on small screens */
             .form-control, .form-select {
                 width: 100%;
                 max-width: 100%;
@@ -312,7 +312,7 @@
                 height: auto;
             }
             
-            /* 优化导航栏在移动设备上的显示 */
+            /* Optimize navigation bar display on mobile devices */
             .navbar-collapse {
                 max-height: 80vh;
                 overflow-y: auto;
@@ -329,19 +329,19 @@
                 border-radius: var(--border-radius);
             }
             
-            /* 优化表单布局 */
+            /* Optimize form layout */
             .row > [class*="col-"] {
                 margin-bottom: 0.75rem;
             }
             
-            /* 优化按钮在移动设备上的显示 */
+            /* Optimize button display on mobile devices */
             .d-flex.flex-wrap.gap-2 {
                 justify-content: center;
                 margin-top: 0.5rem;
                 width: 100%;
             }
             
-            /* 优化表单提交按钮区域 */
+            /* Optimize form submit button area */
             .form-actions {
                 display: flex;
                 flex-wrap: wrap;
@@ -351,12 +351,12 @@
                 width: 100%;
             }
             
-            /* 确保搜索框和筛选器在移动设备上正确显示 */
+            /* Ensure search box and filters display correctly on mobile devices */
             .d-flex.flex-column.flex-md-row {
                 gap: 0.5rem;
             }
             
-            /* 优化移动端表格内容显示 */
+            /* Optimize mobile table content display */
             .table-container {
                 padding: 0;
                 margin-bottom: 1rem;
@@ -367,18 +367,18 @@
                 box-shadow: 0 0.1rem 0.5rem rgba(0, 0, 0, 0.05);
             }
             
-            /* 优化移动端按钮大小 */
+            /* Optimize mobile button size */
             .btn {
                 padding: 0.4rem 0.75rem;
                 font-size: var(--mobile-font-size);
             }
             
-            /* 优化移动端卡片内容 */
+            /* Optimize mobile card content */
             .card-body {
                 padding: var(--mobile-padding);
             }
             
-            /* 确保表单在移动端正确对齐 */
+            /* Ensure form alignment on mobile */
             .form-label {
                 font-size: var(--mobile-font-size);
                 margin-bottom: 0.25rem;
@@ -386,7 +386,7 @@
                 width: 100%;
             }
             
-            /* 优化移动端表单布局 */
+            /* Optimize mobile form layout */
             .row {
                 margin-left: -0.25rem;
                 margin-right: -0.25rem;
@@ -397,7 +397,7 @@
                 padding-right: 0.25rem;
             }
             
-            /* 优化移动端搜索和筛选区域 */
+            /* Optimize mobile search and filter area */
             .d-flex.flex-wrap {
                 flex-direction: column;
                 align-items: stretch;
@@ -405,7 +405,7 @@
                 gap: 0.5rem;
             }
             
-            /* 确保下拉选择框在移动端正确显示 */
+            /* Ensure dropdown select boxes display correctly on mobile */
             select.form-select[style="width: auto;"] {
                 width: 100% !important;
                 margin-bottom: 0.5rem;
@@ -413,14 +413,14 @@
                 appearance: auto;
             }
             
-            /* 优化移动端表单组 */
+            /* Optimize mobile form groups */
             .form-group {
                 margin-bottom: 0.75rem;
                 width: 100%;
                 position: relative;
             }
             
-            /* 优化表单验证反馈 */
+            /* Optimize form validation feedback */
             .invalid-feedback {
                 display: block;
                 font-size: 0.8rem;
@@ -428,7 +428,7 @@
                 margin-top: 0.25rem;
             }
             
-            /* 增强表单控件触摸区域 */
+            /* Enhance form control touch area */
             .form-control, .form-select, .btn {
                 min-height: 44px;
                 touch-action: manipulation;
@@ -437,12 +437,12 @@
                 transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, transform 0.1s ease;
             }
             
-            /* 增强表单控件触摸反馈 */
+            /* Enhance form control touch feedback */
             .form-control:focus, .form-select:focus {
                 transform: translateY(-1px);
             }
             
-            /* 优化表单验证状态显示 */
+            /* Optimize form validation state display */
             .was-validated .form-control:invalid,
             .form-control.is-invalid {
                 border-color: var(--accent-color);
@@ -453,20 +453,20 @@
                 background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
             }
             
-            /* 优化移动端搜索框 */
+            /* Optimize mobile search box */
             .input-group.mb-3 {
                 width: 100%;
                 margin-bottom: 0.5rem !important;
             }
             
-            /* 增强搜索框交互体验 */
+            /* Enhance search box interaction experience */
             .input-group .form-control:focus + .input-group-text,
             .input-group .form-control:focus ~ .btn {
                 border-color: var(--secondary-color);
                 background-color: rgba(52, 152, 219, 0.1);
             }
             
-            /* 优化筛选按钮组交互 */
+            /* Optimize filter button group interaction */
             .btn-group .btn {
                 position: relative;
                 overflow: hidden;
@@ -493,7 +493,7 @@
                 transition: transform 0s, opacity 0.3s;
             }
             
-            /* 优化移动端分页 */
+            /* Optimize mobile pagination */
             .pagination {
                 flex-wrap: wrap;
                 justify-content: center;
@@ -505,7 +505,7 @@
                 font-size: var(--mobile-font-size);
             }
             
-            /* 优化移动端警告框 */
+            /* Optimize mobile alert box */
             .alert {
                 padding: 0.75rem 1rem;
                 margin-bottom: 1rem;
@@ -513,7 +513,7 @@
             }
         }
         
-        /* 列表组样式优化 */
+        /* List group style optimization */
         .list-group-item {
             border: none;
             padding: 0.75rem 1.25rem;
@@ -524,14 +524,14 @@
             background-color: rgba(0, 0, 0, 0.03);
         }
         
-        /* 触摸反馈效果 */
+        /* Touch feedback effect */
         .active-touch {
             background-color: rgba(0, 0, 0, 0.05) !important;
             transform: scale(0.98);
             transition: all 0.1s ease-in-out;
         }
         
-        /* 表单验证增强 */
+        /* Form validation enhancement */
         .was-validated .form-control:invalid:focus,
         .was-validated .form-select:invalid:focus {
             box-shadow: 0 0 0 0.25rem rgba(231, 76, 60, 0.25);
@@ -542,7 +542,7 @@
             box-shadow: 0 0 0 0.25rem rgba(46, 204, 113, 0.25);
         }
         
-        /* 改进移动端导航栏交互 */
+        /* Improve mobile navigation bar interaction */
         @media (max-width: 768px) {
             .navbar-collapse {
                 max-height: 0;
@@ -554,13 +554,13 @@
                 max-height: 80vh;
             }
             
-            /* 增强移动端表单元素可访问性 */
+            /* Enhance mobile form element accessibility */
             .form-label {
                 font-size: 1rem;
                 margin-bottom: 0.5rem;
             }
             
-            /* 改进移动端按钮触摸区域 */
+            /* Improve mobile button touch area */
             .btn, .nav-link, .dropdown-item {
                 min-height: 44px;
                 display: flex;
@@ -573,7 +573,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <i class="bi bi-box-seam me-2"></i>库存管理系统
+                <i class="bi bi-box-seam me-2"></i>Inventory Management System
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -582,41 +582,41 @@
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link " href="/products/">
-                            <i class="bi bi-box me-1"></i>商品管理
+                            <i class="bi bi-box me-1"></i>Product Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/categories/">
-                            <i class="bi bi-tag"></i> 分类管理
+                            <i class="bi bi-tag"></i> Category Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/inventory/">
-                            <i class="bi bi-clipboard-data me-1"></i>库存管理
+                            <i class="bi bi-clipboard-data me-1"></i>Inventory Management
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/inventory-checks/">
-                            <i class="bi bi-clipboard-check"></i> 库存盘点
+                            <i class="bi bi-clipboard-check"></i> Inventory Check
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/sales/">
-                            <i class="bi bi-cart me-1"></i>销售管理
+                            <i class="bi bi-cart me-1"></i>Sales Management
                         </a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-people me-1"></i>会员管理
+                            <i class="bi bi-people me-1"></i>Member Management
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/members/"><i class="bi bi-person-vcard me-2"></i>会员列表</a></li>
-                            <li><a class="dropdown-item" href="/member-levels/"><i class="bi bi-list-stars me-2"></i>会员等级</a></li>
+                            <li><a class="dropdown-item" href="/members/"><i class="bi bi-person-vcard me-2"></i>Member List</a></li>
+                            <li><a class="dropdown-item" href="/member-levels/"><i class="bi bi-list-stars me-2"></i>Member Levels</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="/reports/">
-                            <i class="bi bi-graph-up"></i> 报表中心
+                            <i class="bi bi-graph-up"></i> Reports Center
                         </a>
                     </li>
                 </ul>
@@ -627,14 +627,14 @@
                             admin
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>设置</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
-                                <!-- 使用表单代替链接 -->
+                                <!-- Use form instead of link -->
                                 <form action="{% url 'logout' %}" method="post" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="dropdown-item" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
-                                        <i class="bi bi-box-arrow-right me-2"></i>退出登录
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
                                     </button>
                                 </form>
                             </li>
@@ -649,45 +649,29 @@
     <div class="main-content">
         <div class="container">
             
-
-            
 <div class="container mt-4">
     <div class="card shadow">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">添加新商品</h5>
+            <h5 class="mb-0">Add New Product</h5>
         </div>
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" id="product-form" class="needs-validation" novalidate>
                 <input type="hidden" name="csrfmiddlewaretoken" value="B90QLm39d2LV7acDrRhvJzGCUWWjwgz3e23AL4afCaPZqspxVtJIQOQK9rOk1fgJ">
 
                 <div class="row">
-                    <!-- 基本信息 -->
+                    <!-- Basic Information -->
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">基本信息</h6>
+                                <h6 class="mb-0">Basic Information</h6>
                             </div>
                             <div class="card-body">
-                                
-
-
-    
     <div id="div_id_name" class="mb-3">
-        
-            
             <label
                 for="id_name" class="form-label requiredField">
-                商品名称<span class="asteriskField">*</span>
+                Product Name<span class="asteriskField">*</span>
             </label>
-        
-
-        
-
-        
-            
-                
-                    
-                        <input type="text" name="name" class="form-control textinput" placeholder="请输入商品名称" aria-label="商品名称" maxlength="200" required id="id_name">
+                        <input type="text" name="name" class="form-control textinput" placeholder="Enter product name" aria-label="Product Name" maxlength="200" required id="id_name">
                     
                     
                         
@@ -720,7 +704,7 @@
             
             <label
                 for="id_barcode" class="form-label requiredField">
-                商品条码<span class="asteriskField">*</span>
+                Product Barcode<span class="asteriskField">*</span>
             </label>
         
 
@@ -730,7 +714,7 @@
             
                 
                     
-                        <input type="text" name="barcode" class="form-control textinput" placeholder="请输入商品条码" autocomplete="off" inputmode="numeric" pattern="[A-Za-z0-9-]+" aria-label="商品条码" maxlength="100" required aria-describedby="id_barcode_helptext" id="id_barcode">
+                        <input type="text" name="barcode" class="form-control textinput" placeholder="Enter product barcode" autocomplete="off" inputmode="numeric" pattern="[A-Za-z0-9-]+" aria-label="Product Barcode" maxlength="100" required aria-describedby="id_barcode_helptext" id="id_barcode">
                     
                     
                         
@@ -743,7 +727,7 @@
 
     
     
-        <div id="id_barcode_helptext" class="form-text">支持EAN-13、UPC、ISBN等标准条码格式</div>
+        <div id="id_barcode_helptext" class="form-text">Supports standard barcode formats such as EAN-13, UPC, ISBN</div>
     
 
 
@@ -767,7 +751,7 @@
             
             <label
                 for="id_category" class="form-label requiredField">
-                商品分类<span class="asteriskField">*</span>
+                Product Category<span class="asteriskField">*</span>
             </label>
         
 
@@ -778,28 +762,28 @@
                 
                     
                         
-                            <select name="category" class="form-control form-select" aria-label="商品分类" required id="id_category">
+                            <select name="category" class="form-control form-select" aria-label="Product Category" required id="id_category">
   <option value="" selected>---------</option>
 
-  <option value="23">手机数码</option>
+  <option value="23">Mobile & Digital</option>
 
-  <option value="24">电脑办公</option>
+  <option value="24">Computer & Office</option>
 
-  <option value="25">家用电器</option>
+  <option value="25">Home Appliances</option>
 
-  <option value="26">食品饮料</option>
+  <option value="26">Food & Beverages</option>
 
-  <option value="27">服装鞋帽</option>
+  <option value="27">Clothing & Shoes</option>
 
-  <option value="28">美妆护肤</option>
+  <option value="28">Beauty & Skincare</option>
 
-  <option value="29">母婴用品</option>
+  <option value="29">Mom & Baby</option>
 
-  <option value="30">家居家装</option>
+  <option value="30">Home & Furniture</option>
 
-  <option value="31">玩具乐器</option>
+  <option value="31">Toys & Instruments</option>
 
-  <option value="32">运动户外</option>
+  <option value="32">Sports & Outdoor</option>
 
 </select>
                         
@@ -835,7 +819,7 @@
             
             <label
                 for="id_specification" class="form-label">
-                规格
+                Specification
             </label>
         
 
@@ -845,7 +829,7 @@
             
                 
                     
-                        <input type="text" name="specification" class="form-control textinput" placeholder="规格" aria-label="规格" maxlength="200" id="id_specification">
+                        <input type="text" name="specification" class="form-control textinput" placeholder="Specification" aria-label="Specification" maxlength="200" id="id_specification">
                     
                     
                         
@@ -878,7 +862,7 @@
             
             <label
                 for="id_manufacturer" class="form-label">
-                制造商
+                Manufacturer
             </label>
         
 
@@ -888,7 +872,7 @@
             
                 
                     
-                        <input type="text" name="manufacturer" class="form-control textinput" placeholder="制造商" aria-label="制造商" maxlength="200" id="id_manufacturer">
+                        <input type="text" name="manufacturer" class="form-control textinput" placeholder="Manufacturer" aria-label="Manufacturer" maxlength="200" id="id_manufacturer">
                     
                     
                         
@@ -916,11 +900,11 @@
                         </div>
                     </div>
 
-                    <!-- 价格和库存信息 -->
+                    <!-- Price and Stock Information -->
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">价格和库存</h6>
+                                <h6 class="mb-0">Price and Stock</h6>
                             </div>
                             <div class="card-body">
                                 
@@ -932,7 +916,7 @@
             
             <label
                 for="id_cost" class="form-label requiredField">
-                成本价<span class="asteriskField">*</span>
+                Cost Price<span class="asteriskField">*</span>
             </label>
         
 
@@ -942,7 +926,7 @@
             
                 
                     
-                        <input type="number" name="cost" class="form-control numberinput" step="0.01" placeholder="成本价" inputmode="decimal" aria-label="成本价" required id="id_cost">
+                        <input type="number" name="cost" class="form-control numberinput" step="0.01" placeholder="Cost Price" inputmode="decimal" aria-label="Cost Price" required id="id_cost">
                     
                     
                         
@@ -975,7 +959,7 @@
             
             <label
                 for="id_price" class="form-label requiredField">
-                售价<span class="asteriskField">*</span>
+                Selling Price<span class="asteriskField">*</span>
             </label>
         
 
@@ -985,7 +969,7 @@
             
                 
                     
-                        <input type="number" name="price" class="form-control numberinput" step="0.01" placeholder="售价" inputmode="decimal" aria-label="售价" required id="id_price">
+                        <input type="number" name="price" class="form-control numberinput" step="0.01" placeholder="Selling Price" inputmode="decimal" aria-label="Selling Price" required id="id_price">
                     
                     
                         
@@ -1019,7 +1003,7 @@
             
             <label
                 for="id_warning_level" class="form-label">
-                预警库存
+                Warning Level
             </label>
         
 
@@ -1029,7 +1013,7 @@
             
                 
                     
-                        <input type="number" name="warning_level" class="form-control numberinput" min="0" step="1" placeholder="预警数量" aria-label="预警库存" aria-describedby="id_warning_level_helptext" id="id_warning_level">
+                        <input type="number" name="warning_level" class="form-control numberinput" min="0" step="1" placeholder="Warning Quantity" aria-label="Warning Level" aria-describedby="id_warning_level_helptext" id="id_warning_level">
                     
                     
                         
@@ -1042,7 +1026,7 @@
 
     
     
-        <div id="id_warning_level_helptext" class="form-text">库存低于此数量时将发出预警</div>
+        <div id="id_warning_level_helptext" class="form-text">Alert will be issued when stock falls below this quantity</div>
     
 
 
@@ -1064,11 +1048,11 @@
                 </div>
 
                 <div class="row">
-                    <!-- 颜色和尺码 -->
+                    <!-- Color and Size -->
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">颜色和尺码</h6>
+                                <h6 class="mb-0">Color and Size</h6>
                             </div>
                             <div class="card-body">
                                 
@@ -1080,7 +1064,7 @@
             
             <label
                 for="id_color" class="form-label">
-                颜色
+                Color
             </label>
         
 
@@ -1091,32 +1075,32 @@
                 
                     
                         
-                            <select name="color" class="form-control form-select" aria-label="颜色" id="id_color">
-  <option value="" selected>无颜色</option>
+                            <select name="color" class="form-control form-select" aria-label="Color" id="id_color">
+  <option value="" selected>No Color</option>
 
-  <option value="black">黑色</option>
+  <option value="black">Black</option>
 
-  <option value="white">白色</option>
+  <option value="white">White</option>
 
-  <option value="red">红色</option>
+  <option value="red">Red</option>
 
-  <option value="blue">蓝色</option>
+  <option value="blue">Blue</option>
 
-  <option value="green">绿色</option>
+  <option value="green">Green</option>
 
-  <option value="yellow">黄色</option>
+  <option value="yellow">Yellow</option>
 
-  <option value="purple">紫色</option>
+  <option value="purple">Purple</option>
 
-  <option value="grey">灰色</option>
+  <option value="grey">Gray</option>
 
-  <option value="pink">粉色</option>
+  <option value="pink">Pink</option>
 
-  <option value="orange">橙色</option>
+  <option value="orange">Orange</option>
 
-  <option value="brown">棕色</option>
+  <option value="brown">Brown</option>
 
-  <option value="other">其他</option>
+  <option value="other">Other</option>
 
 </select>
                         
@@ -1152,7 +1136,7 @@
             
             <label
                 for="id_size" class="form-label">
-                尺码
+                Size
             </label>
         
 
@@ -1163,8 +1147,8 @@
                 
                     
                         
-                            <select name="size" class="form-control form-select" aria-label="尺码" id="id_size">
-  <option value="" selected>无尺码</option>
+                            <select name="size" class="form-control form-select" aria-label="Size" id="id_size">
+  <option value="" selected>No Size</option>
 
   <option value="XS">XS</option>
 
@@ -1202,7 +1186,7 @@
 
   <option value="45">45</option>
 
-  <option value="other">其他</option>
+  <option value="other">Other</option>
 
 </select>
                         
@@ -1233,11 +1217,11 @@
                         </div>
                     </div>
 
-                    <!-- 图片上传 -->
+                    <!-- Image Upload -->
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">商品图片</h6>
+                                <h6 class="mb-0">Product Image</h6>
                             </div>
                             <div class="card-body">
                                 
@@ -1249,7 +1233,7 @@
             
             <label
                 for="id_image" class="form-label">
-                商品图片
+                Product Image
             </label>
         
 
@@ -1264,7 +1248,7 @@
 
 
 <div>
-    <input type="file" name="image" class="form-control form-control" accept="image/*" aria-label="商品图片" id="id_image">
+    <input type="file" name="image" class="form-control form-control" accept="image/*" aria-label="Product Image" id="id_image">
     
 
 
@@ -1297,11 +1281,11 @@
                 </div>
 
                 <div class="row">
-                    <!-- 描述信息 -->
+                    <!-- Description Information -->
                     <div class="col-12">
                         <div class="card mb-3">
                             <div class="card-header bg-light">
-                                <h6 class="mb-0">描述</h6>
+                                <h6 class="mb-0">Description</h6>
                             </div>
                             <div class="card-body">
                                 
@@ -1313,7 +1297,7 @@
             
             <label
                 for="id_description" class="form-label">
-                商品描述
+                Product Description
             </label>
         
 
@@ -1364,10 +1348,10 @@
         
             
                     
-                        <input type="checkbox" name="is_active" class="form-check-input checkboxinput" aria-label="是否启用" id="id_is_active" checked>
+                        <input type="checkbox" name="is_active" class="form-check-input checkboxinput" aria-label="Is Active" id="id_is_active" checked>
                     
                 <label for="id_is_active" class="form-check-label">
-                    是否启用
+                    Is Active
                 </label>
                 
 
@@ -1402,12 +1386,12 @@
                     <div class="col-12">
                         <div class="d-flex justify-content-between">
                             <a href="/products/" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> 返回列表
+                                <i class="fas fa-arrow-left"></i> Back to List
                             </a>
                             <div>
                                 
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> 保存商品
+                                    <i class="fas fa-save"></i> Save Product
                                 </button>
                             </div>
                         </div>
@@ -1424,7 +1408,7 @@
 
     <footer class="bg-light py-3 mt-auto border-top">
         <div class="container text-center text-muted">
-            <small>&copy; 2025 库存管理系统 | 版本 1.0</small>
+            <small>&copy; 2025 Inventory Management System | Version 1.0</small>
         </div>
     </footer>
 
@@ -1433,30 +1417,30 @@
     
 <script>
     $(document).ready(function() {
-        // 自动生成条码
+        // Auto-generate barcode
         $('#id_barcode').closest('.form-group').append(
-            '<div class="mt-2"><button type="button" id="generate-barcode" class="btn btn-sm btn-outline-primary">自动生成条码</button></div>'
+            '<div class="mt-2"><button type="button" id="generate-barcode" class="btn btn-sm btn-outline-primary">Auto-generate Barcode</button></div>'
         );
         
         $('#generate-barcode').click(function() {
-            // 生成随机13位EAN条码
+            // Generate random 13-digit EAN barcode
             let barcode = '69' + Math.floor(Math.random() * 10000000000).toString().padStart(11, '0');
             $('#id_barcode').val(barcode);
         });
         
-        // 分类下拉框增强
+        // Category dropdown enhancement
         $('#id_category').select2({
-            placeholder: '选择商品分类',
+            placeholder: 'Select Category',
             allowClear: true
         });
         
-        // 颜色和尺码下拉框增强
+        // Color and size dropdown enhancement
         $('#id_color, #id_size').select2({
-            placeholder: '请选择',
+            placeholder: 'Please Select',
             allowClear: true
         });
         
-        // 表单验证
+        // Form validation
         $('#product-form').submit(function(event) {
             if (this.checkValidity() === false) {
                 event.preventDefault();
@@ -1468,9 +1452,9 @@
 </script>
 
     <script>
-    // 页面加载完成后执行增强功能
+    // Execute enhanced features after page load
     document.addEventListener('DOMContentLoaded', function() {
-         // 为表单元素添加Bootstrap样式
+         // Add Bootstrap styles to form elements
          document.querySelectorAll('input[type="text"], input[type="number"], input[type="email"], input[type="password"], textarea, select').forEach(function(element) {
              if (!element.classList.contains('form-control') && !element.classList.contains('form-select')) {
                  if (element.tagName === 'SELECT') {
@@ -1481,7 +1465,7 @@
              }
          });
          
-         // 自动隐藏警告消息
+         // Auto-hide alert messages
          setTimeout(function() {
              document.querySelectorAll('.alert').forEach(function(alert) {
                 if (typeof bootstrap !== 'undefined' && bootstrap.Alert) {
@@ -1491,11 +1475,11 @@
              });
          }, 5000);
          
-         // 优化移动端导航栏交互
+         // Optimize mobile navigation bar interaction
          const navbarToggler = document.querySelector('.navbar-toggler');
          if (navbarToggler) {
              navbarToggler.addEventListener('click', function() {
-                 // 添加过渡效果
+                 // Add transition effect
                 const navbarCollapse = document.querySelector('.navbar-collapse');
                 if (navbarCollapse) {
                     navbarCollapse.style.transition = 'all 0.3s ease-in-out';
@@ -1503,7 +1487,7 @@
             });
         }
         
-        // 添加表单验证
+        // Add form validation
         const forms = document.querySelectorAll('form');
         forms.forEach(form => {
             form.addEventListener('submit', function(event) {
